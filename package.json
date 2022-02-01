@@ -1,0 +1,30 @@
+{
+  "name": "formifly",
+  "version": "0.0.1",
+  "description": "React form handling as light as a butterfly",
+  "main": "dist/formifly.min.js",
+  "scripts": {
+    "test": "jest --config jest.config.js ",
+    "coverage": "jest --config jest.config.js --collectCoverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/binary-butterfly/formifly.git"
+  },
+  "keywords": [
+    "react",
+    "forms"
+  ],
+  "author": "binary butterfly GmbH",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/binary-butterfly/formifly/issues"
+  },
+  "homepage": "https://github.com/binary-butterfly/formifly#readme",
+  "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.16.10",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
+    "jest": "^27.4.7"
+  }
+}

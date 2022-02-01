@@ -1,0 +1,7 @@
+.idea/
+.vs_code/
+
+.DS_STORE
+
+node_modules/
+dist/
