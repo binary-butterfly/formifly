@@ -7,7 +7,7 @@ describe.each([
 ])('Test StringValidator regex', (value, expr, expected, name) => {
     test(name, () => {
         const validator = new StringValidator().regex(expr);
-        expect(validator.validate(value)).toEqual([expected, value]);
+        expect(validator.validate(value)).toStrictEqual([expected, value]);
     });
 });
 
@@ -18,7 +18,7 @@ describe.each([
 ])('Test StringValidator minLength', (value, minLength, expected, name) => {
     test(name, () => {
         const validator = new StringValidator().minLength(minLength);
-        expect(validator.validate(value)).toEqual([expected, value]);
+        expect(validator.validate(value)).toStrictEqual([expected, value]);
     });
 });
 
@@ -29,7 +29,7 @@ describe.each([
 ])('Test StringValidator maxLength', (value, maxLength, expected, name) => {
     test(name, () => {
         const validator = new StringValidator().maxLength(maxLength);
-        expect(validator.validate(value)).toEqual([expected, value]);
+        expect(validator.validate(value)).toStrictEqual([expected, value]);
     });
 });
 
@@ -43,11 +43,11 @@ describe.each([
 ])('Test StringValidator lengthRange', (value, minLength, maxLength, expected, name) => {
     test(name, () => {
         const validator = new StringValidator().lengthRange(minLength, maxLength);
-        expect(validator.validate(value)).toEqual([expected, value]);
+        expect(validator.validate(value)).toStrictEqual([expected, value]);
     });
 });
 
 test('Test StringValidator validators can be chained', () => {
     const validator = new StringValidator().required().minLength(1).maxLength(2).lengthRange(1, 2).regex(/[a-z]/);
-    expect(validator.validate('a')).toEqual([true, 'a']);
+    expect(validator.validate('a')).toStrictEqual([true, 'a']);
 });

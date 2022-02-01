@@ -8,7 +8,7 @@ describe.each([
 ])('Test BaseValidator not required', (value, expected, name) => {
     test(name, () => {
         const validator = new BaseValidator();
-        expect(validator.validate(value)).toEqual([expected, value]);
+        expect(validator.validate(value)).toStrictEqual([expected, value]);
     });
 });
 
@@ -20,6 +20,6 @@ describe.each([
 ])('Test BaseValdiator required', (value, expected, name) => {
     test(name, () => {
         const validator = new BaseValidator().required();
-        expect(validator.validate(value)).toEqual([expected, value]);
+        expect(validator.validate(value)).toStrictEqual([expected, value]);
     });
 });
