@@ -23,3 +23,23 @@ describe.each([
         expect(validator.validate(value)).toStrictEqual(expected);
     });
 });
+
+test('Test always false validator', () => {
+    const validator = new BaseValidator().alwaysFalse();
+    expect(validator.validate('banana')).toStrictEqual([false, 'This validator will never return true'])
+})
+
+describe.each([
+    ['', {banana: 'food'}, [true, ''], 'uses independent validator if dependent condition is not met'],
+    ['', {banana: 'apple'}, [false, 'This field is required'], 'uses dependent validator when condition is met'],
+    ['abc', {banana: 'apple'}, [true, 'abc'], 'uses dependent validator and can pass when condition is met']
+])('Test dependent validator', (value, otherValues, expected, name) => {
+    test(name, () => {
+        const validator = new BaseValidator([
+            'banana',
+            value => value === 'apple',
+            new BaseValidator().required(),
+        ]);
+        expect(validator.validate(value, otherValues)).toStrictEqual(expected);
+    });
+});

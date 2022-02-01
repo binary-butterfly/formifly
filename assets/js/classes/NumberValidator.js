@@ -8,8 +8,8 @@ const delocalize = (value) => {
 };
 
 class NumberValidator extends BaseValidator {
-    constructor(defaultErrorMsg = 'This field must be a number') {
-        super(defaultErrorMsg);
+    constructor(dependent, defaultErrorMsg = 'This field must be a number') {
+        super(dependent, defaultErrorMsg);
         this.validateFuncs.push([
             value => {
                 return numRegexp.test(value) ? delocalize(value) : false;
