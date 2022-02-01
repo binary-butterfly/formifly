@@ -13,13 +13,13 @@ describe.each([
 });
 
 describe.each([
-    ['abc', true, 'returns true for random value'],
-    ['', false, 'returns false for empty string'],
-    [null, false, 'returns false for null'],
-    [undefined, false, 'returns false for undefined'],
-])('Test BaseValdiator required', (value, expected, name) => {
+    ['abc', [true, 'abc'], undefined, 'returns true for random value'],
+    ['', [false, 'This field is required'], undefined, 'returns false for empty string'],
+    [null, [false, 'There is an error within this field'], null, 'returns false for null'],
+    [undefined, [false, 'banana'], 'banana', 'returns false for undefined'],
+])('Test BaseValdiator required', (value, expected, msg, name) => {
     test(name, () => {
-        const validator = new BaseValidator().required();
-        expect(validator.validate(value)).toStrictEqual([expected, value]);
+        const validator = new BaseValidator().required(msg);
+        expect(validator.validate(value)).toStrictEqual(expected);
     });
 });
