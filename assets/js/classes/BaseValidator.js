@@ -19,11 +19,15 @@ class BaseValidator {
                 continue;
             }
 
-            if (func(value) === false) {
-                return false;
+            const test = func(value);
+            if (test === false) {
+                return [false, value];
+            } else if (test !== true) {
+                // Allows validators to modify the value
+                value = test;
             }
         }
-        return true;
+        return [true, value];
     }
 }
 
