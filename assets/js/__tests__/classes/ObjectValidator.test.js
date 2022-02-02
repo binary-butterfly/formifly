@@ -4,7 +4,7 @@ import StringValidator from '../../classes/StringValidator';
 
 describe.each([
     [{banana: new StringValidator().required()}, {banana: 'nom!'}, [true, {banana: 'nom!'}], 'validates child fields'],
-    [{banana: new StringValidator().required()}, {banana: ''}, [false, 'This field is required'], 'validates child fields and can fail'],
+    [{banana: new StringValidator().required(), apple: new StringValidator()}, {banana: '', apple: ''}, [false, {banana: [false, 'This field is required'], apple: [true, '']}], 'validates child fields and can fail'],
     [{decimal: new NumberValidator().decimalPlaces(2), banana: new StringValidator()},
         {banana: '', decimal: '2'},
         [

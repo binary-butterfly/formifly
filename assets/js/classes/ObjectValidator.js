@@ -15,15 +15,18 @@ class ObjectValidator extends BaseValidator {
     }
 
     validate(value, otherValues) {
+        let allOk = true;
+        let tests = {};
         for (const fieldName in this.fields) {
             const test = this.fields[fieldName].validate(value[fieldName], value);
+            tests[fieldName] = test;
             if (test[0] === false) {
-                return [false, test[1]];
-            } else {
+                allOk = false;
+            } else if (allOk) {
                 value[fieldName] = test[1];
             }
         }
-        return [true, value];
+        return allOk ? [true, value] : [false, tests];
     }
 }
 
