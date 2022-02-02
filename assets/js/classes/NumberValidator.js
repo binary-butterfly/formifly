@@ -2,20 +2,78 @@ import {ensureValueIsNumeric} from '../helpers/developerInputValidators';
 import BaseValidator from './BaseValidator';
 
 const numRegexp = /^-?\d+([.,]\d+)?$/s;
+const wholeNumRegexp = /^-?\d+$/s;
 
 const delocalize = (value) => {
     return parseFloat(String(value).replace(',', '.'));
 };
 
 class NumberValidator extends BaseValidator {
-    constructor(dependent, defaultErrorMsg = 'This field must be a number') {
+
+    /**
+     * Validate a numeric input field
+     * @param {Boolean} wholeNumber - Set to true to only allow whole numbers
+     * @param {Array|Boolean} [dependent]
+     * @param {String} [defaultErrorMsg]
+     */
+    constructor(wholeNumber = false, dependent, defaultErrorMsg) {
         super(dependent, defaultErrorMsg);
+
+        let regexpInUse;
+        if (wholeNumber) {
+            if (defaultErrorMsg === undefined) {
+                defaultErrorMsg = 'This field must be a whole number';
+            }
+            regexpInUse = wholeNumRegexp;
+        } else {
+            if (defaultErrorMsg === undefined) {
+                defaultErrorMsg = 'This field must be a number';
+            }
+            regexpInUse = numRegexp;
+        }
+
         this.validateFuncs.push([
             value => {
-                return numRegexp.test(value) ? delocalize(value) : false;
+                return regexpInUse.test(value) ? delocalize(value) : false;
             },
             defaultErrorMsg,
         ]);
+    }
+
+    /**
+     * Ensure a minimum number (inclusive)
+     * @param {Number} num
+     * @param {String} [msg]
+     * @return {NumberValidator}
+     */
+    min(num, msg) {
+        ensureValueIsNumeric(num, 'min', 'NumberValidator', 'num');
+        if (msg === undefined) {
+            msg = 'This value must be at least ' + num;
+        } else {
+            msg = msg.replace('{{num}}', String(num));
+        }
+
+        this.validateFuncs.push([value => value >= num, msg]);
+        return this;
+    }
+
+    /**
+     * Enforce a maximum value
+     * @param {Number} num
+     * @param {String} [msg]
+     * @return {NumberValidator}
+     */
+    max(num, msg) {
+        ensureValueIsNumeric(num, 'max', 'NumberValidator', 'num');
+        if (msg === undefined) {
+            msg = 'This value must be at most ' + num;
+        } else {
+            msg = msg.replace('{{num}}', String(num));
+        }
+
+        this.validateFuncs.push([value => value <= num, msg]);
+        return this;
     }
 
     /**
