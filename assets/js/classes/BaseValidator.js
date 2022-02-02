@@ -17,7 +17,7 @@ class BaseValidator {
     }
 
     validateRequired(value) {
-        return (value !== '' && value !== null && value !== undefined);
+        return (value !== '' && value !== null && value !== undefined && (!(value instanceof Array) || value.length > 0));
     }
 
     /**
