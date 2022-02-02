@@ -91,6 +91,13 @@ Example:
 new DateTimeValidator().minDate(new Date(2020 - 01 - 01));
 ```
 
+### BooleanValidator
+
+This validator is used for boolean values, such as checkbox checked states. It does not have any special functions.
+
+The BooleanValidator will turn any input into a string representation of the correct boolean and fail on values that are not either a
+string representation of true or false or a real boolean.
+
 ### ObjectValidator
 
 This validator is used when your data model is not flat and has objects with keys in it.  
