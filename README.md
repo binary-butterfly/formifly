@@ -98,6 +98,14 @@ This validator is used for boolean values, such as checkbox checked states. It d
 The BooleanValidator will turn any input into a string representation of the correct boolean and fail on values that are not either a
 string representation of true or false or a real boolean.
 
+Example:
+
+```js
+new BooleanValidator()
+```
+
+This example will validate to true for `true`, `false`, `"true"` and `"false"`.
+
 ### ObjectValidator
 
 This validator is used when your data model is not flat and has objects with keys in it.  
