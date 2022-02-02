@@ -12,6 +12,12 @@ class DateTimeValidator extends BaseValidator {
         }, defaultMsg]);
     }
 
+    /**
+     * Enforce a minimum date (inclusive)
+     * @param {Date} date
+     * @param {String} [msg]
+     * @return {DateTimeValidator}
+     */
     minDate(date, msg) {
         ensureValueIsDateObject(date, 'minDate', 'DateTimeValidator', 'date');
         if (msg === undefined) {
@@ -24,6 +30,12 @@ class DateTimeValidator extends BaseValidator {
         return this;
     }
 
+    /**
+     * Enforce a maximum date (inclusive)
+     * @param {Date} date
+     * @param {String} [msg]
+     * @return {DateTimeValidator}
+     */
     maxDate(date, msg) {
         ensureValueIsDateObject(date, 'maxDate', 'DateTimeValidator', 'date');
         if (msg === undefined) {
@@ -36,6 +48,13 @@ class DateTimeValidator extends BaseValidator {
         return this;
     }
 
+    /**
+     * Enforce an (inclusive) date range
+     * @param {Date} minDate
+     * @param {Date} maxDate
+     * @param {String} [msg]
+     * @return {DateTimeValidator}
+     */
     dateRange(minDate, maxDate, msg) {
         ensureValueIsDateObject(minDate, 'dateRange', 'DateTimeValidator', 'minDate');
         ensureValueIsDateObject(maxDate, 'dateRange', 'DateTimeValidator', 'maxDate');

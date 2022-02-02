@@ -6,6 +6,11 @@ class BaseValidator {
     defaultErrorMsg = '';
     dependent = false;
 
+    /**
+     * Validates a field
+     * @param {Array|Boolean} [dependent]
+     * @param {String} [defaultErrorMsg]
+     */
     constructor(dependent = false, defaultErrorMsg = null) {
         this.defaultErrorMsg = defaultErrorMsg ?? 'There is an error within this field';
         this.dependent = dependent;
