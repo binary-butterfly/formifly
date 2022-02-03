@@ -35,15 +35,20 @@ This will be used as the error message if validation fails.
 If the validator accepts other values, those should be able to be inserted into custom strings using template keywords.  
 Check the specific validators documentation for that.
 
-All validator constructors accept (at least) the params `dependent` (see [Cross dependent fields](#cross-dependent-fields)
+Most validator constructors accept (at least) the params `dependent` (see [Cross dependent fields](#cross-dependent-fields)
 for more info), `defaultErrorMsg` and `defaultValue`.
+
+The former two params are accepted by all validators, while `defaultValue` is not accepted by the `ArrayValidator` and
+the `ObjectValidator`
+since for those, their children's default values are used instead.
 
 The default error message will be used when validation fails for a validator that does not have its own error message.  
 Note that most existing validators ***do*** have their own default error messages, which you will have to overwrite with your own as well.
 
 If you do not set a default value it will be set to a sensible default for the type of field.  
 That means most fields will have an empty string as default value, however arrays and objects will have an empty array or object
-respectively and booleans will default to false.
+respectively and booleans will default to false.  
+**The defaultValue may only be queried by using `getDefaultValue()` and not by directly accessing it.**
 
 ### BaseValidator
 
@@ -59,6 +64,7 @@ Available methods:
 
 - `required(msg: [String])` Make the field required. A field that is not required will pass all validators if it is empty.
 - `alwaysFalse(msg: [String])` Make the validation always return false. This may be useful when building more complex dependent validators.
+- `getDefaultValue()` Return the field's default value.
 - `validate(value, [otherValues])` Validate the field.  
   You should not need to use this function. If you do for some reason, pass the field's value as value and
   (if there are dependencies) all other values as otherValues.

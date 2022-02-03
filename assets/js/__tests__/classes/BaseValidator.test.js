@@ -50,6 +50,6 @@ describe.each([
 ])('Test defaultValue', (defaultValue, expected, name) => {
     test(name, () => {
         const validator = new BaseValidator(false, undefined, defaultValue);
-        expect(validator.defaultValue).toStrictEqual(expected);
+        expect(validator.getDefaultValue()).toStrictEqual(expected);
     });
 });

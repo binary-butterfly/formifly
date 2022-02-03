@@ -80,6 +80,10 @@ class BaseValidator {
             return this.validateIndependent(value);
         }
     }
+
+    getDefaultValue() {
+        return this.defaultValue;
+    }
 }
 
 export default BaseValidator;

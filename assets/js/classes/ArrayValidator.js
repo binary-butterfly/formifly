@@ -3,16 +3,16 @@ import BaseValidator from './BaseValidator';
 
 class ArrayValidator extends BaseValidator {
     of;
+    minChildCount = 0;
 
     /**
      * Validate an array of fields
      * @param {BaseValidator} of
      * @param {Array} [dependent]
      * @param {String} [defaultMessage]
-     * @param {Array} [defaultValue]
      */
-    constructor(of, dependent, defaultMessage, defaultValue = []) {
-        super(dependent, defaultMessage, defaultValue);
+    constructor(of, dependent, defaultMessage) {
+        super(dependent, defaultMessage);
         this.of = of;
     }
 
@@ -34,6 +34,7 @@ class ArrayValidator extends BaseValidator {
         if (num > 0) {
             this.isRequired = true;
         }
+        this.minChildCount = num;
         return this;
     }
 
@@ -75,7 +76,22 @@ class ArrayValidator extends BaseValidator {
         if (min > 0) {
             this.isRequired = true;
         }
+        this.minChildCount = min;
         return this;
+    }
+
+    /**
+     * Get the default value for the array's children
+     * @return {*[]}
+     */
+    getDefaultValue() {
+        let ret = [
+            this.of.getDefaultValue(),
+        ];
+        for (let c = 1; c < this.minChildCount; c++) {
+            ret.push(ret[0]);
+        }
+        return ret;
     }
 
     validate(values, otherValues = {}) {

@@ -60,3 +60,13 @@ test('Test ArrayValidator can fail on child fail', () => {
     const validator = new ArrayValidator(new NumberValidator().negative());
     expect(validator.validate([1, -2])).toStrictEqual([false, [[false, 'This value must be negative'], [true, -2]]]);
 });
+
+test('Test ArrayValidator getDefaultValue returns the children\'s default values', () => {
+    const validator = new ArrayValidator(new NumberValidator(undefined, undefined, undefined, 0));
+    expect(validator.getDefaultValue()).toStrictEqual([0]);
+});
+
+test('Test ArrayValidator getDefaultValue returns as many default values as there are required children', () => {
+    const validator = new ArrayValidator(new NumberValidator(undefined, undefined, undefined, 1)).minLength(3);
+    expect(validator.getDefaultValue()).toStrictEqual([1, 1, 1]);
+});

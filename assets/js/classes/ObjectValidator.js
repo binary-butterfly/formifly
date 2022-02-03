@@ -1,3 +1,4 @@
+import ArrayValidator from './ArrayValidator';
 import BaseValidator from './BaseValidator';
 
 class ObjectValidator extends BaseValidator {
@@ -8,11 +9,21 @@ class ObjectValidator extends BaseValidator {
      * @param {Object} fields
      * @param {Array} [dependent]
      * @param {String} [defaultMessage]
-     * @param {Object} [defaultValue]
      */
-    constructor(fields, dependent, defaultMessage, defaultValue = {}) {
-        super(dependent, defaultMessage, defaultValue);
+    constructor(fields, dependent, defaultMessage) {
+        super(dependent, defaultMessage);
         this.fields = fields;
+    }
+
+    /**
+     * @return {{}}
+     */
+    getDefaultValue() {
+        let ret = {};
+        for (const fieldName in this.fields) {
+            ret[fieldName] = this.fields[fieldName].getDefaultValue();
+        }
+        return ret;
     }
 
     validate(value, otherValues) {
