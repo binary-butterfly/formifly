@@ -8,6 +8,26 @@ REST backends.
 
 It is currently in very early development and not actually usable yet.
 
+## Table of contents
+
+<nav>
+<ol>
+  <li> 
+    <a href="#available-validators">Available Validators</a>
+    <ul>
+      <li><a href="#basevalidator">BaseValidator</a></li>
+      <li><a href="#numbervalidator">NumberValidator</a></li>
+      <li><a href="#strigvalidtor">StringValidator</a></li>
+      <li><a href="#datetimevalidator">DateTimeValidator</a></li>
+      <li><a href="#booleanvalidator">BooleanValidator</a></li>
+      <li><a href="#objectvalidator">ObjectValidator</a></li>
+      <li><a href="#arrayvalidator">ArrayValidator</a></li>
+    </ul>
+  </li>
+  <li><a href="#cross-dependent-fields">Cross Dependent Fields</a></li>
+</ol>
+</nav>
+
 ## Available Validators
 
 Generally all validators accept an optional `msg` param.  
@@ -114,7 +134,7 @@ Example:
 new BooleanValidator()
 ```
 
-This example will validate to true for `true`, `false`, `"true"` and `"false"`.
+This example will validate to true for `true`, `false`, `"true"` and `"false"` and return an error message for everything else.
 
 ### ObjectValidator
 
@@ -157,7 +177,7 @@ Example:
 new ArrayValidator(new StringValidator().required()).minLength(2);
 ```
 
-## Cross dependent fields
+## Cross Dependent Fields
 
 You can use different validators for fields depending on the value of other fields.  
 This behaviour is pretty bare bones at the moment and may be subject to change at a later date.
