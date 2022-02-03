@@ -17,7 +17,7 @@ describe.each([
     ['', [false, 'This field is required'], undefined, 'returns false for empty string'],
     [null, [false, 'There is an error within this field'], null, 'returns false for null'],
     [undefined, [false, 'banana'], 'banana', 'returns false for undefined'],
-])('Test BaseValdiator required', (value, expected, msg, name) => {
+])('Test BaseValidator required', (value, expected, msg, name) => {
     test(name, () => {
         const validator = new BaseValidator().required(msg);
         expect(validator.validate(value)).toStrictEqual(expected);
@@ -26,13 +26,13 @@ describe.each([
 
 test('Test always false validator', () => {
     const validator = new BaseValidator().alwaysFalse();
-    expect(validator.validate('banana')).toStrictEqual([false, 'This validator will never return true'])
-})
+    expect(validator.validate('banana')).toStrictEqual([false, 'This validator will never return true']);
+});
 
 describe.each([
     ['', {banana: 'food'}, [true, ''], 'uses independent validator if dependent condition is not met'],
     ['', {banana: 'apple'}, [false, 'This field is required'], 'uses dependent validator when condition is met'],
-    ['abc', {banana: 'apple'}, [true, 'abc'], 'uses dependent validator and can pass when condition is met']
+    ['abc', {banana: 'apple'}, [true, 'abc'], 'uses dependent validator and can pass when condition is met'],
 ])('Test dependent validator', (value, otherValues, expected, name) => {
     test(name, () => {
         const validator = new BaseValidator([
@@ -41,5 +41,15 @@ describe.each([
             new BaseValidator().required(),
         ]);
         expect(validator.validate(value, otherValues)).toStrictEqual(expected);
+    });
+});
+
+describe.each([
+    [undefined, '', 'defaults to empty string'],
+    ['banana', 'banana', 'is set correctly'],
+])('Test defaultValue', (defaultValue, expected, name) => {
+    test(name, () => {
+        const validator = new BaseValidator(false, undefined, defaultValue);
+        expect(validator.defaultValue).toStrictEqual(expected);
     });
 });

@@ -15,6 +15,16 @@ This will be used as the error message if validation fails.
 If the validator accepts other values, those should be able to be inserted into custom strings using template keywords.  
 Check the specific validators documentation for that.
 
+All validator constructors accept (at least) the params `dependent` (see [Cross dependent fields](#cross-dependent-fields)
+for more info), `defaultErrorMsg` and `defaultValue`.
+
+The default error message will be used when validation fails for a validator that does not have its own error message.  
+Note that most existing validators ***do*** have their own default error messages, which you will have to overwrite with your own as well.
+
+If you do not set a default value it will be set to a sensible default for the type of field.  
+That means most fields will have an empty string as default value, however arrays and objects will have an empty array or object
+respectively and booleans will default to false.
+
 ### BaseValidator
 
 This is the validator that all other validators inherit from, so all of its methods are available for the other validators as well.  

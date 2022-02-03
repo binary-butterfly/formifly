@@ -9,9 +9,10 @@ class ArrayValidator extends BaseValidator {
      * @param {BaseValidator} of
      * @param {Array} [dependent]
      * @param {String} [defaultMessage]
+     * @param {Array} [defaultValue]
      */
-    constructor(of, dependent, defaultMessage) {
-        super(dependent, defaultMessage);
+    constructor(of, dependent, defaultMessage, defaultValue = []) {
+        super(dependent, defaultMessage, defaultValue);
         this.of = of;
     }
 

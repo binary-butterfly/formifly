@@ -15,9 +15,10 @@ class NumberValidator extends BaseValidator {
      * @param {Boolean} wholeNumber - Set to true to only allow whole numbers
      * @param {Array|Boolean} [dependent]
      * @param {String} [defaultErrorMsg]
+     * @param [defaultValue]
      */
-    constructor(wholeNumber = false, dependent, defaultErrorMsg) {
-        super(dependent, defaultErrorMsg);
+    constructor(wholeNumber = false, dependent, defaultErrorMsg, defaultValue = '') {
+        super(dependent, defaultErrorMsg, defaultValue);
 
         let regexpInUse;
         if (wholeNumber) {

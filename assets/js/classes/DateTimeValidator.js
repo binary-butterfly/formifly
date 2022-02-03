@@ -4,8 +4,14 @@ import BaseValidator from './BaseValidator';
 const dateRegex = /^\d{4}-((0[1-9])|(1[0-2]))-(([0-2][0-9])|(3[0-1]))T(([0-1][0-9])|(2[0-3]))(:[0-5][0-9]){1,2}$/s;
 
 class DateTimeValidator extends BaseValidator {
-    constructor(dependent, defaultMsg = 'This field must contain a date/time') {
-        super(dependent, defaultMsg);
+    /**
+     * Validate a datetime input
+     * @param {Array} [dependent]
+     * @param {String} [defaultMsg]
+     * @param {String} [defaultValue]
+     */
+    constructor(dependent, defaultMsg = 'This field must contain a date/time', defaultValue = '') {
+        super(dependent, defaultMsg, defaultValue);
 
         this.validateFuncs.push([(value) => {
             return dateRegex.test(value) ? new Date(value) : false;
