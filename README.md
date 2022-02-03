@@ -112,7 +112,7 @@ Available methods:
 Example:
 
 ```js
- StringValidator().required().minLength(1).maxLength(2).regex(/[a-z]+/);  
+ StringValidator().required().minLength(1).maxLength(2).regex(/^[a-z]+$/);  
 ```
 
 This will validate any string that is composed of either 1 or two lowercase characters.
