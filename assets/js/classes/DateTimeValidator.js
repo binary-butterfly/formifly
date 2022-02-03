@@ -22,7 +22,7 @@ class DateTimeValidator extends BaseValidator {
      * Enforce a minimum date (inclusive)
      * @param {Date} date
      * @param {String} [msg]
-     * @return {DateTimeValidator}
+     * @return {this}
      */
     minDate(date, msg) {
         ensureValueIsDateObject(date, 'minDate', 'DateTimeValidator', 'date');
@@ -40,7 +40,7 @@ class DateTimeValidator extends BaseValidator {
      * Enforce a maximum date (inclusive)
      * @param {Date} date
      * @param {String} [msg]
-     * @return {DateTimeValidator}
+     * @return {this}
      */
     maxDate(date, msg) {
         ensureValueIsDateObject(date, 'maxDate', 'DateTimeValidator', 'date');
@@ -59,7 +59,7 @@ class DateTimeValidator extends BaseValidator {
      * @param {Date} minDate
      * @param {Date} maxDate
      * @param {String} [msg]
-     * @return {DateTimeValidator}
+     * @return {this}
      */
     dateRange(minDate, maxDate, msg) {
         ensureValueIsDateObject(minDate, 'dateRange', 'DateTimeValidator', 'minDate');

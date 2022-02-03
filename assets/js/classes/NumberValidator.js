@@ -48,7 +48,7 @@ class NumberValidator extends BaseValidator {
      * Ensure a minimum number (inclusive)
      * @param {Number} num
      * @param {String} [msg]
-     * @return {NumberValidator}
+     * @return {this}
      */
     min(num, msg) {
         ensureValueIsNumeric(num, 'min', 'NumberValidator', 'num');
@@ -67,7 +67,7 @@ class NumberValidator extends BaseValidator {
      * Enforce a maximum value
      * @param {Number} num
      * @param {String} [msg]
-     * @return {NumberValidator}
+     * @return {this}
      */
     max(num, msg) {
         ensureValueIsNumeric(num, 'max', 'NumberValidator', 'num');
@@ -85,7 +85,7 @@ class NumberValidator extends BaseValidator {
     /**
      * Only allow positive numbers. (Excluding 0)
      * @param {String} [msg] - The error message that is displayed when the value is invalid
-     * @returns {NumberValidator}
+     * @returns {this}
      */
     positive(msg = 'This value must be positive') {
         this.validateFuncs.push([value => value > 0, msg]);
@@ -96,7 +96,7 @@ class NumberValidator extends BaseValidator {
     /**
      * Only allow negative numbers. (Excluding 0)
      * @param {String} [msg] - The error message that is displayed when the value is invalid
-     * @returns {NumberValidator}
+     * @returns {this}
      */
     negative(msg = 'This value must be negative') {
         this.validateFuncs.push([value => value < 0, msg]);
@@ -109,7 +109,7 @@ class NumberValidator extends BaseValidator {
      * @param {Number} min
      * @param {Number} max
      * @param {String} [msg] - The error message that is displayed when the value is invalid
-     * @returns {NumberValidator}
+     * @returns {this}
      */
     range(min, max, msg) {
         if (msg === undefined) {
@@ -130,7 +130,7 @@ class NumberValidator extends BaseValidator {
     /**
      * Converts the input number into a decimal string.
      * @param {Number} count
-     * @returns {NumberValidator}
+     * @returns {this}
      */
     decimalPlaces(count) {
         ensureValueIsNumeric(count, 'decimalPlaces', 'NumberValidator', 'count');

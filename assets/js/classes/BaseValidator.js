@@ -26,7 +26,7 @@ class BaseValidator {
     /**
      * Enforces a value to be set
      * @param [msg] - The error message that is displayed when the value is invalid
-     * @return {BaseValidator}
+     * @return {this}
      */
     required(msg = 'This field is required') {
         this.isRequired = true;
@@ -38,7 +38,7 @@ class BaseValidator {
      * Makes the validation fail in all cases.
      * This may be useful for dependent validators.
      * @param [msg] - The error message that is displayed
-     * @return {BaseValidator}
+     * @return {this}
      */
     alwaysFalse(msg = 'This validator will never return true') {
         this.validateFuncs.push([() => false, msg]);

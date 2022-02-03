@@ -187,7 +187,7 @@ Available methods:
 - `maxLength(num: Number, msg: [String])` Enforce an (inclusive) maximum amount of children.  
   Use `{{num}}` to include the maximum amount of children in your custom error string.
 - `lengthRange(min: Number, max: Number, msg: [String])` Enforce an amount of children within an inclusive range.  
-  **Note that when `min` is > 0, the field will be considered required automatically.**
+  **Note that when `min` is > 0, the field will be considered required automatically.**  
   Use `{{min}}` and/ or `{{max}}` to include the minimum and/ or maximum amount of children in your custom error string respectively.
 
 Example:
