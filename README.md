@@ -48,7 +48,12 @@ respectively and booleans will default to false.
 ### BaseValidator
 
 This is the validator that all other validators inherit from, so all of its methods are available for the other validators as well.  
-All methods can be chained.
+All methods (except for validate) can be chained.
+
+Generally, this validator should only be used as a base for new custom validators or as a "last resort" when no other validator is working
+for the kind of date you need. (In which cases it is a good idea to build your own custom validator though.)
+
+The validator may be used in code examples within this documentation in cases where the validator that is actually used does not matter.
 
 Available methods:
 
@@ -82,6 +87,8 @@ Example:
  new NumberValidator().positive().decimalPlaces(2);
 ```
 
+This will validate any positive number and transform it to be a decimal string with two decimal places.
+
 ### StringValidator
 
 This Validator is used for generic strings.
@@ -99,8 +106,10 @@ Available methods:
 Example:
 
 ```js
- StringValidator().required().minLength(1).maxLength(2).regex(/[a-z]/);  
+ StringValidator().required().minLength(1).maxLength(2).regex(/[a-z]+/);  
 ```
+
+This will validate any string that is composed of either 1 or two lowercase characters.
 
 ### DateTimeValidator
 
@@ -118,8 +127,10 @@ Available methods:
 Example:
 
 ```js
-new DateTimeValidator().minDate(new Date(2020 - 01 - 01));
+new DateTimeValidator().minDate(new Date(2020, 1, 1));
 ```
+
+This will validate any date after the first of february 2020.
 
 ### BooleanValidator
 
@@ -153,6 +164,8 @@ new ObjectValidator({
 });
 ```
 
+This will validate the child fields `foo` and `number` with a String- and NumberValidator respectively.
+
 ### ArrayValidator
 
 This validator is used when your data model contains multiple of the same fields. When the validation fails, it will return an array with
@@ -176,6 +189,8 @@ Example:
 ```js
 new ArrayValidator(new StringValidator().required()).minLength(2);
 ```
+
+This will validate any child fields of the Array as Strings while also making sure there are at least two children.
 
 ## Cross Dependent Fields
 
