@@ -4,6 +4,7 @@ import BaseValidator from './BaseValidator';
 class ArrayValidator extends BaseValidator {
     of;
     minChildCount = 0;
+    maxChildCount;
 
     /**
      * Validate an array of fields
@@ -52,6 +53,7 @@ class ArrayValidator extends BaseValidator {
             msg = msg.replace('{{num}}', String(num));
         }
         this.validateFuncs.push([values => values.length <= num, msg]);
+        this.maxChildCount = num;
         return this;
     }
 
@@ -77,6 +79,7 @@ class ArrayValidator extends BaseValidator {
             this.isRequired = true;
         }
         this.minChildCount = min;
+        this.maxChildCount = max;
         return this;
     }
 

@@ -12,7 +12,19 @@ It is currently in very early development and not actually usable yet.
 
 <nav>
 <ol>
-  <li> 
+  <li>
+    <a href="#react-components">React Components</a>
+    <ul>
+      <li><a href="#formiflyform">FormiflyFrom</a></li>
+      <li><a href="#automagicformiflyfield">AutomagicFormiflyField</a></li>
+      <li><a href="#formiflyfield">FormiflyField</a></li>
+      <li><a href="#formiflyselectfield">FormiflySelectField</a></li>
+      <li><a href="#formiflycheckfield">FormiflyCheckField</a></li>
+      <li><a href="#formiflyprovider">FormiflyProvider</a></li>
+    </ul>
+  </li>
+  <li><a href="#styling">Styling</a></li>
+  <li>
     <a href="#available-validators">Available Validators</a>
     <ul>
       <li><a href="#basevalidator">BaseValidator</a></li>
@@ -27,6 +39,133 @@ It is currently in very early development and not actually usable yet.
   <li><a href="#cross-dependent-fields">Cross Dependent Fields</a></li>
 </ol>
 </nav>
+
+## React Components
+
+### FormiflyForm
+
+This component should always be the one containing all of your Fields in one specific form.  
+It accepts the following params:
+
+- `onSubmit`: your custom submit handler  
+  This has to return a promise that resolves when the form was submitted correctly.  
+  Field validation is handled automatically before running your function.  
+  If you have additional server validation that does not exactly match the client validators, you can reject the promise in case of an
+  error with an object that contains the validation errors for failed fields.  
+  If the promise is rejected with anything that is ___not___ formed in this way, the reason will be saved to `submitFailureReason`
+  in the Formifly Context.
+- `shape`: your validators  
+  This has to be an `ObjectValidator` containing all fields in your form.
+- `defaultValues`: default values for your form fields (optional)
+  This should only be used for a form that is used to edit existing database entries since the validators themselves are also capable of
+  holding default values, which is the preferred way to set those.  
+  Note that when this param is set, you will have to set **all** of the field values in it.
+
+### AutomagicFormiflyField
+
+This is a component that automatically fetches all field props from the current Formifly Context and decides which exact field component
+will be rendered.  
+The component can only be rendered from within a Formifly Context, while the other components may also be used outside one if that's
+something you need to do.  
+When using Formifly fields within a context, using this component is generally the preferred way to do so, although using the field
+components directly may lead to a very minor performance increase.
+
+The Component accepts the following props:
+
+- `label` The input label
+- `name` The name of the input  
+  If this name is the child of an object or array, write like this: `parent.key.subKey`
+- `help` Additional help text for the input (optional)  
+  Especially useful for fields that do not explain themselves from the label alone or password fields with special requirements.  
+  When using the help param, `aria-describedby` will be set correctly automatically.
+- `type` The type of the input (optional)  
+  Generally type can be inferred from the kind of validator you are using for the field.  
+  If the inferred type is incorrect, set it explicitly using this param.
+- `id` The id for the input (optional)
+  If this is not set, an id will be generated automatically like this: `formifly-input-field-$name`
+- `className` A string of classes to apply to the container of the label, input, error and help text (optional)  
+  All containers will already have the class names `formifly-field-container` and `formifly-$type-field-container`
+- `inputClassName` A string of classes to apply to the input component (optional)    
+  All input components will already have the class names `formifly-field-input` and `formifly-$type-field-input`.  
+  This will also apply to select fields.
+- `labelClassName` A string of classes to apply to the label component (optional)  
+  All label components will already have the class names `formifly-field-label` and `formifly-$type-field-label`.
+- `helpClassName` A string of classes to apply to the help component (optional)  
+  All help components will already have the class names `formifly-field-help` and `formifly-$type-field-help`.
+- `errorClassName` A string of classes to apply to the error component (optional)  
+  All error components will already have the class names `formifly-field-error` and `formifly-$type-field-error`.
+- `conatinerComponent` A component to replace the default container component with (optional)  
+  This is useful when you're styling the components using `styled-components`
+- `labelComponent` A component to replace the default label component with (optional)
+- `inputComponent` A component to replace the default input component with (optional)  
+  This is also used for select fields.
+- `errorComponent` A component to replace the default error component with (optional)
+- `helpComponent` A component to replace the default help component with (optional)
+- `optionComponent` A component to replace the default option component in select fields with (optional)
+- `labelNoMove` Disable the effect that moves the labels into the input field's border by setting this to true (optional)
+- `options` An array of options for select fields  (required for select fields, must not be set for others)  
+  This array must contain the options as objects with the keys `label` and `value`.
+
+### FormiflyField
+
+The field component used for most inputs. It accepts the same props as `AutomagicFormiflyField`, however it also adds and requires some
+more that are not needed for the automagic one.
+
+These are:
+
+- `errors` A string containing all validation errors for a field
+- `value` The value of the field
+- `onChange` The input's change handler
+- `onBlur` The input's blur handler
+- `onFocus` The input's focus handler
+- `aria-invalid`: Whether the field content is invalid (optional)
+- `aria-describedby`: A space seperated list of html ids of components that describe the input (optional)
+- `required` Whether or not the field is required (optional)
+
+All of these props can be generated automatically by calling `getFieldProps()` from the FormiflyContext with the name of the input field.
+
+### FormiflySelectField
+
+The field used for selectors.  
+It uses the same params as the `FormiflyField`, however it also adds these params:
+
+- `options` An array that contains all the options for the selector as objects with the keys `label` and `value`
+- `optionComponent` A component to overwrite the default option component (optional)
+
+These **can not** be generated by calling `getFieldProps()`.
+
+### FormiflyCheckField
+
+The component used for checkboxes and radios.  
+It uses the same params as the `FormiflyField`, however instead of `value`, it required `checked`.  
+The `getFieldProps()` function of the FormiflyContext already takes care of this for you if you use it.
+
+### FormiflyProvider
+
+The provider that holds all the context values.  
+You **should not** need to use this component since it is also included in `FormiflyForm` and it is only exported to enable further
+customization than what was considered when building the library.  
+If you run into an occasion where you need this component, consider adding an issue or PR to add the behaviour you need to the upstream
+library.
+
+## Styling
+
+The provided components do not have many styles attached by default.  
+This is done so that you do not need to overwrite tons of different styles when adding them to your own designs.
+
+In order to style the components, there are multiple methods available.
+
+- `styled-components`: You may use styled components to overwrite the components used by default.  
+  For this it may be useful to import the default components as the base for your own styled ones.  
+  Look at the `AutomagicFormiflyField` documentation to find out how.
+- `CSS`: All components have class names applied to allow CSS styles to be matched to them.  
+  For these names, look at the documentation for the `AutomagicFormiflyField` as it lists all of them.
+- `className`: You may use styling libraries other than styled-components that utilize the className property.  
+  For more information about this, look at the documentation for the `AutomagicFormiflyField` as it explains how to do that.
+- `style` property: You may also use styling libraries that add an inline `style` prop.  
+  To do this, override the default components as explained in the `AutomagicFormiflyField` documentation with ones that have your style
+  prop applied.  
+  Note that directly applying to `style` prop will **not** apply the styles to the field components.
 
 ## Available Validators
 

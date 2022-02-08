@@ -1,4 +1,3 @@
-import ArrayValidator from './ArrayValidator';
 import BaseValidator from './BaseValidator';
 
 class ObjectValidator extends BaseValidator {

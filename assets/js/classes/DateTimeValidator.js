@@ -1,7 +1,7 @@
 import {ensureValueIsDateObject} from '../helpers/developerInputValidators';
 import BaseValidator from './BaseValidator';
 
-const dateRegex = /^\d{4}-((0[1-9])|(1[0-2]))-(([0-2][0-9])|(3[0-1]))T(([0-1][0-9])|(2[0-3]))(:[0-5][0-9]){1,2}$/s;
+const dateRegex = /^\d{4}-((0[1-9])|(1[0-2]))-(([0-2][0-9])|(3[0-1]))T(([0-1][0-9])|(2[0-3]))(:[0-5][0-9]){1,2}(.\d{3})?$/s;
 
 class DateTimeValidator extends BaseValidator {
     /**
