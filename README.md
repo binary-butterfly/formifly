@@ -37,6 +37,7 @@ It is currently in very early development and not actually usable yet.
     </ul>
   </li>
   <li><a href="#cross-dependent-fields">Cross Dependent Fields</a></li>
+  <li><a href="#development">Development</a></li>
 </ol>
 </nav>
 
@@ -371,3 +372,16 @@ shape({
 ```
 
 This example will make the field `agreement` required if the field `fruit.banana` contains the value `nom!`.
+
+## Development
+
+In order to work on this library, follow these steps:
+
+1. Pull this repo
+2. Install all dependencies: `npm install`
+3. Start the development server with the example app: `npm run start`  
+   This will automatically open your default web browser with the demo app.
+4. Before you push any changes
+    1. Run tests and create coverage: `npm run coverage`
+    2. Fix any tests that fail
+    3. Check the test coverage output and make sure all of your additions are covered where that makes sense
