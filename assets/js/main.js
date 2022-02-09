@@ -13,6 +13,8 @@ import DateTimeValidator from './classes/DateTimeValidator';
 import {findFieldValidatorFromName, unpackErrors} from './helpers/validationHelpers';
 import {convertDateObjectToInputString, getFieldValueFromKeyString, setFieldValueFromKeyString} from './helpers/generalHelpers';
 import {ensureValueIsDateObject, ensureValueIsNumeric, ensureValueIsRegexp} from './helpers/developerInputValidators';
+import withLabelErrorsAndHelp, {FieldContainer, InputLabel, ErrorSpan, HelpSpan} from './components/input/withLabelErrorsAndHelp';
+import {Input} from './components/input/FormiflyField';
 
 export {
     FormiflyField,
@@ -36,4 +38,10 @@ export {
     ensureValueIsRegexp,
     ensureValueIsNumeric,
     ensureValueIsDateObject,
+    withLabelErrorsAndHelp,
+    Input as FormiflyInput,
+    FieldContainer as FormiflyFieldContainer,
+    InputLabel as FormiflyInputLabel,
+    ErrorSpan as FormiflyErrorSpan,
+    HelpSpan as FormiflyHelpSpan,
 };

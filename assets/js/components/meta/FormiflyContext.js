@@ -51,6 +51,12 @@ export const FormiflyProvider = (props) => {
 
     const handleCheckChange = (event) => {
         setFieldValue(event.target.name, Boolean(event.target.checked));
+        return validateField(event.target.name, event.target.checked);
+    };
+
+    const handleRadioChange = (event) => {
+        setFieldValue(event.target.name, event.target.value);
+        return validateField(event.target.name, event.target.value);
     };
 
     const handleBlur = (event) => {
@@ -77,7 +83,17 @@ export const FormiflyProvider = (props) => {
         setErrors(setFieldValueFromKeyString(event.target.name, false, errors));
     };
 
-    const getFieldProps = (name, help, type, id) => {
+    /**
+     * Returns all properties needed to render a Formifly field.
+     * Use this function if the AutomagicFormiflyField does not work for your specific use case.
+     * @param {String} name - The field name. If it is a child field of an object write like this: objectName.key, if it is a child of an array write like this arrayName.index
+     * @param {String} [help] - Help text to display next to the field
+     * @param {String} [type] - The field's type. This will usually be filled in automatically, however with radio fields you need to pass it.
+     * @param {String} [value] - The field value. **Only used for radio fields**. This does not contain the value of the field within your data but instead the value of this specific radio option.
+     * @param {String} [id] - The field's id. Usually IDs will be automatically generated like this: formifly-input-field-$name (or formifly-input-field-$name-radio-$value for radio buttons). Only pass an id if you want to override this.
+     * @return {{onBlur: (function(*): Promise<unknown>), onChange: handleChange, name, id: string, type: string, value, errors: (*|boolean), onFocus: handleFocus}}
+     */
+    const getFieldProps = (name, help, type, value, id) => {
         const fieldValidator = findFieldValidatorFromName(name, shape);
         const fieldValue = getFieldValueFromKeyString(name, values);
 
@@ -99,8 +115,15 @@ export const FormiflyProvider = (props) => {
             }
         } else if (fieldValidator instanceof BooleanValidator) {
             additionalProps.checked = fieldValue;
-            additionalProps.onChange = handleCheckChange;
-            guessedType = 'checkbox';
+            if (type === 'radio') {
+                additionalProps.onChange = handleRadioChange;
+                additionalProps.checked = fieldValue === value;
+                additionalProps.value = value;
+                additionalProps.id = id ?? 'formifly-input-field-' + name + '-radio-' + value;
+            } else {
+                additionalProps.onChange = handleCheckChange;
+                guessedType = 'checkbox';
+            }
         } else if (fieldValidator instanceof ArrayValidator || fieldValidator instanceof ObjectValidator) {
             throw new Error('Array and Object validators must not be used for input fields directly.');
         }
