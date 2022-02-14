@@ -15,11 +15,13 @@ import {convertDateObjectToInputString, getFieldValueFromKeyString, setFieldValu
 import {ensureValueIsDateObject, ensureValueIsNumeric, ensureValueIsRegexp} from './helpers/developerInputValidators';
 import withLabelErrorsAndHelp, {FieldContainer, InputLabel, ErrorSpan, HelpSpan} from './components/input/withLabelErrorsAndHelp';
 import {Input} from './components/input/FormiflyField';
+import FormiflyRadioGroup, {RadioGroupContainer} from './components/input/FormiflyRadioGroup';
 
 export {
     FormiflyField,
     FormiflyCheckField,
     AutomagicFormiflyField,
+    FormiflyRadioGroup,
     FormiflyForm,
     FormiflyProvider,
     useFormiflyContext,
@@ -41,6 +43,7 @@ export {
     withLabelErrorsAndHelp,
     Input as FormiflyInput,
     FieldContainer as FormiflyFieldContainer,
+    RadioGroupContainer as FormiflyRadioGroupContainer,
     InputLabel as FormiflyInputLabel,
     ErrorSpan as FormiflyErrorSpan,
     HelpSpan as FormiflyHelpSpan,
