@@ -41,7 +41,7 @@ const FormiflyCheckField = (props) => {
         <div>
             <LabelComponent className={'formifly-field-label formifly-' + type + '-field-label ' + (labelClassName ?? '')}>
                 <InputComponent type={type}
-                                checked={Boolean(checked)}
+                                checked={checked === 'true' || checked === true}
                                 id={id}
                                 name={name}
                                 onChange={onChange}
