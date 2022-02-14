@@ -104,6 +104,46 @@ describe('DemoForm', () => {
         expect(screen.queryByText('This field is required')).toBeNull();
     });
 
+    it('renders a radio group outside a fieldset', () => {
+        const firstOption = screen.getByLabelText('This is a radio option');
+        const secondOption = screen.getByLabelText('This is another radio option');
+
+        fireEvent.click(firstOption);
+        expect(firstOption.checked).toEqual(true);
+
+        fireEvent.click(secondOption);
+        expect(firstOption.checked).toEqual(false);
+        expect(secondOption.checked).toEqual(true);
+    });
+
+    it('renders a vertical radio group', () => {
+        const firstOption = screen.getByLabelText('First option');
+        const secondOption = screen.getByLabelText('Second option');
+
+        fireEvent.click(firstOption);
+        expect(firstOption.checked).toEqual(true);
+
+        fireEvent.click(secondOption);
+        expect(firstOption.checked).toEqual(false);
+        expect(secondOption.checked).toEqual(true);
+
+        expect(screen.queryByText('This radio group uses the FormiflyRadioGroup component, which creates an accessible field set to hold the options.')).not.toBeNull();
+    });
+
+    it('renders a horizontal radio group', () => {
+        const firstOption = screen.getByLabelText('Cool option');
+        const secondOption = screen.getByLabelText('Cooler option');
+
+        fireEvent.click(firstOption);
+        expect(firstOption.checked).toEqual(true);
+
+        fireEvent.click(secondOption);
+        expect(firstOption.checked).toEqual(false);
+        expect(secondOption.checked).toEqual(true);
+
+        expect(screen.queryByText('Also select one of these horizontal fields please')).not.toBeNull();
+    });
+
     it('allows adding and removing fruit', () => {
         const removeButton = screen.getByText('Remove this fruit');
         const addButton = screen.getByText('Add another fruit');
@@ -154,6 +194,8 @@ describe('DemoForm', () => {
         changeInputValue(screen.getByLabelText('Select something'), 'option2');
         changeInputValue(screen.getByLabelText('Name'), 'banana');
 
+        fireEvent.click(screen.getByLabelText('Second option'));
+
         fireEvent.click(screen.getByText('Submit Form'));
 
         return screen.findByText('Submission successful').then((result) => {
@@ -166,5 +208,5 @@ describe('DemoForm', () => {
         fireEvent.click(expiredCheck);
         fireEvent.blur(expiredCheck);
         expect(screen.getByText('You cannot add expired food.')).not.toBeNull();
-    })
+    });
 });

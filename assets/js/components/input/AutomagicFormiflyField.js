@@ -3,17 +3,22 @@ import React from 'react';
 import {useFormiflyContext} from '../meta/FormiflyContext';
 import FormiflyCheckField from './FormiflyCheckField';
 import FormiflyField from './FormiflyField';
+import FormiflyRadioGroup from './FormiflyRadioGroup';
 import FormiflySelectField from './FormiflySelectField';
 
 const AutomagicFormiflyField = (props) => {
     const {getFieldProps} = useFormiflyContext();
-    const fieldProps = getFieldProps(props.name, props.help, props.type, props.id);
+    const fieldProps = getFieldProps(props.name, props.help, props.type, props.value, props.id, props.additionalDescribedBy);
     const type = props.type ?? fieldProps.type;
 
-    if (['checkbox', 'radio'].includes(type)) {
+    if (!!props.options) {
+        if (props.type === 'radio-group') {
+            return <FormiflyRadioGroup {...fieldProps} {...props}/>;
+        } else {
+            return <FormiflySelectField {...fieldProps} {...props}/>;
+        }
+    } else if (['checkbox', 'radio'].includes(type)) {
         return <FormiflyCheckField {...fieldProps} {...props}/>;
-    } else if (!!props.options) {
-        return <FormiflySelectField {...fieldProps} {...props}/>;
     } else {
         return <FormiflyField {...fieldProps} {...props}/>;
     }
@@ -29,16 +34,19 @@ AutomagicFormiflyField.propTypes = {
     'inputClassName': PropTypes.string,
     'labelClassName': PropTypes.string,
     'helpClassName': PropTypes.string,
+    'legendClassName': PropTypes.string,
     'containerComponent': PropTypes.func,
     'inputComponent': PropTypes.func,
     'labelComponent': PropTypes.func,
     'errorComponent': PropTypes.func,
     'helpComponent': PropTypes.func,
+    'legendComponent': PropTypes.func,
     'labelNoMove': PropTypes.bool,
+    'additionalDescribedBy': PropTypes.string,
     'options': PropTypes.arrayOf(PropTypes.shape({
         label: PropTypes.string.isRequired,
         value: PropTypes.any.isRequired,
-    }))
+    })),
 };
 
 export default AutomagicFormiflyField;

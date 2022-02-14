@@ -91,16 +91,24 @@ export const FormiflyProvider = (props) => {
      * @param {String} [type] - The field's type. This will usually be filled in automatically, however with radio fields you need to pass it.
      * @param {String} [value] - The field value. **Only used for radio fields**. This does not contain the value of the field within your data but instead the value of this specific radio option.
      * @param {String} [id] - The field's id. Usually IDs will be automatically generated like this: formifly-input-field-$name (or formifly-input-field-$name-radio-$value for radio buttons). Only pass an id if you want to override this.
+     * @param {String} [additionalDescribedBy] - Use this to add additional ids to aria-describedby. (By default help and error displays are already connected.) This is especially useful when building a radio group without using the FormiflyRadioGroup component to add a title to the radio options.
      * @return {{onBlur: (function(*): Promise<unknown>), onChange: handleChange, name, id: string, type: string, value, errors: (*|boolean), onFocus: handleFocus}}
      */
-    const getFieldProps = (name, help, type, value, id) => {
+    const getFieldProps = (name, help, type, value, id, additionalDescribedBy) => {
         const fieldValidator = findFieldValidatorFromName(name, shape);
         const fieldValue = getFieldValueFromKeyString(name, values);
 
         let guessedType = 'text';
         let additionalProps = {};
 
-        if (fieldValidator instanceof DateTimeValidator) {
+        if (type === 'radio') {
+            additionalProps.onChange = handleRadioChange;
+            additionalProps.checked = fieldValue === value;
+            additionalProps.value = value;
+            additionalProps.id = id ?? 'formifly-input-field-' + name + '-radio-' + value;
+        }else if (type === 'radio-group'){
+            additionalProps.onchange = handleRadioChange;
+        } else if (fieldValidator instanceof DateTimeValidator) {
             guessedType = 'datetime-local';
             if (fieldValue !== '') {
                 additionalProps.value = convertDateObjectToInputString(new Date(fieldValue));
@@ -115,15 +123,8 @@ export const FormiflyProvider = (props) => {
             }
         } else if (fieldValidator instanceof BooleanValidator) {
             additionalProps.checked = fieldValue;
-            if (type === 'radio') {
-                additionalProps.onChange = handleRadioChange;
-                additionalProps.checked = fieldValue === value;
-                additionalProps.value = value;
-                additionalProps.id = id ?? 'formifly-input-field-' + name + '-radio-' + value;
-            } else {
-                additionalProps.onChange = handleCheckChange;
-                guessedType = 'checkbox';
-            }
+            additionalProps.onChange = handleCheckChange;
+            guessedType = 'checkbox';
         } else if (fieldValidator instanceof ArrayValidator || fieldValidator instanceof ObjectValidator) {
             throw new Error('Array and Object validators must not be used for input fields directly.');
         }
@@ -132,11 +133,16 @@ export const FormiflyProvider = (props) => {
 
         id = id ?? 'formifly-input-field-' + name;
 
+
+        additionalProps['aria-describedby'] = id + '-errors';
+
         if (help) {
             additionalProps.help = help;
-            additionalProps['aria-describedby'] = id + '-help ' + id + '-errors';
-        } else {
-            additionalProps['aria-describedby'] = id + '-errors';
+            additionalProps['aria-describedby'] += ' ' + id + '-help';
+        }
+
+        if (!!additionalDescribedBy) {
+            additionalProps['aria-describedby'] += ' ' + additionalDescribedBy;
         }
 
         const errors = hasErrors(name);

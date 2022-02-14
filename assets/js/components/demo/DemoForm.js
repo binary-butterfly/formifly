@@ -28,6 +28,10 @@ const FruitContainer = styled.div`
   }
 `;
 
+const FruitError = styled.p`
+  color: red;
+`;
+
 const DemoFormContent = (props) => {
     const {shape} = props;
     const context = useFormiflyContext();
@@ -43,6 +47,7 @@ const DemoFormContent = (props) => {
         const newFruitValue = [...values.fruit];
         newFruitValue.push(shape.fields.fruit.getDefaultValue()[0]);
         setFieldValue('fruit', newFruitValue);
+        validateField('fruit', newFruitValue);
     };
 
     const addFruitDisabled = values.fruit.length >= shape.fields.fruit.maxChildCount;
@@ -61,9 +66,30 @@ const DemoFormContent = (props) => {
             {label: 'Foo 1', value: 'foo1'},
             {label: 'Foo 2', value: 'foo2'},
         ]}/>
-        <p aria-live="polite" aria-relevant="additions" role="alert">
+
+        <p id="radiogroup-1-title">Please select one of these fields</p>
+        <AutomagicFormiflyField additionalDescribedBy="radiogroup-1-title" label="This is a radio option" name="radioGroupOne" type="radio"
+                                value="radio-option-1"/>
+        <AutomagicFormiflyField additionalDescribedBy="radiogroup-1-title" label="This is another radio option" name="radioGroupOne"
+                                type="radio" value="radio-option-2"/>
+
+        <AutomagicFormiflyField label="Please select one of these fields as well"
+                                name="radioGroupTwo"
+                                type="radio-group"
+                                help="This radio group uses the FormiflyRadioGroup component, which creates an accessible field set to hold the options."
+                                options={[
+                                    {label: 'First option', value: 'first-option'}, {label: 'Second option', value: 'second-option'},
+                                ]}/>
+        <AutomagicFormiflyField label="Also select one of these horizontal fields please"
+                                name="radioGroupThree"
+                                type="radio-group"
+                                horizontal={true}
+                                options={[
+                                    {label: 'Cool option', value: 'cool'}, {label: 'Cooler option', value: 'cooler'}
+                                ]}/>
+        <FruitError aria-live="polite" aria-relevant="additions" role="alert">
             {!!errors.fruit && typeof errors.fruit === 'string' && errors.fruit}
-        </p>
+        </FruitError>
         {values.fruit.map((value, index) => {
             const disabled = values.fruit.length <= shape.fields.fruit.minChildCount;
             return <FruitContainer key={'fruit-input' + index}>
@@ -109,6 +135,9 @@ const DemoForm = () => {
         date: new DateTimeValidator().minDate(new Date()),
         select: new StringValidator().required(),
         selectTwo: new StringValidator(),
+        radioGroupOne: new StringValidator(),
+        radioGroupTwo: new StringValidator().required(),
+        radioGroupThree: new StringValidator(),
         fruit: new ArrayValidator(new ObjectValidator({
             name: new StringValidator().required(),
             tasty: new BooleanValidator(undefined, undefined, true),

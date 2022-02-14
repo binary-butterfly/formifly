@@ -3,8 +3,12 @@ import styled from 'styled-components';
 import {fieldPropTypes} from './FormiflyField';
 import {FieldContainer, ErrorSpan, HelpSpan} from './withLabelErrorsAndHelp';
 
-const CheckLabel = styled.label`
+export const CheckLabel = styled.label`
   cursor: pointer;
+
+  & input {
+    cursor: pointer;
+  }
 `;
 
 const FormiflyCheckField = (props) => {
@@ -24,6 +28,7 @@ const FormiflyCheckField = (props) => {
         labelClassName,
         helpClassName,
         errorClassName,
+        checked,
     } = props;
 
     const ContainerComponent = props.containerComponent ?? FieldContainer;
@@ -34,15 +39,16 @@ const FormiflyCheckField = (props) => {
 
     return <ContainerComponent className={'formifly-field-container formifly-' + type + '-field-container ' + (className ?? '')}>
         <div>
-            <LabelComponent htmlFor={id} className={'formifly-field-label formifly-' + type + '-field-label ' + (labelClassName ?? '')}>
+            <LabelComponent className={'formifly-field-label formifly-' + type + '-field-label ' + (labelClassName ?? '')}>
                 <InputComponent type={type}
-                                checked={Boolean(value)}
+                                checked={Boolean(checked)}
                                 id={id}
                                 name={name}
                                 onChange={onChange}
                                 onBlur={onBlur}
                                 onFocus={onFocus}
                                 data-has-errors={!!errors}
+                                value={value}
                                 className={'formifly-field-input formifly-' + type + '-field-input ' + (inputClassName ?? '')}
                                 aria-describedby={props['aria-describedby']}
                                 aria-invalid={props['aria-invalid']}/>
