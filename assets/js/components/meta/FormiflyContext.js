@@ -59,6 +59,11 @@ export const FormiflyProvider = (props) => {
         return validateField(event.target.name, event.target.value);
     };
 
+    const handleMultiSelectChange = (name, newVal) => {
+        setFieldValue(name, newVal);
+        return validateField(name, newVal);
+    };
+
     const handleBlur = (event) => {
         const name = event.target.name;
         return validateField(name, event.target.type === 'radio' || event.target.type === 'checkbox' ? event.target.checked : event.target.value);
@@ -106,7 +111,7 @@ export const FormiflyProvider = (props) => {
             additionalProps.checked = fieldValue === value;
             additionalProps.value = value;
             additionalProps.id = id ?? 'formifly-input-field-' + name + '-radio-' + value;
-        }else if (type === 'radio-group'){
+        } else if (type === 'radio-group') {
             additionalProps.onchange = handleRadioChange;
         } else if (fieldValidator instanceof DateTimeValidator) {
             guessedType = 'datetime-local';
@@ -125,8 +130,11 @@ export const FormiflyProvider = (props) => {
             additionalProps.checked = fieldValue;
             additionalProps.onChange = handleCheckChange;
             guessedType = 'checkbox';
-        } else if (fieldValidator instanceof ArrayValidator || fieldValidator instanceof ObjectValidator) {
-            throw new Error('Array and Object validators must not be used for input fields directly.');
+        }else if (fieldValidator instanceof ArrayValidator) {
+            additionalProps.onChange = handleMultiSelectChange;
+            additionalProps.value = fieldValue.filter((value) => value !== '');
+        } else if (fieldValidator instanceof ObjectValidator) {
+            throw new Error('Object validators must not be used for input fields directly.');
         }
 
         additionalProps.required = fieldValidator.isRequired;

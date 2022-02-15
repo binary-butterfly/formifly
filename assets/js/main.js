@@ -16,12 +16,14 @@ import {ensureValueIsDateObject, ensureValueIsNumeric, ensureValueIsRegexp} from
 import withLabelErrorsAndHelp, {FieldContainer, InputLabel, ErrorSpan, HelpSpan} from './components/input/withLabelErrorsAndHelp';
 import {Input} from './components/input/FormiflyField';
 import FormiflyRadioGroup, {RadioGroupContainer} from './components/input/FormiflyRadioGroup';
+import FormiflyMultiSelectField, {Option, OptionsMenu, OptionsAnchor, SelectContainer} from './components/input/FormiflyMultiSelectField';
 
 export {
     FormiflyField,
     FormiflyCheckField,
     AutomagicFormiflyField,
     FormiflyRadioGroup,
+    FormiflyMultiSelectField,
     FormiflyForm,
     FormiflyProvider,
     useFormiflyContext,
@@ -47,4 +49,8 @@ export {
     InputLabel as FormiflyInputLabel,
     ErrorSpan as FormiflyErrorSpan,
     HelpSpan as FormiflyHelpSpan,
+    Option as FormiflyMultiSelectOption,
+    OptionsMenu as FormiflyMultiSelectOptionsMenu,
+    OptionsAnchor as FormiflyMultiSelectOptionsAnchor,
+    SelectContainer as FormiflyMultiSelectContainer,
 };

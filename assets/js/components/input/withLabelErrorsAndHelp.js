@@ -13,6 +13,9 @@ export const FieldContainer = styled.div`
 
 export const InputLabel = styled.label`
   display: block;
+  position: relative;
+  z-index: 10;
+  /* TODO: theme (#30) */
   background-color: white;
   width: max-content;
   padding: 0 0.1rem 0 0.15rem;
@@ -22,6 +25,7 @@ export const InputLabel = styled.label`
 `;
 
 export const ErrorSpan = styled.span`
+  /* TODO theme (#30) */
   color: red;
   width: 100%;
 

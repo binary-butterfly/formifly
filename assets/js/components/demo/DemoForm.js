@@ -16,6 +16,10 @@ const Button = styled.button`
   cursor: pointer;
   padding: 0.25rem;
   margin: 0.5rem 0 0.5rem 0;
+
+  &:focus-visible {
+    box-shadow: 0 0 5px black;
+  }
 `;
 
 const FruitContainer = styled.div`
@@ -34,8 +38,7 @@ const FruitError = styled.p`
 
 const DemoFormContent = (props) => {
     const {shape} = props;
-    const context = useFormiflyContext();
-    const {values, setFieldValue, errors, validateField} = context;
+    const {values, setFieldValue, errors, validateField, getFieldProps} = useFormiflyContext();
 
     const handleRemoveFruitClick = (index) => {
         const newFruitValue = [...values.fruit.filter((value, fIndex) => fIndex !== index)];
@@ -85,7 +88,15 @@ const DemoFormContent = (props) => {
                                 type="radio-group"
                                 horizontal={true}
                                 options={[
-                                    {label: 'Cool option', value: 'cool'}, {label: 'Cooler option', value: 'cooler'}
+                                    {label: 'Cool option', value: 'cool'}, {label: 'Cooler option', value: 'cooler'},
+                                ]}/>
+        <AutomagicFormiflyField name="multi" label="Select one or more options" multiple={true}
+                                options={[
+                                    {label: 'Select me', value: 'multi1'},
+                                    {label: 'Select me too', value: 'multi2'},
+                                    {label: 'So many options', value: 'multi3'},
+                                    {label: 'Try selecting all of them', value: 'multi4'},
+                                    {label: 'Or try selecting all but one', value: 'multi5'},
                                 ]}/>
         <FruitError aria-live="polite" aria-relevant="additions" role="alert">
             {!!errors.fruit && typeof errors.fruit === 'string' && errors.fruit}
@@ -138,6 +149,7 @@ const DemoForm = () => {
         radioGroupOne: new StringValidator(),
         radioGroupTwo: new StringValidator().required(),
         radioGroupThree: new StringValidator(),
+        multi: new ArrayValidator(new StringValidator()).minLength(1, 'You must select at least one option.'),
         fruit: new ArrayValidator(new ObjectValidator({
             name: new StringValidator().required(),
             tasty: new BooleanValidator(undefined, undefined, true),

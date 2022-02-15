@@ -8,8 +8,10 @@ export const Input = styled.input`
   border-radius: 0.25rem;
   padding: 0.25rem;
   min-width: 15rem;
+  border: 1px solid;
 
   &[data-has-errors="true"] {
+    /* TODO: theme (#30) */
     border-color: red;
   }
 `;

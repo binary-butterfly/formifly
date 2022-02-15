@@ -3,6 +3,7 @@ import React from 'react';
 import {useFormiflyContext} from '../meta/FormiflyContext';
 import FormiflyCheckField from './FormiflyCheckField';
 import FormiflyField from './FormiflyField';
+import FormiflyMultiSelectField from './FormiflyMultiSelectField';
 import FormiflyRadioGroup from './FormiflyRadioGroup';
 import FormiflySelectField from './FormiflySelectField';
 
@@ -14,6 +15,8 @@ const AutomagicFormiflyField = (props) => {
     if (!!props.options) {
         if (props.type === 'radio-group') {
             return <FormiflyRadioGroup {...fieldProps} {...props}/>;
+        } else if (!!props.multiple) {
+            return <FormiflyMultiSelectField {...fieldProps} {...props}/>;
         } else {
             return <FormiflySelectField {...fieldProps} {...props}/>;
         }
@@ -47,6 +50,18 @@ AutomagicFormiflyField.propTypes = {
         label: PropTypes.string.isRequired,
         value: PropTypes.any.isRequired,
     })),
+    'multiple': PropTypes.bool,
+    'selectionDisplayCutoff': PropTypes.number,
+    'selectedDisplayComponent': PropTypes.func,
+    'selectedDisplayClassName': PropTypes.string,
+    'menuComponent': PropTypes.func,
+    'menuClassName': PropTypes.string,
+    'selectContainerComponent': PropTypes.func,
+    'selectContainerClassName': PropTypes.string,
+    'selectAllText': PropTypes.string,
+    'nothingSelectedText': PropTypes.string,
+    'numSelectedText': PropTypes.string,
+    'allSelectedText': PropTypes.string,
 };
 
 export default AutomagicFormiflyField;
