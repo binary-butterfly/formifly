@@ -64,10 +64,8 @@ export const SelectContainer = styled.div`
     display: block;
   }
 
-  /* TODO Could this be applied at all times, not just when menu is open? */
-
-  &:hover menu li, &:focus menu li, &:focus-within menu li {
-    transition-duration: ${props => props.theme.reduceMotion ? '0s' : '0.5s'};
+  & menu li {
+    transition: background-color ${props => props.theme.reduceMotion ? ' 0s' : ' 0.25s'} ease-in;
   }
 `;
 

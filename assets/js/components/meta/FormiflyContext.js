@@ -103,7 +103,7 @@ export const FormiflyProvider = (props) => {
         const fieldValidator = findFieldValidatorFromName(name, shape);
         const fieldValue = getFieldValueFromKeyString(name, values);
 
-        const guessedType = fieldValidator?.defaultInputType ?? 'text';
+        const guessedType = fieldValidator.defaultInputType;
         let additionalProps = {};
 
         if (type === 'radio') {
@@ -187,17 +187,13 @@ export const FormiflyProvider = (props) => {
             onSubmit(changedValues).then(() => {
                 setSubmitting(false);
                 setSubmitSuccess(true);
-            });
+            }).catch(reason => setSubmitFailureReason(reason));
         }).catch((reason) => {
-            try {
-                let newErrors = {};
-                Object.entries(reason).map(([key, value]) => {
-                    newErrors = setFieldValueFromKeyString(key, value, newErrors);
-                });
-                setErrors(newErrors);
-            } catch {
-                setSubmitFailureReason(reason);
-            }
+            let newErrors = {};
+            Object.entries(reason).map(([key, value]) => {
+                newErrors = setFieldValueFromKeyString(key, value, newErrors);
+            });
+            setErrors(newErrors);
             setSubmitSuccess(false);
             setSubmitting(false);
         });
@@ -228,7 +224,7 @@ FormiflyProvider.propTypes = {
 
 export const useFormiflyContext = () => {
     const context = React.useContext(Context);
-    if (!context) {
+    if (!context || Object.keys(context).length === 0) {
         throw new Error('Attempted to use formifly context outside of a provider. Only call useFormiflyContext from a component within a FormiflyForm.');
     }
     return context;
