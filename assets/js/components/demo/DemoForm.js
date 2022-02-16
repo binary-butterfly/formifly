@@ -129,7 +129,7 @@ const DemoFormContent = (props) => {
 
 class NotTrueValidator extends BooleanValidator {
     constructor(dependent, defaultErrorMsg, defaultValue) {
-        super(dependent, defaultErrorMsg, defaultValue);
+        super(defaultValue, defaultErrorMsg, dependent);
         this.validateFuncs.push([(value) => value !== 'true' && value !== true, defaultErrorMsg]);
     }
 }
@@ -152,7 +152,7 @@ const DemoForm = () => {
         multi: new ArrayValidator(new StringValidator()).minLength(1, 'You must select at least one option.'),
         fruit: new ArrayValidator(new ObjectValidator({
             name: new StringValidator().required(),
-            tasty: new BooleanValidator(undefined, undefined, true),
+            tasty: new BooleanValidator(true),
             expired: new NotTrueValidator(undefined, 'You cannot add expired food.'),
         })).minLength(1, 'You must create at least one fruit.').maxLength(5, 'There can not be more than 5 fruit.'),
     });

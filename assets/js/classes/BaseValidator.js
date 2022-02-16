@@ -9,11 +9,11 @@ class BaseValidator {
 
     /**
      * Validates a field
-     * @param {Array|Boolean} [dependent]
-     * @param {String} [defaultErrorMsg]
      * @param [defaultValue]
+     * @param {String} [defaultErrorMsg]
+     * @param {Array|Boolean} [dependent]
      */
-    constructor(dependent = false, defaultErrorMsg = null, defaultValue = '') {
+    constructor(defaultValue = '', defaultErrorMsg = null, dependent = false) {
         this.defaultErrorMsg = defaultErrorMsg ?? 'There is an error within this field';
         this.dependent = dependent;
         this.defaultValue = defaultValue;

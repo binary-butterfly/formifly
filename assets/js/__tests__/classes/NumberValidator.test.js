@@ -13,7 +13,7 @@ describe.each([
 });
 
 test('Test NumberValidator uses correct error msg for numbers with decimal places', () => {
-    const validator = new NumberValidator(false, false, 'banana is no number');
+    const validator = new NumberValidator(false, undefined, 'banana is no number');
     expect(validator.validate('banana')).toStrictEqual([false, 'banana is no number']);
 });
 
@@ -30,7 +30,7 @@ describe.each([
     [1.31, 'banana', [false, 'banana'], 'uses correct error msg'],
 ])('Test NumberValidator wholeNumber', (value, msg, expected, name) => {
     test(name, () => {
-        const validator = new NumberValidator(true, false, msg);
+        const validator = new NumberValidator(true, undefined, msg);
         expect(validator.validate(value)).toStrictEqual(expected);
     });
 });

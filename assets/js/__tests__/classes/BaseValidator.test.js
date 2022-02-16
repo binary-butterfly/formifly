@@ -35,7 +35,7 @@ describe.each([
     ['abc', {banana: 'apple'}, [true, 'abc'], 'uses dependent validator and can pass when condition is met'],
 ])('Test dependent validator', (value, otherValues, expected, name) => {
     test(name, () => {
-        const validator = new BaseValidator([
+        const validator = new BaseValidator(undefined, undefined, [
             'banana',
             value => value === 'apple',
             new BaseValidator().required(),
@@ -49,7 +49,7 @@ describe.each([
     ['banana', 'banana', 'is set correctly'],
 ])('Test defaultValue', (defaultValue, expected, name) => {
     test(name, () => {
-        const validator = new BaseValidator(false, undefined, defaultValue);
+        const validator = new BaseValidator(defaultValue);
         expect(validator.getDefaultValue()).toStrictEqual(expected);
     });
 });
