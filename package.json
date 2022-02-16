@@ -13,13 +13,6 @@
     "start": "npm-run-all --parallel watch browse",
     "prepublishOnly": "npm run build:prod"
   },
-  "jest": {
-    "verbose": true,
-    "reporters": [
-      "default",
-      "jest-junit"
-    ]
-  },
   "jest-junit": {
     "outputDirectory": "reports/"
   },
