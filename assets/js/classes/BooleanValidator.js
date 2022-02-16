@@ -1,6 +1,8 @@
 import BaseValidator from './BaseValidator';
 
 class BooleanValidator extends BaseValidator {
+    defaultInputType = 'checkbox';
+
     /**
      * Validate a boolean field
      * @param {Boolean} [defaultValue]

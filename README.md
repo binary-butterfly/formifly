@@ -49,6 +49,7 @@ It is currently in very early development and not actually usable yet.
     </ul>
   </li>
   <li><a href="#cross-dependent-fields">Cross Dependent Fields</a></li>
+  <li><a href="#creating-your-own-validators">Creating your own validators</a></li>
   <li><a href="#development">Development</a></li>
 </ol>
 </nav>
@@ -509,6 +510,65 @@ new ObjectValidator({
 ```
 
 This example will make the field `agreement` required if the field `fruit.banana` contains the value `nom!`.
+
+## Creating your own validators
+
+This library is written in a way to make is especially easy to write your own validators.  
+If your validators inherit from the correct provided ones, even the input type guessing for field components will work out of the box in most cases.
+
+Creating your own validator is really easy. This is a quick "tl;dr" example for a very simple one:
+
+```js
+class NotTrueValidator extends BooleanValidator {
+    constructor(defaultValue, defaultErrorMsg, onError, dependent) {
+        super(defaultValue, defaultErrorMsg, onError, dependent);
+        this.validateFuncs.push([(value) => value !== 'true' && value !== true, defaultErrorMsg]);
+    }
+}
+```
+
+all this does is add a constraint to the existing BooleanValidator to make sure only false is validated as correct.
+
+However, your validators can be a bit more complex.  
+Let's imagine an email validator that does not allow email addresses hosted from some specific domain.  
+We would write that something like this:
+
+```js
+const emailRegexp = /.+@.+/;
+
+class CustomEmailValidator extends StringValidator {
+    defaultInputType = 'email';
+
+    constructor(defaultValue, defaultErrorMsg, onError, dependent) {
+        super(defaultValue, defaultErrorMsg, onError, dependent);
+
+        this.validateFuncs.push([
+            value => {
+                return emailRegexp.test(value);
+            },
+            defaultErrorMsg,
+        ]);
+    }
+
+    notFromDomain(domain, msg = 'This domain is not allowed') {
+        this.validateFuncs.push([
+            value => {
+                const splitString = value.split('@');
+                return splitString[splitString.length - 1] !== domain;
+            },
+            msg
+        ])
+        return this;
+    }
+}
+```
+
+This validator does the following things:
+- It sets the `defaultInputType` to email so an email input field will be rendered.
+- It adds a validator that checks if the input contains an @ at a position that is neither first nor last.  
+  (email most likely allows for more things than you think, so it's a good idea to just allow basically everything and catch incorrect input by sending validation emails.)
+- It adds a function called `notFromDomain`.  
+  This function can be used to forbid email addresses hosted on a certain domain.
 
 ## Development
 

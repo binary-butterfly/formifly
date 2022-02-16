@@ -1,6 +1,7 @@
 import {getFieldValueFromKeyString} from '../helpers/generalHelpers';
 
 class BaseValidator {
+    defaultInputType = 'text';
     validateFuncs = [];
     isRequired = false;
     defaultErrorMsg = '';

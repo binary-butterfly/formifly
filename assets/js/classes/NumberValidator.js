@@ -9,7 +9,7 @@ const delocalize = (value) => {
 };
 
 class NumberValidator extends BaseValidator {
-
+    defaultInputType = 'number';
     minNum;
     maxNum;
 
