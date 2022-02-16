@@ -20,7 +20,7 @@ const FormiflyForm = (props) => {
         inputTextColor: 'black',
         inputBorderColor: 'black',
         highlightColor: 'lightblue',
-        reduceMotion: theme?.reducedMotion ?? (typeof window.matchMedia === 'function' && (window.matchMedia(`(prefers-reduced-motion: reduce)`) === true || window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true)),
+        reduceMotion: theme?.reducedMotion ?? (typeof window.matchMedia === 'function' && window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true),
 
         ...theme,
     };
