@@ -2,6 +2,8 @@ import {ensureValueIsNumeric, ensureValueIsRegexp} from '../helpers/developerInp
 import BaseValidator from './BaseValidator';
 
 class StringValidator extends BaseValidator {
+    defaultInputType = 'text';
+
     /**
      * Match the string against a regular expression
      * @param {RegExp} expr

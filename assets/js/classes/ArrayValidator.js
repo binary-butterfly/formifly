@@ -5,6 +5,7 @@ class ArrayValidator extends BaseValidator {
     of;
     minChildCount = 0;
     maxChildCount;
+    defaultInputType = 'select';
 
     /**
      * Validate an array of fields

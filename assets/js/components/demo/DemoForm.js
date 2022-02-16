@@ -90,7 +90,8 @@ const DemoFormContent = (props) => {
                                 options={[
                                     {label: 'Cool option', value: 'cool'}, {label: 'Cooler option', value: 'cooler'},
                                 ]}/>
-        <AutomagicFormiflyField name="multi" label="Select one or more options" multiple={true}
+        <AutomagicFormiflyField name="multi"
+                                label="Select one or more options"
                                 options={[
                                     {label: 'Select me', value: 'multi1'},
                                     {label: 'Select me too', value: 'multi2'},

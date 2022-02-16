@@ -15,7 +15,7 @@ const AutomagicFormiflyField = (props) => {
     if (!!props.options) {
         if (props.type === 'radio-group') {
             return <FormiflyRadioGroup {...fieldProps} {...props}/>;
-        } else if (!!props.multiple) {
+        } else if (!!props.multiple || !!fieldProps.multiple) {
             return <FormiflyMultiSelectField {...fieldProps} {...props}/>;
         } else {
             return <FormiflySelectField {...fieldProps} {...props}/>;

@@ -103,7 +103,7 @@ export const FormiflyProvider = (props) => {
         const fieldValidator = findFieldValidatorFromName(name, shape);
         const fieldValue = getFieldValueFromKeyString(name, values);
 
-        let guessedType = 'text';
+        const guessedType = fieldValidator?.defaultInputType ?? 'text';
         let additionalProps = {};
 
         if (type === 'radio') {
@@ -114,12 +114,10 @@ export const FormiflyProvider = (props) => {
         } else if (type === 'radio-group') {
             additionalProps.onchange = handleRadioChange;
         } else if (fieldValidator instanceof DateTimeValidator) {
-            guessedType = 'datetime-local';
             if (fieldValue !== '') {
                 additionalProps.value = convertDateObjectToInputString(new Date(fieldValue));
             }
         } else if (fieldValidator instanceof NumberValidator) {
-            guessedType = 'number';
             if (fieldValidator.minNum !== undefined) {
                 additionalProps.min = fieldValidator.minNum;
             }
@@ -129,10 +127,10 @@ export const FormiflyProvider = (props) => {
         } else if (fieldValidator instanceof BooleanValidator) {
             additionalProps.checked = fieldValue;
             additionalProps.onChange = handleCheckChange;
-            guessedType = 'checkbox';
-        }else if (fieldValidator instanceof ArrayValidator) {
+        } else if (fieldValidator instanceof ArrayValidator) {
             additionalProps.onChange = handleMultiSelectChange;
             additionalProps.value = fieldValue.filter((value) => value !== '');
+            additionalProps.multiple = true;
         } else if (fieldValidator instanceof ObjectValidator) {
             throw new Error('Object validators must not be used for input fields directly.');
         }
