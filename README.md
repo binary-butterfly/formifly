@@ -65,10 +65,7 @@ It accepts the following params:
 - `onSubmit` your custom submit handler  
   This has to return a promise that resolves when the form was submitted correctly.  
   Field validation is handled automatically before running your function.  
-  If you have additional server validation that does not exactly match the client validators, you can reject the promise in case of an
-  error with an object that contains the validation errors for failed fields.  
-  If the promise is rejected with anything that is ___not___ formed in this way, the reason will be saved to `submitFailureReason`
-  in the Formifly Context.
+  If your promise is rejected, the reason will be saved to `submitFailureReason` in the Formifly Context.
 - `shape` your validators  
   This has to be an `ObjectValidator` containing all fields in your form.
 - `defaultValues` default values for your form fields (optional)
