@@ -62,11 +62,11 @@ test('Test ArrayValidator can fail on child fail', () => {
 });
 
 test('Test ArrayValidator getDefaultValue returns the children\'s default values', () => {
-    const validator = new ArrayValidator(new NumberValidator(undefined, undefined, undefined, 0));
+    const validator = new ArrayValidator(new NumberValidator(undefined, 0));
     expect(validator.getDefaultValue()).toStrictEqual([0]);
 });
 
 test('Test ArrayValidator getDefaultValue returns as many default values as there are required children', () => {
-    const validator = new ArrayValidator(new NumberValidator(undefined, undefined, undefined, 1)).minLength(3);
+    const validator = new ArrayValidator(new NumberValidator(undefined, 1)).minLength(3);
     expect(validator.getDefaultValue()).toStrictEqual([1, 1, 1]);
 });

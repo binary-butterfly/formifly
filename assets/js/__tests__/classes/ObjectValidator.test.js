@@ -67,10 +67,10 @@ describe.each([
         {
             things: new ObjectValidator({
                 cool: new ObjectValidator({
-                    coolnessLevel: new NumberValidator(undefined, undefined, undefined, 0),
+                    coolnessLevel: new NumberValidator(undefined, 0),
                 }),
                 tasty: new ObjectValidator({
-                    tastinessLevel: new NumberValidator(undefined, undefined, undefined, 0),
+                    tastinessLevel: new NumberValidator(undefined, 0),
                 }),
             }),
         },

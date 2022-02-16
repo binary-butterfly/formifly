@@ -16,12 +16,12 @@ class NumberValidator extends BaseValidator {
     /**
      * Validate a numeric input field
      * @param {Boolean} wholeNumber - Set to true to only allow whole numbers
-     * @param {Array|Boolean} [dependent]
-     * @param {String} [defaultErrorMsg]
      * @param {String|Number} [defaultValue]
+     * @param {String} [defaultErrorMsg]
+     * @param {Array|Boolean} [dependent]
      */
-    constructor(wholeNumber = false, dependent, defaultErrorMsg, defaultValue = '') {
-        super(dependent, defaultErrorMsg, defaultValue);
+    constructor(wholeNumber = false, defaultValue = '', defaultErrorMsg, dependent) {
+        super(defaultValue, defaultErrorMsg, dependent);
 
         let regexpInUse;
         if (wholeNumber) {

@@ -293,24 +293,23 @@ See [its documentation](#formiflyform) for more info on that.
 
 ## Available Validators
 
-Generally all validators accept an optional `msg` param.  
+Generally all validation functions accept an optional `msg` param.  
 This will be used as the error message if validation fails.  
 If the validator accepts other values, those should be able to be inserted into custom strings using template keywords.  
 Check the specific validators documentation for that.
 
-Most validator constructors accept (at least) the params `dependent` (see [Cross dependent fields](#cross-dependent-fields)
-for more info), `defaultErrorMsg` and `defaultValue`.
+Most validator constructors accept (at least) the params `defaultValue`, `defaultErrorMsg` and `dependent`
+(see [Cross dependent fields](#cross-dependent-fields) for more info on the last one).
 
-The former two params are accepted by all validators, while `defaultValue` is not accepted by the `ArrayValidator` and
-the `ObjectValidator`
-since for those, their children's default values are used instead.
+The latter two params are accepted by all validators, while `defaultValue` is not accepted by the `ArrayValidator` and
+the `ObjectValidator` since for those, their children's default values are used instead.
 
 The default error message will be used when validation fails for a validator that does not have its own error message.  
 Note that most existing validators ***do*** have their own default error messages, which you will have to overwrite with your own as well.
 
 If you do not set a default value it will be set to a sensible default for the type of field.  
-That means most fields will have an empty string as default value, however arrays and objects will have an empty array or object
-respectively and booleans will default to false.  
+That means most fields will have an empty string as default value, however arrays and objects will have a default value 
+depending on their children and (for arrays) their min child count.  
 **The defaultValue may only be queried by using `getDefaultValue()` and not by directly accessing it.**
 
 ### BaseValidator
@@ -350,13 +349,20 @@ Available methods:
   Use `{{min}}` and/ or `{{max}}` to include the minimum or maximum values in it respectively.
 - `decimalPlaces(count: Number)` Format the output as a decimal String with the specified amount of decimal places.
 
-Example:
+Examples:
 
 ```js
  new NumberValidator().positive().decimalPlaces(2);
 ```
 
 This will validate any positive number and transform it to be a decimal string with two decimal places.
+
+```js
+  new NumberValidator(true, 1, 'this field only allows for whole numbers');
+```
+
+This will validate any whole number and return the error message seen in the example for anything else.  
+It will also set 1 as the default value for this field.
 
 ### StringValidator
 
@@ -375,10 +381,15 @@ Available methods:
 Example:
 
 ```js
- StringValidator().required().minLength(1).maxLength(2).regex(/^[a-z]+$/);  
+ StringValidator('foo')
+        .required()
+        .minLength(1)
+        .maxLength(3)
+        .regex(/^[a-z]+$/);  
 ```
 
-This will validate any string that is composed of either 1 or two lowercase characters.
+This will validate any string that is composed of between 1 and 3 lowercase characters.  
+It will also set the string "foo" as default value.
 
 ### DateTimeValidator
 
@@ -482,7 +493,7 @@ Example:
 
 ```js
 shape({
-    agreement: new BaseValidator([
+    agreement: new BaseValidator(undefined, undefined, [
         'fruit.banana',
         value => value === 'nom!',
         new BaseValidator().required(),
