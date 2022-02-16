@@ -11,8 +11,7 @@ export const Input = styled.input`
   border: 1px solid;
 
   &[data-has-errors="true"] {
-    /* TODO: theme (#30) */
-    border-color: red;
+    border-color: ${props => props.theme.errorColor};
   }
 `;
 

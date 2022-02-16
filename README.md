@@ -73,6 +73,14 @@ It accepts the following params:
   This should only be used for a form that is used to edit existing database entries since the validators themselves are also capable of
   holding default values, which is the preferred way to set those.  
   Note that when this param is set, you will have to set **all** of the field values in it.
+- `theme` override the default styling of the provided components. (Optional)  
+  Available keys:
+    - `inputBackgroundColor` Background color for input fields
+    - `errorColor` Both border and font color for fields with errors
+    - `inputTextColor` Default text color for inputs
+    - `inputBorderColor` Default border color for inputs
+    - `highlightColor` Background color for highlighted options in multi selects
+    - `reduceMotion` Set to `true` or `false` to override the user's prefer-reduced-motion setting and show/ hide animations either way
 
 ### AutomagicFormiflyField
 
@@ -278,6 +286,10 @@ In order to style the components, there are multiple methods available.
   To do this, override the default components as explained in the `AutomagicFormiflyField` documentation with ones that have your style
   prop applied.  
   Note that directly applying to `style` prop will **not** apply the styles to the field components.
+
+If the only thing you want to change are the colors used by default, you can also pass a `theme` prop to the
+`FormiflyForm` component.  
+See [its documentation](#formiflyform) for more info on that.
 
 ## Available Validators
 

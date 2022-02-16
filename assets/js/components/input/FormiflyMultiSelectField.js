@@ -6,8 +6,7 @@ import withLabelErrorsAndHelp from './withLabelErrorsAndHelp';
 import {fieldPropTypes} from './FormiflyField';
 
 export const OptionsMenu = styled.menu`
-  /* TODO: theme (#30) */
-  background-color: white;
+  background-color: ${props => props.theme.inputBackgroundColor};
   position: absolute;
   margin: 0;
   z-index: 1000;
@@ -26,8 +25,7 @@ export const OptionsMenu = styled.menu`
   }
 
   li:hover, li:focus-within {
-    /* TODO: theme (#30) */
-    background-color: lightblue;
+    background-color: ${props => props.theme.highlightColor};
   }
 `;
 
@@ -36,14 +34,13 @@ export const OptionsAnchor = styled.a`
   display: inline-block;
   width: 100%;
   overflow: hidden;
-  /* # TODO theme (#30) */
-  color: black;
+  color: ${props => props.theme.inputTextColor};
 
   &:focus-visible {
     outline: none;
     text-decoration: underline;
   }
-      
+
   &:visited {
     color: black;
   }
@@ -51,8 +48,7 @@ export const OptionsAnchor = styled.a`
 
 export const SelectContainer = styled.div`
   cursor: pointer;
-  /* #TODO theme (#30) */
-  border: 1px solid black;
+  border: 1px solid ${props => props.theme.inputBorderColor};
   border-radius: 0.25rem;
   padding: 0.25rem;
   min-width: 15rem;
@@ -71,11 +67,7 @@ export const SelectContainer = styled.div`
   /* TODO Could this be applied at all times, not just when menu is open? */
 
   &:hover menu li, &:focus menu li, &:focus-within menu li {
-    transition-duration: 0.5s;
-    /* # TODO theme (#30) */
-    @media (prefers-reduced-motion) {
-      transition-duration: 0s;
-    }
+    transition-duration: ${props => props.theme.reduceMotion ? '0s' : '0.5s'};
   }
 `;
 

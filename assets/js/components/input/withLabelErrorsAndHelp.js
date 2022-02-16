@@ -15,8 +15,7 @@ export const InputLabel = styled.label`
   display: block;
   position: relative;
   z-index: 10;
-  /* TODO: theme (#30) */
-  background-color: white;
+  background-color: ${props => props.theme.inputBackgroundColor};
   width: max-content;
   padding: 0 0.1rem 0 0.15rem;
   margin-left: ${props => props.$noMove ? 0 : '0.5rem'};
@@ -25,8 +24,7 @@ export const InputLabel = styled.label`
 `;
 
 export const ErrorSpan = styled.span`
-  /* TODO theme (#30) */
-  color: red;
+  color: ${props => props.theme.errorColor};
   width: 100%;
 
   &:empty {
