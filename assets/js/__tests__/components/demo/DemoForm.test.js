@@ -144,6 +144,38 @@ describe('DemoForm', () => {
         expect(screen.queryByText('Also select one of these horizontal fields please')).not.toBeNull();
     });
 
+    it('renders a functional multi select', () => {
+        const selectAnchor = screen.getByText('Nothing selected');
+        fireEvent.focus(selectAnchor);
+
+        const selectAllOption = screen.getByLabelText('Select all');
+        fireEvent.click(selectAllOption);
+        expect(screen.queryByText('All selected')).not.toBeNull();
+
+        fireEvent.click(selectAllOption);
+        expect(screen.queryByText('Nothing selected')).not.toBeNull();
+
+        fireEvent.click(screen.getByLabelText('Select me'));
+        expect(screen.queryAllByText('Select me').length).toBe(2);
+
+        fireEvent.click(screen.getByLabelText('Select me too'));
+        expect(screen.queryByText('Select me, Select me too')).not.toBeNull();
+
+        fireEvent.click(screen.getByLabelText('So many options'));
+        expect(screen.queryByText('Select me, Select me too, So many options')).not.toBeNull();
+
+        const trySelectingAll = screen.getByLabelText('Try selecting all of them');
+        fireEvent.click(trySelectingAll);
+        expect(screen.queryByText('4 selected')).not.toBeNull();
+
+        fireEvent.click(trySelectingAll);
+        expect(screen.queryByText('Select me, Select me too, So many options')).not.toBeNull();
+
+        fireEvent.click(trySelectingAll);
+        fireEvent.click(screen.getByLabelText('Or try selecting all but one'));
+        expect(screen.queryByText('All selected')).not.toBeNull();
+    });
+
     it('allows adding and removing fruit', () => {
         const removeButton = screen.getByText('Remove this fruit');
         const addButton = screen.getByText('Add another fruit');
@@ -193,6 +225,9 @@ describe('DemoForm', () => {
         changeInputValue(screen.getByLabelText('Enter a string'), 'banana');
         changeInputValue(screen.getByLabelText('Select something'), 'option2');
         changeInputValue(screen.getByLabelText('Name'), 'banana');
+
+        fireEvent.focus(screen.getByText('Nothing selected'));
+        fireEvent.click(screen.getByLabelText('Select me'));
 
         fireEvent.click(screen.getByLabelText('Second option'));
 
