@@ -13,6 +13,16 @@
     "start": "npm-run-all --parallel watch browse",
     "prepublishOnly": "npm run build:prod"
   },
+  "jest": {
+    "verbose": true,
+    "reporters": [
+      "default",
+      "jest-junit"
+    ]
+  },
+  "jest-junit": {
+    "outputDirectory": "reports/"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/binary-butterfly/formifly.git"
@@ -39,6 +49,7 @@
     "babel-plugin-styled-components": "^2.0.2",
     "browser-sync": "^2.27.7",
     "jest": "^27.4.7",
+    "jest-junit": "^13.0.0",
     "jsdom": "^19.0.0",
     "npm-run-all": "^4.1.5",
     "prop-types": "^15.8.1",
