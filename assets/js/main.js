@@ -2,6 +2,7 @@ import FormiflyField from './components/input/FormiflyField';
 import FormiflyCheckField from './components/input/FormiflyCheckField';
 import AutomagicFormiflyField from './components/input/AutomagicFormiflyField';
 import FormiflyForm from './components/meta/FormiflyForm';
+import withFormifly from './components/meta/withFormifly';
 import {FormiflyProvider, useFormiflyContext} from './components/meta/FormiflyContext';
 import BaseValidator from './classes/BaseValidator';
 import StringValidator from './classes/StringValidator';
@@ -26,6 +27,7 @@ export {
     FormiflyMultiSelectField,
     FormiflyForm,
     FormiflyProvider,
+    withFormifly,
     useFormiflyContext,
     BaseValidator,
     StringValidator,
