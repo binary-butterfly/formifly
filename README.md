@@ -279,8 +279,6 @@ In order to style the components, there are multiple methods available.
   prop applied.  
   Note that directly applying to `style` prop will **not** apply the styles to the field components.
 
-# TODO: add components that make up multi select here as well!
-
 ## Available Validators
 
 Generally all validators accept an optional `msg` param.  
