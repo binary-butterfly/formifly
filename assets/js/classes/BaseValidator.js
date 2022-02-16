@@ -6,15 +6,18 @@ class BaseValidator {
     defaultErrorMsg = '';
     dependent = false;
     defaultValue = '';
+    onError;
 
     /**
      * Validates a field
      * @param [defaultValue]
      * @param {String} [defaultErrorMsg]
+     * @param {Function} [onError]
      * @param {Array|Boolean} [dependent]
      */
-    constructor(defaultValue = '', defaultErrorMsg = null, dependent = false) {
+    constructor(defaultValue = '', defaultErrorMsg = null, onError, dependent = false) {
         this.defaultErrorMsg = defaultErrorMsg ?? 'There is an error within this field';
+        this.onError = onError;
         this.dependent = dependent;
         this.defaultValue = defaultValue;
     }
@@ -74,11 +77,18 @@ class BaseValidator {
     }
 
     validate(value, otherValues = {}) {
+        let ret;
         if (this.dependent) {
-            return this.validateDependent(value, otherValues);
+            ret = this.validateDependent(value, otherValues);
         } else {
-            return this.validateIndependent(value);
+            ret = this.validateIndependent(value);
         }
+
+        if (!ret[0] && typeof this.onError === 'function') {
+            this.onError(value, otherValues);
+        }
+
+        return ret;
     }
 
     getDefaultValue() {

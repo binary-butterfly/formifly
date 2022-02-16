@@ -298,19 +298,22 @@ This will be used as the error message if validation fails.
 If the validator accepts other values, those should be able to be inserted into custom strings using template keywords.  
 Check the specific validators documentation for that.
 
-Most validator constructors accept (at least) the params `defaultValue`, `defaultErrorMsg` and `dependent`
+Most validator constructors accept (at least) the params `defaultValue`, `defaultErrorMsg`, `onError` and `dependent`
 (see [Cross dependent fields](#cross-dependent-fields) for more info on the last one).
 
-The latter two params are accepted by all validators, while `defaultValue` is not accepted by the `ArrayValidator` and
+The latter three params are accepted by all validators, while `defaultValue` is not accepted by the `ArrayValidator` and
 the `ObjectValidator` since for those, their children's default values are used instead.
+
+If you do not set a default value it will be set to a sensible default for the type of field.  
+That means most fields will have an empty string as default value, however arrays and objects will have a default value depending on their
+children and, for arrays, their min child count.  
+**The defaultValue may only be queried by using `getDefaultValue()` and not by directly accessing it.**
 
 The default error message will be used when validation fails for a validator that does not have its own error message.  
 Note that most existing validators ***do*** have their own default error messages, which you will have to overwrite with your own as well.
 
-If you do not set a default value it will be set to a sensible default for the type of field.  
-That means most fields will have an empty string as default value, however arrays and objects will have a default value depending on their
-children and (for arrays) their min child count.  
-**The defaultValue may only be queried by using `getDefaultValue()` and not by directly accessing it.**
+The `onError` callback function will be called when validation fails.  
+It receives the `value` and `otherValues` params passed to the `validate` function.
 
 ### BaseValidator
 
@@ -492,8 +495,8 @@ Dependent validators may be chained.
 Example:
 
 ```js
-shape({
-    agreement: new BaseValidator(undefined, undefined, [
+new ObjectValidator({
+    agreement: new BaseValidator(undefined, undefined, undefined, [
         'fruit.banana',
         value => value === 'nom!',
         new BaseValidator().required(),

@@ -7,10 +7,11 @@ class ObjectValidator extends BaseValidator {
     /**
      * @param {Object} fields
      * @param {String} [defaultMessage]
+     * @param {Function} [onError]
      * @param {Array} [dependent]
      */
-    constructor(fields, defaultMessage, dependent) {
-        super(undefined, defaultMessage, dependent);
+    constructor(fields, defaultMessage, onError, dependent) {
+        super(undefined, defaultMessage, onError, dependent);
         this.fields = fields;
     }
 
