@@ -35,7 +35,7 @@ describe.each([
     ['abc', {banana: 'apple'}, [true, 'abc'], 'uses dependent validator and can pass when condition is met'],
 ])('Test dependent validator', (value, otherValues, expected, name) => {
     test(name, () => {
-        const validator = new BaseValidator(undefined, undefined, [
+        const validator = new BaseValidator(undefined, undefined, undefined,[
             'banana',
             value => value === 'apple',
             new BaseValidator().required(),
@@ -53,3 +53,10 @@ describe.each([
         expect(validator.getDefaultValue()).toStrictEqual(expected);
     });
 });
+
+test('Test onError callback is called on error', () => {
+    const callback = jest.fn();
+    const validator = new BaseValidator(undefined, undefined, callback).alwaysFalse();
+    validator.validate(false, {foo: 'bar'});
+    expect(callback).toHaveBeenCalledWith(false, {foo: 'bar'});
+})

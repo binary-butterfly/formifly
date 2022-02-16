@@ -8,10 +8,11 @@ class DateTimeValidator extends BaseValidator {
      * Validate a datetime input
      * @param {String} [defaultValue]
      * @param {String} [defaultMsg]
+     * @param {Function} [onError]
      * @param {Array} [dependent]
      */
-    constructor(defaultValue = '', defaultMsg = 'This field must contain a date/time', dependent) {
-        super(defaultValue, defaultMsg, dependent);
+    constructor(defaultValue = '', defaultMsg = 'This field must contain a date/time', onError, dependent) {
+        super(defaultValue, defaultMsg, onError, dependent);
 
         this.validateFuncs.push([(value) => {
             return dateRegex.test(value) ? new Date(value) : false;

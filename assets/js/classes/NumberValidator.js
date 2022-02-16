@@ -18,10 +18,11 @@ class NumberValidator extends BaseValidator {
      * @param {Boolean} wholeNumber - Set to true to only allow whole numbers
      * @param {String|Number} [defaultValue]
      * @param {String} [defaultErrorMsg]
+     * @param {Function} [onError]
      * @param {Array|Boolean} [dependent]
      */
-    constructor(wholeNumber = false, defaultValue = '', defaultErrorMsg, dependent) {
-        super(defaultValue, defaultErrorMsg, dependent);
+    constructor(wholeNumber = false, defaultValue = '', defaultErrorMsg, onError, dependent) {
+        super(defaultValue, defaultErrorMsg, onError, dependent);
 
         let regexpInUse;
         if (wholeNumber) {
