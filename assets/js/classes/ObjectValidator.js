@@ -14,6 +14,17 @@ class ObjectValidator extends BaseValidator {
         this.fields = fields;
     }
 
+    /**
+     * @return {{}}
+     */
+    getDefaultValue() {
+        let ret = {};
+        for (const fieldName in this.fields) {
+            ret[fieldName] = this.fields[fieldName].getDefaultValue();
+        }
+        return ret;
+    }
+
     validate(value, otherValues) {
         let allOk = true;
         let tests = {};

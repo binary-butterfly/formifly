@@ -5,15 +5,18 @@ class BaseValidator {
     isRequired = false;
     defaultErrorMsg = '';
     dependent = false;
+    defaultValue = '';
 
     /**
      * Validates a field
      * @param {Array|Boolean} [dependent]
      * @param {String} [defaultErrorMsg]
+     * @param [defaultValue]
      */
-    constructor(dependent = false, defaultErrorMsg = null) {
+    constructor(dependent = false, defaultErrorMsg = null, defaultValue = '') {
         this.defaultErrorMsg = defaultErrorMsg ?? 'There is an error within this field';
         this.dependent = dependent;
+        this.defaultValue = defaultValue;
     }
 
     validateRequired(value) {
@@ -23,7 +26,7 @@ class BaseValidator {
     /**
      * Enforces a value to be set
      * @param [msg] - The error message that is displayed when the value is invalid
-     * @return {BaseValidator}
+     * @return {this}
      */
     required(msg = 'This field is required') {
         this.isRequired = true;
@@ -35,7 +38,7 @@ class BaseValidator {
      * Makes the validation fail in all cases.
      * This may be useful for dependent validators.
      * @param [msg] - The error message that is displayed
-     * @return {BaseValidator}
+     * @return {this}
      */
     alwaysFalse(msg = 'This validator will never return true') {
         this.validateFuncs.push([() => false, msg]);
@@ -76,6 +79,10 @@ class BaseValidator {
         } else {
             return this.validateIndependent(value);
         }
+    }
+
+    getDefaultValue() {
+        return this.defaultValue;
     }
 }
 

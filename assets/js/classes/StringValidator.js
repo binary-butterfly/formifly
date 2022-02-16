@@ -6,7 +6,7 @@ class StringValidator extends BaseValidator {
      * Match the string against a regular expression
      * @param {RegExp} expr
      * @param {String} [msg] - The error message that is displayed when the value is invalid
-     * @returns {StringValidator}
+     * @returns {this}
      */
     regex(expr, msg = 'This value is malformed') {
         ensureValueIsRegexp(expr, 'regex', 'StringValidator', 'expr');
@@ -18,7 +18,7 @@ class StringValidator extends BaseValidator {
      * Enforce a minimum length (inclusive) of the string
      * @param {Number} num
      * @param {String} [msg] - The error message that is displayed when the value is invalid
-     * @returns {StringValidator}
+     * @returns {this}
      */
     minLength(num, msg) {
         if (msg === undefined) {
@@ -35,7 +35,7 @@ class StringValidator extends BaseValidator {
      * Enforce a maximum length (inclusive) of the string
      * @param {Number} num
      * @param {String} [msg] - The error message that is displayed when the value is invalid
-     * @returns {StringValidator}
+     * @returns {this}
      */
     maxLength(num, msg) {
         if (msg === undefined) {
@@ -53,7 +53,7 @@ class StringValidator extends BaseValidator {
      * @param {Number} min
      * @param {Number} max
      * @param {String} [msg] - The error message that is displayed when the value is invalid
-     * @returns {StringValidator}
+     * @returns {this}
      */
     lengthRange(min, max, msg) {
         if (msg === undefined) {

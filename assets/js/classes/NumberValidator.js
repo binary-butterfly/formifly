@@ -10,14 +10,18 @@ const delocalize = (value) => {
 
 class NumberValidator extends BaseValidator {
 
+    minNum;
+    maxNum;
+
     /**
      * Validate a numeric input field
      * @param {Boolean} wholeNumber - Set to true to only allow whole numbers
      * @param {Array|Boolean} [dependent]
      * @param {String} [defaultErrorMsg]
+     * @param {String|Number} [defaultValue]
      */
-    constructor(wholeNumber = false, dependent, defaultErrorMsg) {
-        super(dependent, defaultErrorMsg);
+    constructor(wholeNumber = false, dependent, defaultErrorMsg, defaultValue = '') {
+        super(dependent, defaultErrorMsg, defaultValue);
 
         let regexpInUse;
         if (wholeNumber) {
@@ -44,7 +48,7 @@ class NumberValidator extends BaseValidator {
      * Ensure a minimum number (inclusive)
      * @param {Number} num
      * @param {String} [msg]
-     * @return {NumberValidator}
+     * @return {this}
      */
     min(num, msg) {
         ensureValueIsNumeric(num, 'min', 'NumberValidator', 'num');
@@ -55,6 +59,7 @@ class NumberValidator extends BaseValidator {
         }
 
         this.validateFuncs.push([value => value >= num, msg]);
+        this.minNum = num;
         return this;
     }
 
@@ -62,7 +67,7 @@ class NumberValidator extends BaseValidator {
      * Enforce a maximum value
      * @param {Number} num
      * @param {String} [msg]
-     * @return {NumberValidator}
+     * @return {this}
      */
     max(num, msg) {
         ensureValueIsNumeric(num, 'max', 'NumberValidator', 'num');
@@ -73,26 +78,29 @@ class NumberValidator extends BaseValidator {
         }
 
         this.validateFuncs.push([value => value <= num, msg]);
+        this.maxNum = num;
         return this;
     }
 
     /**
      * Only allow positive numbers. (Excluding 0)
      * @param {String} [msg] - The error message that is displayed when the value is invalid
-     * @returns {NumberValidator}
+     * @returns {this}
      */
     positive(msg = 'This value must be positive') {
         this.validateFuncs.push([value => value > 0, msg]);
+        this.minNum = 0.000000001;
         return this;
     }
 
     /**
      * Only allow negative numbers. (Excluding 0)
      * @param {String} [msg] - The error message that is displayed when the value is invalid
-     * @returns {NumberValidator}
+     * @returns {this}
      */
     negative(msg = 'This value must be negative') {
         this.validateFuncs.push([value => value < 0, msg]);
+        this.maxNum = -0.000000001;
         return this;
     }
 
@@ -101,7 +109,7 @@ class NumberValidator extends BaseValidator {
      * @param {Number} min
      * @param {Number} max
      * @param {String} [msg] - The error message that is displayed when the value is invalid
-     * @returns {NumberValidator}
+     * @returns {this}
      */
     range(min, max, msg) {
         if (msg === undefined) {
@@ -114,13 +122,15 @@ class NumberValidator extends BaseValidator {
         ensureValueIsNumeric(min, 'range', 'NumberValidator', 'min');
         ensureValueIsNumeric(max, 'range', 'NumberValidator', 'max');
         this.validateFuncs.push([value => value >= min && value <= max, msg]);
+        this.minNum = min;
+        this.maxNum = max;
         return this;
     }
 
     /**
      * Converts the input number into a decimal string.
      * @param {Number} count
-     * @returns {NumberValidator}
+     * @returns {this}
      */
     decimalPlaces(count) {
         ensureValueIsNumeric(count, 'decimalPlaces', 'NumberValidator', 'count');

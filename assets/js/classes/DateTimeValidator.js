@@ -1,11 +1,17 @@
 import {ensureValueIsDateObject} from '../helpers/developerInputValidators';
 import BaseValidator from './BaseValidator';
 
-const dateRegex = /^\d{4}-((0[1-9])|(1[0-2]))-(([0-2][0-9])|(3[0-1]))T(([0-1][0-9])|(2[0-3]))(:[0-5][0-9]){1,2}$/s;
+const dateRegex = /^\d{4}-((0[1-9])|(1[0-2]))-(([0-2][0-9])|(3[0-1]))T(([0-1][0-9])|(2[0-3]))(:[0-5][0-9]){1,2}(.\d{3})?$/s;
 
 class DateTimeValidator extends BaseValidator {
-    constructor(dependent, defaultMsg = 'This field must contain a date/time') {
-        super(dependent, defaultMsg);
+    /**
+     * Validate a datetime input
+     * @param {Array} [dependent]
+     * @param {String} [defaultMsg]
+     * @param {String} [defaultValue]
+     */
+    constructor(dependent, defaultMsg = 'This field must contain a date/time', defaultValue = '') {
+        super(dependent, defaultMsg, defaultValue);
 
         this.validateFuncs.push([(value) => {
             return dateRegex.test(value) ? new Date(value) : false;
@@ -16,7 +22,7 @@ class DateTimeValidator extends BaseValidator {
      * Enforce a minimum date (inclusive)
      * @param {Date} date
      * @param {String} [msg]
-     * @return {DateTimeValidator}
+     * @return {this}
      */
     minDate(date, msg) {
         ensureValueIsDateObject(date, 'minDate', 'DateTimeValidator', 'date');
@@ -34,7 +40,7 @@ class DateTimeValidator extends BaseValidator {
      * Enforce a maximum date (inclusive)
      * @param {Date} date
      * @param {String} [msg]
-     * @return {DateTimeValidator}
+     * @return {this}
      */
     maxDate(date, msg) {
         ensureValueIsDateObject(date, 'maxDate', 'DateTimeValidator', 'date');
@@ -53,7 +59,7 @@ class DateTimeValidator extends BaseValidator {
      * @param {Date} minDate
      * @param {Date} maxDate
      * @param {String} [msg]
-     * @return {DateTimeValidator}
+     * @return {this}
      */
     dateRange(minDate, maxDate, msg) {
         ensureValueIsDateObject(minDate, 'dateRange', 'DateTimeValidator', 'minDate');

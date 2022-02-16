@@ -8,6 +8,289 @@ REST backends.
 
 It is currently in very early development and not actually usable yet.
 
+## Table of contents
+
+<nav>
+<ol>
+  <li>
+    <a href="#react-components">React Components</a>
+    <ul>
+      <li><a href="#formiflyform">FormiflyFrom</a></li>
+      <li><a href="#automagicformiflyfield">AutomagicFormiflyField</a></li>
+      <li><a href="#formiflyfield">FormiflyField</a></li>
+      <li><a href="#formiflyselectfield">FormiflySelectField</a></li>
+      <li><a href="#formiflymultiselectfield">FormiflyMultiSelectField</a></li>
+      <li><a href="#formiflycheckfield">FormiflyCheckField</a></li>
+      <li><a href="#formiflyradiogroup">FormiflyRadioGroup</a></li>
+      <li><a href="#withlabelerrorsandhelp">withLabelErrorsAndHelp</a></li>
+      <li><a href="#formiflyfieldcontainer">FormiflyFieldContainer</a></li>
+      <li><a href="#formiflyinput">FormiflyInput</a></li>
+      <li><a href="#formiflyinputlabel">FormiflyInputLabel</a></li>
+      <li><a href="#formiflyerrorspan">FormiflyErrorSpan</a></li>
+      <li><a href="#formiflyhelpspan">FormiflyHelpSpan</a></li>
+      <li><a href="#formiflymultiselectoption">FormiflyMultiSelectOption</a></li>
+      <li><a href="#formiflymultiselectoptionsmenu">FormiflyMultiSelectOptionsMenu</a></li>
+      <li><a href="#formiflymultiselectoptionsanchor">FormiflyMultiSelectOptionsAnchor</a></li>
+      <li><a href="#formiflymultiselectcontainer">FormiflyMultiSelectContainer</a></li>
+      <li><a href="#formiflyprovider">FormiflyProvider</a></li>
+    </ul>
+  </li>
+  <li><a href="#styling">Styling</a></li>
+  <li>
+    <a href="#available-validators">Available Validators</a>
+    <ul>
+      <li><a href="#basevalidator">BaseValidator</a></li>
+      <li><a href="#numbervalidator">NumberValidator</a></li>
+      <li><a href="#strigvalidtor">StringValidator</a></li>
+      <li><a href="#datetimevalidator">DateTimeValidator</a></li>
+      <li><a href="#booleanvalidator">BooleanValidator</a></li>
+      <li><a href="#objectvalidator">ObjectValidator</a></li>
+      <li><a href="#arrayvalidator">ArrayValidator</a></li>
+    </ul>
+  </li>
+  <li><a href="#cross-dependent-fields">Cross Dependent Fields</a></li>
+  <li><a href="#development">Development</a></li>
+</ol>
+</nav>
+
+## React Components
+
+### FormiflyForm
+
+This component should always be the one containing all of your Fields in one specific form.  
+It accepts the following params:
+
+- `onSubmit` your custom submit handler  
+  This has to return a promise that resolves when the form was submitted correctly.  
+  Field validation is handled automatically before running your function.  
+  If you have additional server validation that does not exactly match the client validators, you can reject the promise in case of an
+  error with an object that contains the validation errors for failed fields.  
+  If the promise is rejected with anything that is ___not___ formed in this way, the reason will be saved to `submitFailureReason`
+  in the Formifly Context.
+- `shape` your validators  
+  This has to be an `ObjectValidator` containing all fields in your form.
+- `defaultValues` default values for your form fields (optional)
+  This should only be used for a form that is used to edit existing database entries since the validators themselves are also capable of
+  holding default values, which is the preferred way to set those.  
+  Note that when this param is set, you will have to set **all** of the field values in it.
+- `theme` override the default styling of the provided components. (Optional)  
+  Available keys:
+    - `inputBackgroundColor` Background color for input fields
+    - `errorColor` Both border and font color for fields with errors
+    - `inputTextColor` Default text color for inputs
+    - `inputBorderColor` Default border color for inputs
+    - `highlightColor` Background color for highlighted options in multi selects
+    - `reduceMotion` Set to `true` or `false` to override the user's prefer-reduced-motion setting and show/ hide animations either way
+
+### AutomagicFormiflyField
+
+This is a component that automatically fetches all field props from the current Formifly Context and decides which exact field component
+will be rendered.  
+The component can only be rendered from within a Formifly Context, while the other components may also be used outside one if that's
+something you need to do.  
+When using Formifly fields within a context, using this component is generally the preferred way to do so, although using the field
+components directly may lead to a very minor performance increase.
+
+The Component accepts the following props:
+
+- `label` The input label
+- `name` The name of the input  
+  If this name is the child of an object or array, write like this: `parent.key.subKey`
+- `help` Additional help text for the input (optional)  
+  Especially useful for fields that do not explain themselves from the label alone or password fields with special requirements.  
+  When using the help param, `aria-describedby` will be set correctly automatically.
+- `type` The type of the input (optional)  
+  Generally type can be inferred from the kind of validator you are using for the field.  
+  If the inferred type is incorrect, set it explicitly using this param.  
+  Note that for radio groups, **you must** set the type to `radio-group`.
+- `id` The id for the input (optional)
+  If this is not set, an id will be generated automatically like this: `formifly-input-field-$name`  
+  Since radio buttons share a single name, their id will be generated like this: `formifly-input-field-$name-radio-$value`.
+- `additionalDescribedBy` Additional ids to add to the aria-describedby property of the input (optional)
+  This is especially useful for radio groups when you are not using the `radio-group` component since without an additional label, it will
+  be unclear to screen reader users what the specific options refer to.
+- `className` A string of classes to apply to the container of the label, input, error and help text (optional)  
+  All containers will already have the class names `formifly-field-container` and `formifly-$type-field-container`
+- `inputClassName` A string of classes to apply to the input component (optional)    
+  All input components will already have the class names `formifly-field-input` and `formifly-$type-field-input`.  
+  This will also apply to select fields.
+- `labelClassName` A string of classes to apply to the label component (optional)  
+  All label components will already have the class names `formifly-field-label` and `formifly-$type-field-label`.
+- `helpClassName` A string of classes to apply to the help component (optional)  
+  All help components will already have the class names `formifly-field-help` and `formifly-$type-field-help`.
+- `errorClassName` A string of classes to apply to the error component (optional)  
+  All error components will already have the class names `formifly-field-error` and `formifly-$type-field-error`.
+- `legendClassName` A string of classes to apply to the legend component of radio groups (optional)  
+  All legend components will already have the class name `formifly-fieldset-legend`
+- `conatinerComponent` A component to replace the default container component with (optional)  
+  This is useful when you're styling the components using `styled-components`
+- `labelComponent` A component to replace the default label component with (optional)
+- `inputComponent` A component to replace the default input component with (optional)  
+  This is also used for select fields.
+- `errorComponent` A component to replace the default error component with (optional)
+- `helpComponent` A component to replace the default help component with (optional)
+- `optionComponent` A component to replace the default option component in select fields with (optional)
+- `legendComponent` A component to replace the default legend component in radio group field sets. (optional)
+- `labelNoMove` Disable the effect that moves the labels into the input field's border by setting this to true (optional)
+- `options` An array of options for select fields and radio groups (required for those fields, must not be set for others)  
+  This array must contain the options as objects with the keys `label` and `value`.
+- `multiple` When creating a select field, pass this as true to render a multi select field. (optional)
+
+As well as the same params that the [`FormiflyMultiSelectField`](#formiflymultiselectfield) adds.
+
+### FormiflyField
+
+The field component used for most inputs. It accepts the same props as `AutomagicFormiflyField`, however it also adds and requires some
+more that are not needed for the automagic one.
+
+These are:
+
+- `errors` A string containing all validation errors for a field
+- `value` The value of the field
+- `onChange` The input's change handler
+- `onBlur` The input's blur handler
+- `onFocus` The input's focus handler
+- `aria-invalid`: Whether the field content is invalid (optional)
+- `aria-describedby`: A space seperated list of html ids of components that describe the input (optional)
+- `required` Whether or not the field is required (optional)
+
+All of these props can be generated automatically by calling `getFieldProps()` from the FormiflyContext with the name of the input field.
+
+### FormiflySelectField
+
+The field used for selectors.  
+It uses the same params as the `FormiflyField`, however it also adds these params:
+
+- `options` An array that contains all the options for the selector as objects with the keys `label` and `value`
+- `optionComponent` A component to overwrite the default option component (optional)
+
+These **can not** be generated by calling `getFieldProps()`.
+
+### FormiflyMultiSelectField
+
+This field is used for selectors that allow multiple selections at once.  
+It does not use the multi selector that html provides by default since that one does not work too well sadly.
+
+It uses the same params as the `FormiflySelectField`, adding the following ones:
+
+- `selectionDisplayCutoff` The largest amount of selected options to be displayed within the selection anchor (optional)
+- `optionClassName` A string of classes to add to the selection options. (optional)
+- `selectAllText` The string to display as the text for the select all option.  
+  By default, this will be: "Select all".
+- `numSelectedText` The string to display when too many options are selected for them to all be displayed. (optional)
+  By default, this will be: "{{num}} selected". You may use the `{{num}}` placeholder in your custom strings as well
+- `allSelectedText` The string that will be displayed when all options are selected. (optional)  
+  By default this will be: "All selected"
+- `nothingSelectedText` The string that will be displayed when nothing is selected. (optional)
+  By default this will be: "Nothing selected"
+- `selectedDisplayComponent` The component to replace the default selection anchor with. (optional)
+- `selectedDisplayClassName` A string of class names to apply to the selection anchor. (optional)  
+  There will already be the class `formifly-multi-select-display` applied to all selection anchors
+- `menuComponent` A component to replace the default menu that holds the options with. (optional)
+- `menuClassName` A string of class names to apply to the option menu. (optional)  
+  There will already be the class `formifly-multi-select-menu` applied by default.
+- `selectContainerComponent` A component to replace the default container that holds the selection anchor and menu with. (optional)
+- `selectionContainerClassName` A string of class names to apply to the select container. (optional)  
+  There will already be the class `formifly-multi-select-container` applied by default.
+
+### FormiflyCheckField
+
+The component used for checkboxes and radios.  
+It uses the same params as the `FormiflyField`, however instead of `value`, it required `checked`.  
+The `getFieldProps()` function of the FormiflyContext already takes care of this for you if you use it.
+
+### FormiflyRadioGroup
+
+The component used for radio groups. It uses the same params as the `FormiflyField`, however it also adds these params:
+
+- `options` An array that contains the values and labels for all radio options with the keys `label` and `value`.
+- `legendClassName` A string that contains class names to add to the field set legend component that contains the overarching label. (
+  optional)
+- `legendComponent` A component to replace the fieldset legend component with. (optional)
+
+These **can not** be generated by calling `getFieldProps()`.
+
+### withLabelErrorsAndHelp
+
+This higher order component is used internally to add the input label, error display and help field to a field.  
+You may use it if you want to build custom fields that look and behave similar to the ones that come with Formifly.
+
+### FormiflyFieldContainer
+
+This is the component used as a container for all parts that make up a Formifly field.  
+You may use it as a base for your custom styled container components.
+
+### FormiflyInput
+
+This is the component used internally for text inputs.  
+You may use it as a base for your custom styled input components.
+
+### FormiflyInputLabel
+
+This is the component used internally for field labels.  
+You may use it as a base for your custom styled label components.
+
+### FormiflyErrorSpan
+
+This is the component used internally to display field errors.  
+You may use it as a base for your custom styled error display components.
+
+### FormiflyHelpSpan
+
+This is the component used internally to display additional help text for fields.  
+You may use it as a base for your custom styled help display components.
+
+### FormiflyMultiSelectOption
+
+This component is used internally to render each option in a multi select.  
+You may use it as a base for your custom styled option components.
+
+### FormiflyMultiSelectOptionsMenu
+
+This component is used internally to render the menu that contains the options for a multi select.  
+You may use it as a base for your custom styled menu components.
+
+### FormiflyMultiSelectOptionsAnchor
+
+This component is used internally to display the current state of a multi select.  
+You may use it as a base for your custom components
+
+### FormiflyMultiSelectContainer
+
+This component is used internally as a container for the multi select anchor and menu.  
+You may use it as a base for your custom components.
+
+### FormiflyProvider
+
+The provider that holds all the context values.  
+You **should not** need to use this component since it is also included in `FormiflyForm` and it is only exported to enable further
+customization than what was considered when building the library.  
+If you run into an occasion where you need this component, consider adding an issue or PR to add the behaviour you need to the upstream
+library.
+
+## Styling
+
+The provided components do not have many styles attached by default.  
+This is done so that you do not need to overwrite tons of different styles when adding them to your own designs.
+
+In order to style the components, there are multiple methods available.
+
+- `styled-components`: You may use styled components to overwrite the components used by default.  
+  For this it may be useful to import the default components as the base for your own styled ones.  
+  Look at the `AutomagicFormiflyField` documentation to find out how.
+- `CSS`: All components have class names applied to allow CSS styles to be matched to them.  
+  For these names, look at the documentation for the `AutomagicFormiflyField` as it lists all of them.
+- `className`: You may use styling libraries other than styled-components that utilize the className property.  
+  For more information about this, look at the documentation for the `AutomagicFormiflyField` as it explains how to do that.
+- `style` property: You may also use styling libraries that add an inline `style` prop.  
+  To do this, override the default components as explained in the `AutomagicFormiflyField` documentation with ones that have your style
+  prop applied.  
+  Note that directly applying to `style` prop will **not** apply the styles to the field components.
+
+If the only thing you want to change are the colors used by default, you can also pass a `theme` prop to the
+`FormiflyForm` component.  
+See [its documentation](#formiflyform) for more info on that.
+
 ## Available Validators
 
 Generally all validators accept an optional `msg` param.  
@@ -15,15 +298,36 @@ This will be used as the error message if validation fails.
 If the validator accepts other values, those should be able to be inserted into custom strings using template keywords.  
 Check the specific validators documentation for that.
 
+Most validator constructors accept (at least) the params `dependent` (see [Cross dependent fields](#cross-dependent-fields)
+for more info), `defaultErrorMsg` and `defaultValue`.
+
+The former two params are accepted by all validators, while `defaultValue` is not accepted by the `ArrayValidator` and
+the `ObjectValidator`
+since for those, their children's default values are used instead.
+
+The default error message will be used when validation fails for a validator that does not have its own error message.  
+Note that most existing validators ***do*** have their own default error messages, which you will have to overwrite with your own as well.
+
+If you do not set a default value it will be set to a sensible default for the type of field.  
+That means most fields will have an empty string as default value, however arrays and objects will have an empty array or object
+respectively and booleans will default to false.  
+**The defaultValue may only be queried by using `getDefaultValue()` and not by directly accessing it.**
+
 ### BaseValidator
 
 This is the validator that all other validators inherit from, so all of its methods are available for the other validators as well.  
-All methods can be chained.
+All methods (except for validate) can be chained.
+
+Generally, this validator should only be used as a base for new custom validators or as a "last resort" when no other validator is working
+for the kind of date you need. (In which cases it is a good idea to build your own custom validator though.)
+
+The validator may be used in code examples within this documentation in cases where the validator that is actually used does not matter.
 
 Available methods:
 
 - `required(msg: [String])` Make the field required. A field that is not required will pass all validators if it is empty.
 - `alwaysFalse(msg: [String])` Make the validation always return false. This may be useful when building more complex dependent validators.
+- `getDefaultValue()` Return the field's default value.
 - `validate(value, [otherValues])` Validate the field.  
   You should not need to use this function. If you do for some reason, pass the field's value as value and
   (if there are dependencies) all other values as otherValues.
@@ -52,6 +356,8 @@ Example:
  new NumberValidator().positive().decimalPlaces(2);
 ```
 
+This will validate any positive number and transform it to be a decimal string with two decimal places.
+
 ### StringValidator
 
 This Validator is used for generic strings.
@@ -69,8 +375,10 @@ Available methods:
 Example:
 
 ```js
- StringValidator().required().minLength(1).maxLength(2).regex(/[a-z]/);  
+ StringValidator().required().minLength(1).maxLength(2).regex(/^[a-z]+$/);  
 ```
+
+This will validate any string that is composed of either 1 or two lowercase characters.
 
 ### DateTimeValidator
 
@@ -88,8 +396,10 @@ Available methods:
 Example:
 
 ```js
-new DateTimeValidator().minDate(new Date(2020 - 01 - 01));
+new DateTimeValidator().minDate(new Date(2020, 1, 1));
 ```
+
+This will validate any date after the first of february 2020.
 
 ### BooleanValidator
 
@@ -104,7 +414,7 @@ Example:
 new BooleanValidator()
 ```
 
-This example will validate to true for `true`, `false`, `"true"` and `"false"`.
+This example will validate to true for `true`, `false`, `"true"` and `"false"` and return an error message for everything else.
 
 ### ObjectValidator
 
@@ -123,6 +433,8 @@ new ObjectValidator({
 });
 ```
 
+This will validate the child fields `foo` and `number` with a String- and NumberValidator respectively.
+
 ### ArrayValidator
 
 This validator is used when your data model contains multiple of the same fields. When the validation fails, it will return an array with
@@ -138,7 +450,7 @@ Available methods:
 - `maxLength(num: Number, msg: [String])` Enforce an (inclusive) maximum amount of children.  
   Use `{{num}}` to include the maximum amount of children in your custom error string.
 - `lengthRange(min: Number, max: Number, msg: [String])` Enforce an amount of children within an inclusive range.  
-  **Note that when `min` is > 0, the field will be considered required automatically.**
+  **Note that when `min` is > 0, the field will be considered required automatically.**  
   Use `{{min}}` and/ or `{{max}}` to include the minimum and/ or maximum amount of children in your custom error string respectively.
 
 Example:
@@ -147,7 +459,9 @@ Example:
 new ArrayValidator(new StringValidator().required()).minLength(2);
 ```
 
-## Cross dependent fields
+This will validate any child fields of the Array as Strings while also making sure there are at least two children.
+
+## Cross Dependent Fields
 
 You can use different validators for fields depending on the value of other fields.  
 This behaviour is pretty bare bones at the moment and may be subject to change at a later date.
@@ -181,3 +495,16 @@ shape({
 ```
 
 This example will make the field `agreement` required if the field `fruit.banana` contains the value `nom!`.
+
+## Development
+
+In order to work on this library, follow these steps:
+
+1. Pull this repo
+2. Install all dependencies: `npm install`
+3. Start the development server with the example app: `npm run start`  
+   This will automatically open your default web browser with the demo app.
+4. Before you push any changes
+    1. Run tests and create coverage: `npm run coverage`
+    2. Fix any tests that fail
+    3. Check the test coverage output and make sure all of your additions are covered where that makes sense
