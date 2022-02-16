@@ -308,8 +308,8 @@ The default error message will be used when validation fails for a validator tha
 Note that most existing validators ***do*** have their own default error messages, which you will have to overwrite with your own as well.
 
 If you do not set a default value it will be set to a sensible default for the type of field.  
-That means most fields will have an empty string as default value, however arrays and objects will have a default value 
-depending on their children and (for arrays) their min child count.  
+That means most fields will have an empty string as default value, however arrays and objects will have a default value depending on their
+children and (for arrays) their min child count.  
 **The defaultValue may only be queried by using `getDefaultValue()` and not by directly accessing it.**
 
 ### BaseValidator
@@ -381,11 +381,11 @@ Available methods:
 Example:
 
 ```js
- StringValidator('foo')
-        .required()
-        .minLength(1)
-        .maxLength(3)
-        .regex(/^[a-z]+$/);  
+ new StringValidator('foo')
+    .required()
+    .minLength(1)
+    .maxLength(3)
+    .regex(/^[a-z]+$/);  
 ```
 
 This will validate any string that is composed of between 1 and 3 lowercase characters.  
