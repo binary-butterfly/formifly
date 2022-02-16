@@ -28,6 +28,10 @@ It is currently in very early development and not actually usable yet.
       <li><a href="#formiflyinputlabel">FormiflyInputLabel</a></li>
       <li><a href="#formiflyerrorspan">FormiflyErrorSpan</a></li>
       <li><a href="#formiflyhelpspan">FormiflyHelpSpan</a></li>
+      <li><a href="#formiflymultiselectoption">FormiflyMultiSelectOption</a></li>
+      <li><a href="#formiflymultiselectoptionsmenu">FormiflyMultiSelectOptionsMenu</a></li>
+      <li><a href="#formiflymultiselectoptionsanchor">FormiflyMultiSelectOptionsAnchor</a></li>
+      <li><a href="#formiflymultiselectcontainer">FormiflyMultiSelectContainer</a></li>
       <li><a href="#formiflyprovider">FormiflyProvider</a></li>
     </ul>
   </li>
@@ -56,16 +60,16 @@ It is currently in very early development and not actually usable yet.
 This component should always be the one containing all of your Fields in one specific form.  
 It accepts the following params:
 
-- `onSubmit`: your custom submit handler  
+- `onSubmit` your custom submit handler  
   This has to return a promise that resolves when the form was submitted correctly.  
   Field validation is handled automatically before running your function.  
   If you have additional server validation that does not exactly match the client validators, you can reject the promise in case of an
   error with an object that contains the validation errors for failed fields.  
   If the promise is rejected with anything that is ___not___ formed in this way, the reason will be saved to `submitFailureReason`
   in the Formifly Context.
-- `shape`: your validators  
+- `shape` your validators  
   This has to be an `ObjectValidator` containing all fields in your form.
-- `defaultValues`: default values for your form fields (optional)
+- `defaultValues` default values for your form fields (optional)
   This should only be used for a form that is used to edit existing database entries since the validators themselves are also capable of
   holding default values, which is the preferred way to set those.  
   Note that when this param is set, you will have to set **all** of the field values in it.
@@ -179,8 +183,7 @@ It uses the same params as the `FormiflySelectField`, adding the following ones:
   There will already be the class `formifly-multi-select-menu` applied by default.
 - `selectContainerComponent` A component to replace the default container that holds the selection anchor and menu with. (optional)
 - `selectionContainerClassName` A string of class names to apply to the select container. (optional)  
-   There will already be the class `formifly-multi-select-container` applied by default.
-
+  There will already be the class `formifly-multi-select-container` applied by default.
 
 ### FormiflyCheckField
 
@@ -229,6 +232,26 @@ You may use it as a base for your custom styled error display components.
 This is the component used internally to display additional help text for fields.  
 You may use it as a base for your custom styled help display components.
 
+### FormiflyMultiSelectOption
+
+This component is used internally to render each option in a multi select.  
+You may use it as a base for your custom styled option components.
+
+### FormiflyMultiSelectOptionsMenu
+
+This component is used internally to render the menu that contains the options for a multi select.  
+You may use it as a base for your custom styled menu components.
+
+### FormiflyMultiSelectOptionsAnchor
+
+This component is used internally to display the current state of a multi select.  
+You may use it as a base for your custom components
+
+### FormiflyMultiSelectContainer
+
+This component is used internally as a container for the multi select anchor and menu.  
+You may use it as a base for your custom components.
+
 ### FormiflyProvider
 
 The provider that holds all the context values.  
@@ -255,6 +278,8 @@ In order to style the components, there are multiple methods available.
   To do this, override the default components as explained in the `AutomagicFormiflyField` documentation with ones that have your style
   prop applied.  
   Note that directly applying to `style` prop will **not** apply the styles to the field components.
+
+# TODO: add components that make up multi select here as well!
 
 ## Available Validators
 
