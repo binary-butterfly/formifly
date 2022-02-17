@@ -36,7 +36,7 @@ describe.each([
     ['abc', {banana: 'apple'}, [true, 'abc'], 'uses dependent validator and can pass when condition is met'],
 ])('Test dependent validator', (value, otherValues, expected, name) => {
     test(name, () => {
-        const validator = new BaseValidator(undefined, undefined, undefined, [
+        const validator = new BaseValidator(undefined, undefined, undefined,undefined, [
             'banana',
             value => value === 'apple',
             new BaseValidator().required(),
@@ -57,7 +57,7 @@ describe.each([
 
 test('Test onError callback is called on error', () => {
     const callback = jest.fn();
-    const validator = new BaseValidator(undefined, undefined, callback).alwaysFalse();
+    const validator = new BaseValidator(undefined, undefined, undefined, callback).alwaysFalse();
     validator.validate(false, {foo: 'bar'});
     expect(callback).toHaveBeenCalledWith(false, {foo: 'bar'});
 });
@@ -71,3 +71,12 @@ test('Test getPropType required', () => {
     const validator = new BaseValidator().required();
     expect(validator.getPropType()).toBe(PropTypes.any.isRequired);
 });
+
+test('Test mutationFunc', () => {
+    const mutation = (value) => {
+        return value + 'banana';
+    }
+    const validator = new BaseValidator(undefined, undefined, mutation);
+
+    expect(validator.validate('my favourite fruit is the ')).toStrictEqual([true, 'my favourite fruit is the banana']);
+})

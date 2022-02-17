@@ -9,8 +9,8 @@ const emailRegexp = /.+@.+/;
 class CustomEmailValidator extends StringValidator {
     defaultInputType = 'email';
 
-    constructor(defaultValue, defaultErrorMsg, onError, dependent) {
-        super(defaultValue, defaultErrorMsg, onError, dependent);
+    constructor(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent) {
+        super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
 
         this.validateFuncs.push([
             value => {

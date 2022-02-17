@@ -129,8 +129,8 @@ const DemoFormContent = (props) => {
 };
 
 class NotTrueValidator extends BooleanValidator {
-    constructor(defaultValue, defaultErrorMsg, onError, dependent) {
-        super(defaultValue, defaultErrorMsg, onError, dependent);
+    constructor(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent) {
+        super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
         this.validateFuncs.push([(value) => value !== 'true' && value !== true, defaultErrorMsg]);
     }
 }

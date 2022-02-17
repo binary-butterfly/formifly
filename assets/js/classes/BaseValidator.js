@@ -10,16 +10,19 @@ class BaseValidator {
     defaultValue = '';
     propType = PropTypes.any;
     onError;
+    mutationFunc;
 
     /**
      * Validates a field
      * @param [defaultValue]
      * @param {String} [defaultErrorMsg]
+     * @param {Function} [mutationFunc]
      * @param {Function} [onError]
      * @param {Array|Boolean} [dependent]
      */
-    constructor(defaultValue = '', defaultErrorMsg = null, onError, dependent = false) {
+    constructor(defaultValue = '', defaultErrorMsg = null, mutationFunc, onError, dependent = false) {
         this.defaultErrorMsg = defaultErrorMsg ?? 'There is an error within this field';
+        this.mutationFunc = mutationFunc;
         this.onError = onError;
         this.dependent = dependent;
         this.defaultValue = defaultValue;
@@ -89,6 +92,8 @@ class BaseValidator {
 
         if (!ret[0] && typeof this.onError === 'function') {
             this.onError(value, otherValues);
+        } else if (ret[0] && typeof this.mutationFunc === 'function') {
+            ret[1] = this.mutationFunc(ret[1], otherValues);
         }
 
         return ret;
