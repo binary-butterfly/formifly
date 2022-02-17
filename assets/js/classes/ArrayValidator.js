@@ -12,11 +12,12 @@ class ArrayValidator extends BaseValidator {
      * Validate an array of fields
      * @param {BaseValidator} of
      * @param {String} [defaultMessage]
+     * @param {Function} [mutationFunc]
      * @param {Function} [onError]
      * @param {Array} [dependent]
      */
-    constructor(of, defaultMessage, onError, dependent) {
-        super(undefined, defaultMessage, onError, dependent);
+    constructor(of, defaultMessage, mutationFunc, onError, dependent) {
+        super(undefined, defaultMessage, mutationFunc, onError, dependent);
         this.of = of;
         this.propType = PropTypes.arrayOf(of.getPropType());
     }

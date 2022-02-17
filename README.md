@@ -325,10 +325,10 @@ This will be used as the error message if validation fails.
 If the validator accepts other values, those should be able to be inserted into custom strings using template keywords.  
 Check the specific validators documentation for that.
 
-Most validator constructors accept (at least) the params `defaultValue`, `defaultErrorMsg`, `onError` and `dependent`
+Most validator constructors accept (at least) the params `defaultValue`, `defaultErrorMsg`, `mutationFunc`, `onError` and `dependent`
 (see [Cross dependent fields](#cross-dependent-fields) for more info on the last one).
 
-The latter three params are accepted by all validators, while `defaultValue` is not accepted by the `ArrayValidator` and
+The latter four params are accepted by all validators, while `defaultValue` is not accepted by the `ArrayValidator` and
 the `ObjectValidator` since for those, their children's default values are used instead.
 
 If you do not set a default value it will be set to a sensible default for the type of field.  
@@ -338,6 +338,11 @@ children and, for arrays, their min child count.
 
 The default error message will be used when validation fails for a validator that does not have its own error message.  
 Note that most existing validators ***do*** have their own default error messages, which you will have to overwrite with your own as well.
+
+If set, the `mutationFunc` will be called if validation succeeds with the field's value and `otherValues` passed to the validate
+function.  
+The field value will be replaced by whatever the mutationFunc returns before handing it off to your submit handler.  
+This is useful if you need to reformat the data before sending it to a REST api for example.
 
 The `onError` callback function will be called when validation fails.  
 It receives the `value` and `otherValues` params passed to the `validate` function.
@@ -467,8 +472,8 @@ The object validator does not have any special methods.
 However, it has to be constructed with the field's children as the first param.  
 It also accepts an additional param `dropEmpty`, which defaults to `true`.  
 This param defines whether empty values will be dropped before handing them to the forms submit handler.  
-It only works on direct children of the specific ObjectValidator so if your data structure contains multiple objects, each
-ObjectValidator must have this param set.
+It only works on direct children of the specific ObjectValidator so if your data structure contains multiple objects, each ObjectValidator
+must have this param set.
 
 The ObjectValidator accepts an additional parameter for its `getPropType` function.  
 If you pass `true` to the function, instead of returning `PropTypes.shape`, it will return an object that you can directly assign as
@@ -532,7 +537,7 @@ Example:
 
 ```js
 new ObjectValidator({
-    agreement: new BaseValidator(undefined, undefined, undefined, [
+    agreement: new BaseValidator(undefined, undefined, undefined, undefined, [
         'fruit.banana',
         value => value === 'nom!',
         new BaseValidator().required(),
@@ -556,8 +561,8 @@ Creating your own validator is really easy. This is a quick "tl;dr" example for 
 
 ```js
 class NotTrueValidator extends BooleanValidator {
-    constructor(defaultValue, defaultErrorMsg, onError, dependent) {
-        super(defaultValue, defaultErrorMsg, onError, dependent);
+    constructor(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent) {
+        super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
         this.validateFuncs.push([(value) => value !== 'true' && value !== true, defaultErrorMsg]);
     }
 }
@@ -575,8 +580,8 @@ const emailRegexp = /.+@.+/;
 class CustomEmailValidator extends StringValidator {
     defaultInputType = 'email';
 
-    constructor(defaultValue, defaultErrorMsg, onError, dependent) {
-        super(defaultValue, defaultErrorMsg, onError, dependent);
+    constructor(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent) {
+        super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
 
         this.validateFuncs.push([
             value => {

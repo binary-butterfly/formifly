@@ -37,7 +37,7 @@ describe.each([
         'validates and can mutate children'],
 ])('Test ObjectValidator', (fields, value, expected, name) => {
     test(name, () => {
-        const Validator = new ObjectValidator(fields, undefined, undefined, undefined, false);
+        const Validator = new ObjectValidator(fields, undefined, undefined, undefined, undefined, false);
         expect(Validator.validate(value)).toStrictEqual(expected);
     });
 });
@@ -143,7 +143,7 @@ describe.each([
         'does not drop empty fields when set false'],
 ])('Test dropEmpty', (fields, value, dropEmtpy, expected, name) => {
     test(name, () => {
-        const validator = new ObjectValidator(fields, undefined, undefined, undefined, dropEmtpy);
+        const validator = new ObjectValidator(fields, undefined, undefined, undefined, undefined, dropEmtpy);
         expect(validator.validate(value)).toStrictEqual(expected);
     });
 });
