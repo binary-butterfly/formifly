@@ -147,3 +147,8 @@ describe.each([
         expect(validator.validate(value)).toStrictEqual(expected);
     });
 });
+
+test('Test ObjectValidator works with alwaysFalse', () => {
+    const validator = new ObjectValidator({foo: new StringValidator()}).alwaysFalse('test!');
+    expect(validator.validate('banana')).toStrictEqual([false, 'test!']);
+});

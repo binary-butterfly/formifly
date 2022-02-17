@@ -31,6 +31,11 @@ class ObjectValidator extends BaseValidator {
     }
 
     validate(value, otherValues) {
+        const preValidate = super.validate(value, otherValues);
+        if (!preValidate[0]) {
+            return preValidate;
+        }
+
         // Unpack the test value to avoid mutating the original object
         let testValue = {...value};
         let allOk = true;
