@@ -1,7 +1,9 @@
+import PropTypes from 'prop-types';
 import BaseValidator from './BaseValidator';
 
 class BooleanValidator extends BaseValidator {
     defaultInputType = 'checkbox';
+    propType = PropTypes.bool;
 
     /**
      * Validate a boolean field

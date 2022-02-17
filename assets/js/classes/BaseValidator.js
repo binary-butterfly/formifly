@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import {getFieldValueFromKeyString} from '../helpers/generalHelpers';
 
 class BaseValidator {
@@ -7,6 +8,7 @@ class BaseValidator {
     defaultErrorMsg = '';
     dependent = false;
     defaultValue = '';
+    propType = PropTypes.any;
     onError;
 
     /**
@@ -94,6 +96,10 @@ class BaseValidator {
 
     getDefaultValue() {
         return this.defaultValue;
+    }
+
+    getPropType() {
+        return this.isRequired ? this.propType.isRequired : this.propType;
     }
 }
 

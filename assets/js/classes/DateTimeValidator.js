@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import {ensureValueIsDateObject} from '../helpers/developerInputValidators';
 import BaseValidator from './BaseValidator';
 
@@ -5,6 +6,7 @@ const dateRegex = /^\d{4}-((0[1-9])|(1[0-2]))-(([0-2][0-9])|(3[0-1]))T(([0-1][0-
 
 class DateTimeValidator extends BaseValidator {
     defaultInputType = 'datetime-local';
+    propType = PropTypes.object;
 
     /**
      * Validate a datetime input

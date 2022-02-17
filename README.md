@@ -357,6 +357,7 @@ Available methods:
 - `required(msg: [String])` Make the field required. A field that is not required will pass all validators if it is empty.
 - `alwaysFalse(msg: [String])` Make the validation always return false. This may be useful when building more complex dependent validators.
 - `getDefaultValue()` Return the field's default value.
+- `getPropType()` Returns the validator represented as PropTypes
 - `validate(value, [otherValues])` Validate the field.  
   You should not need to use this function. If you do for some reason, pass the field's value as value and
   (if there are dependencies) all other values as otherValues.
@@ -475,6 +476,10 @@ new ObjectValidator({
 ```
 
 This will validate the child fields `foo` and `number` with a String- and NumberValidator respectively.
+
+The ObjectValidator accepts an additional parameter for its `getPropType` function.  
+If you pass `true` to the function, instead of returning `PropTypes.shape`, it will return an object that you can directly
+assign as the `PropTypes` of a component.
 
 ### ArrayValidator
 

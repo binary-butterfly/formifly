@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import {ensureValueIsNumeric} from '../helpers/developerInputValidators';
 import BaseValidator from './BaseValidator';
 
@@ -17,6 +18,7 @@ class ArrayValidator extends BaseValidator {
     constructor(of, defaultMessage, onError, dependent) {
         super(undefined, defaultMessage, onError, dependent);
         this.of = of;
+        this.propType = PropTypes.arrayOf(of.getPropType());
     }
 
     /**
