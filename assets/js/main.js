@@ -4,6 +4,7 @@ import AutomagicFormiflyField from './components/input/AutomagicFormiflyField';
 import FormiflyForm from './components/meta/FormiflyForm';
 import withFormifly from './components/meta/withFormifly';
 import {FormiflyProvider, useFormiflyContext} from './components/meta/FormiflyContext';
+import AnyOfValidator from './classes/AnyOfValidator';
 import BaseValidator from './classes/BaseValidator';
 import StringValidator from './classes/StringValidator';
 import ArrayValidator from './classes/ArrayValidator';
@@ -29,6 +30,7 @@ export {
     FormiflyProvider,
     withFormifly,
     useFormiflyContext,
+    AnyOfValidator,
     BaseValidator,
     StringValidator,
     ArrayValidator,

@@ -47,6 +47,7 @@ It is currently in very early development and not actually usable yet.
       <li><a href="#booleanvalidator">BooleanValidator</a></li>
       <li><a href="#objectvalidator">ObjectValidator</a></li>
       <li><a href="#arrayvalidator">ArrayValidator</a></li>
+      <li><a href="#anyofvalidator">AnyOfValidator</a></li>
     </ul>
   </li>
   <li><a href="#cross-dependent-fields">Cross Dependent Fields</a></li>
@@ -515,6 +516,49 @@ new ArrayValidator(new StringValidator().required()).minLength(2);
 ```
 
 This will validate any child fields of the Array as Strings while also making sure there are at least two children.
+
+### AnyOfValidator
+
+This validator tries to validate the field value against an array of other validators and validates successfully if any of those match.
+
+It will run all given validators in the order that they have been passed and stop as soon as the first one has matched.  
+Keep this in mind when using mutation functions, since those will only run if either they are set on the validator that matches or if they
+are set on the AnyOfValidator itself.
+
+Also keep in mind that any onError callbacks for validators that are run and don't match will still be triggered, so make sure those don't
+break anything.
+
+In addition to the regular constructor params, the AnyOfValidator requires an array of validators to be passed as the first constructor
+param.
+
+Another thing to keep in mind is that this validator will validate successfully if either it or any of its validators is not required and
+the value is empty, so for a required field you will have to set each validator required.
+
+Example:
+
+```js
+    new AnyOfValidator([new NumberValidator().required(), new StringValidator().required()]).required();
+```
+
+This validator will validate successfully for both numbers and strings.
+
+Due to the fact that this validator is actually multiple validators in a Trenchcoat, the input type "guessing" will not work properly for
+it and always return "text".
+
+If you want to assign a different default input type for your AnyOfValidator, the cleanest way is to create
+a [custom validator](#creating-your-own-validators) and set the defaultInputType there like this:
+
+```js
+class WeirdPasswordValidator extends AnyOfValidator {
+    defaultInputType = 'password';
+
+    constructor(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent) {
+        super([new NumberValidator().required(), new StringValidator().required()], defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
+    }
+}
+```
+
+This has the added benefit that you can hardcode the validator options if you use the validator in multiple places like shown above.
 
 ## Cross Dependent Fields
 
