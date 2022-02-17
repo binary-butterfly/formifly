@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import {ensureValueIsNumeric} from '../helpers/developerInputValidators';
 import BaseValidator from './BaseValidator';
 
@@ -10,6 +11,7 @@ const delocalize = (value) => {
 
 class NumberValidator extends BaseValidator {
     defaultInputType = 'number';
+    propType = PropTypes.number;
     minNum;
     maxNum;
 

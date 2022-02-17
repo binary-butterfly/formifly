@@ -1,8 +1,10 @@
+import PropTypes from 'prop-types';
 import {ensureValueIsNumeric, ensureValueIsRegexp} from '../helpers/developerInputValidators';
 import BaseValidator from './BaseValidator';
 
 class StringValidator extends BaseValidator {
     defaultInputType = 'text';
+    propType = PropTypes.string;
 
     /**
      * Match the string against a regular expression
