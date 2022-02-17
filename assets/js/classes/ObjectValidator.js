@@ -2,18 +2,20 @@ import PropTypes from 'prop-types';
 import BaseValidator from './BaseValidator';
 
 class ObjectValidator extends BaseValidator {
-
     fields = {};
+    dropEmpty;
 
     /**
      * @param {Object} fields
      * @param {String} [defaultMessage]
      * @param {Function} [onError]
+     * @param {Boolean} [dropEmpty]
      * @param {Array} [dependent]
      */
-    constructor(fields, defaultMessage, onError, dependent) {
+    constructor(fields, defaultMessage, onError, dependent, dropEmpty = true) {
         super(undefined, defaultMessage, onError, dependent);
         this.fields = fields;
+        this.dropEmpty = dropEmpty;
     }
 
     /**
@@ -28,18 +30,34 @@ class ObjectValidator extends BaseValidator {
     }
 
     validate(value, otherValues) {
+        // Unpack the test value to avoid mutating the original object
+        let testValue = {...value};
         let allOk = true;
         let tests = {};
         for (const fieldName in this.fields) {
-            const test = this.fields[fieldName].validate(value[fieldName], value);
+            const test = this.fields[fieldName].validate(testValue[fieldName], testValue);
             tests[fieldName] = test;
             if (test[0] === false) {
                 allOk = false;
             } else if (allOk) {
-                value[fieldName] = test[1];
+                if (this.dropEmpty) {
+                    if (Array.isArray(test[1])) {
+                        const filtered = test[1].filter((val) => val !== '');
+                        if (filtered.length > 0) {
+                            testValue[fieldName] = filtered;
+                            continue;
+                        }
+                    } else if (test[1] !== '') {
+                        testValue[fieldName] = test[1];
+                        continue;
+                    }
+                    delete testValue[fieldName];
+                } else {
+                    testValue[fieldName] = test[1];
+                }
             }
         }
-        return allOk ? [true, value] : [false, tests];
+        return allOk ? [true, testValue] : [false, tests];
     }
 
     /**

@@ -464,7 +464,15 @@ This validator is used when your data model is not flat and has objects with key
 When the validation fails, it will return a dictionary with all the test results for its children in it.
 
 The object validator does not have any special methods.  
-However, it has to be constructed with the field's children as the first param.
+However, it has to be constructed with the field's children as the first param.  
+It also accepts an additional param `dropEmpty`, which defaults to `true`.  
+This param defines whether empty values will be dropped before handing them to the forms submit handler.  
+It only works on direct children of the specific ObjectValidator so if your data structure contains multiple objects, each
+ObjectValidator must have this param set.
+
+The ObjectValidator accepts an additional parameter for its `getPropType` function.  
+If you pass `true` to the function, instead of returning `PropTypes.shape`, it will return an object that you can directly assign as
+the `PropTypes` of a component.
 
 Example:
 
@@ -476,10 +484,6 @@ new ObjectValidator({
 ```
 
 This will validate the child fields `foo` and `number` with a String- and NumberValidator respectively.
-
-The ObjectValidator accepts an additional parameter for its `getPropType` function.  
-If you pass `true` to the function, instead of returning `PropTypes.shape`, it will return an object that you can directly
-assign as the `PropTypes` of a component.
 
 ### ArrayValidator
 

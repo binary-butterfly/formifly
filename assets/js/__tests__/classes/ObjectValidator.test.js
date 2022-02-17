@@ -37,7 +37,7 @@ describe.each([
         'validates and can mutate children'],
 ])('Test ObjectValidator', (fields, value, expected, name) => {
     test(name, () => {
-        const Validator = new ObjectValidator(fields);
+        const Validator = new ObjectValidator(fields, undefined, undefined, undefined, false);
         expect(Validator.validate(value)).toStrictEqual(expected);
     });
 });
@@ -110,4 +110,40 @@ test('Test getPropType required', () => {
 test('Test getPropType first', () => {
     const validator = new ObjectValidator({foo: new StringValidator().required(), bar: new NumberValidator()});
     expect(validator.getPropType(true)).toStrictEqual({foo: PropTypes.string.isRequired, bar: PropTypes.number});
+});
+
+describe.each([
+    [
+        {
+            foo: new StringValidator(),
+            bar: new ArrayValidator(new StringValidator()),
+            baz: new ArrayValidator(new StringValidator()),
+        },
+        {foo: '', bar: [], baz: ['']},
+        true,
+        [true, {}],
+        'drops empty fields',
+    ],
+    [
+        {
+            foo: new StringValidator(),
+            bar: new ArrayValidator(new StringValidator()),
+            baz: new ArrayValidator(new StringValidator()),
+        },
+        {foo: '', bar: [], baz: ['']},
+        false,
+        [
+            true,
+            {
+                foo: '',
+                bar: [],
+                baz: [''],
+            },
+        ],
+        'does not drop empty fields when set false'],
+])('Test dropEmpty', (fields, value, dropEmtpy, expected, name) => {
+    test(name, () => {
+        const validator = new ObjectValidator(fields, undefined, undefined, undefined, dropEmtpy);
+        expect(validator.validate(value)).toStrictEqual(expected);
+    });
 });
