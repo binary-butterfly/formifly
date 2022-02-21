@@ -9,6 +9,9 @@ REST backends.
 ## Table of contents
 
 1. [Quick Start](#quick-start)
+    - [Basic Forms](#basic-forms)
+    - [Array Forms](#array-forms)
+    - [Object Forms](#object-forms)
 2. [React Components](#react-components)
     - [FormiflyForm](#formiflyform)
     - [AutomagicFormiflyField](#automagicformiflyfield)
@@ -43,6 +46,206 @@ REST backends.
 7. [Development](#development)
 
 ## Quick Start
+
+### tldr;
+
+Head over to the [code of the demo form](assets/js/components/demo/DemoForm.js); it contains at least one example for every kind of input
+field this library ships.
+
+### Basic forms
+
+Generally, there are only a few things you will need to know for most use cases.  
+First of all, you will need to know how to create the validators you need.
+
+To do so, you will always have to start by creating a new [`ObjectValidator`](#objectvalidator) as a base with your fields as keys.  
+A minimal example for a login form could look like this:
+
+```js
+const LoginForm = (props) => {
+    const shape = new ObjectValidator({
+        username: new StringValidator().required('Please enter your username'),
+        password: new StringValidator().minLength(8, 'Passwords are at least 8 chars long').required('A password is required to log in'),
+        stayLoggedIn: new BooleanValidator(),
+    });
+
+    return <FormiflyForm shape={shape} onSubmit={props.handleSubmit}>
+        <AutomagicFormiflyField name="username" label="Username"/>
+        <AutomagicFormiflyField name="password" label="Password" type="password"/>
+        <AutomagicFormiflyField name="stayLoggedIn" label="Stay logged in"/>
+        <button type="submit">Log in</button>
+    </FormiflyForm>
+}
+```
+
+In this example, we first create an ObjectValidator with the fields `username`, `password` and `stayLoggedIn`.  
+Username is a required text field, just like password. However, a password must be at least 8 characters long. (Although I would advise
+against such validation for a login field since you may change your password guidelines at some point and you will still want people to be
+able to log in with their old passwords, but I digress.)  
+Then lastly there is the Boolean field `stayLoggedIn`.
+
+Now we can look at the components that are being returned.  
+Firstly we've got the `FormiflyForm` as a container for everything.  
+This component already includes the context provider so everything that is contained within it can get the field values and validators by
+using either the `withFormifly` HOC or the `useFormiflyContext` React hook.  
+The form requires at least a shape (which is always an ObjectValidator that contains all form fields) and a submission handler.  
+You may also pass `defaultValues` if you do not want the default values to be taken from the validators, like in an edit form for
+example.  
+Further options about the `FormiflyForm` can be found in [its documentation](#formiflyform).
+
+Within the form we have three AutomagicFormiflyFields.  
+These are the easiest way you can create input fields since they get most of their properties automatically from the validator that has
+their name.  
+Since the password field does not use a specific password validator, we have to override its input type to make it a password input instead
+of a simple text input.  
+For most inputs you do not need more properties than the field name and label, however there are certain cases where one might need more.  
+In the case of select inputs or radio groups, you will also have to pass the available options. To find out more about that
+see [the AutomagicFormiflyField documentation](#automagicformiflyfield).
+
+The last `AutomagicFormiflyField` included in this example is for our Boolean field.  
+It will render a checkbox by default.
+
+At the very last we have a simple `submit` button that will submit the form just like you would use for any regular form.
+
+### Array forms
+
+There are cases where you need multiple entries for similarly formed data.  
+You could simply build multiple forms for that but doing so would not scale, especially if your form also contains regular, non array
+data.  
+Luckily for you, Formifly provides the possibility of rendering array inputs.
+
+A simple example would look like this:
+
+```js
+const ShoppingListForm = (props) => {
+    const shape = new ObjectValidator({
+        store: new StringValidator().required,
+        items: new ArrayValidator(
+            new ObjectValidator({
+                name: new StringValidator().required(),
+                purchased: new BooleanValidator().required(),
+            })
+        ).required().minLength(1)
+    });
+
+    return <FormiflyForm shape={shape} onSubmit={props.handleSubmit}>
+        <AutomagicFormiflyField name="store" label="Store"/>
+        <ItemsSubForm/>
+        <button type="submit">Save</button>
+    </FormiflyForm>
+}
+
+const ItemsSubForm = withFormifly((props) => {
+    const {values, setFieldValue} = props;
+
+    const handleAddClick = () => {
+        const newItems = [...values.items, {name: '', purchased: false}];
+        setFieldValue('items', newItems);
+    };
+
+    const handleRemoveClick = (which) => {
+        const newItems = values.items.filter((item, index) => index !== which);
+        setFieldValue(items, newItems);
+    }
+
+    return <>
+        {values.items.map((item, index) => <React.Fragment key={index}>
+            <button type="button" onClick={() => handleRemoveClick(index)}>Delete item</button>
+            <AutomagicFormiflyField name={"items." + index + ".name"} label="Name"/>
+            <AutomagicFormiflyField name={"items." + index + ".purchased"} label="Purchased"/>
+        </React.Fragment>)}
+        <button type="button" onClick={handleAddClick}>Add another item</button>
+    </>
+})
+```
+
+As you can see, the `ArrayValidator` accepts another validator as its first constructor parameter.  
+This validator is then used to validate all child fields.  
+In our case, since there are multiple children, we have to use an `ObjectValidator` to hold them.
+
+The `ArrayValidator` has a minimum length of 1.  
+This prevents the form from being submitted without any items set.  
+This would also has the effect of filling in a child entry with the default values of its validators.
+
+The form rendering itself is rather simple, the only complicated thing about it being that we had to move `ItemsSubForm` to its own
+component.  
+That had to be done since in order to render the input fields, we need information from the context that is not available in the component
+that creates the context.  
+This component is wrapped within the `withFormifly` HOC to get access to that information as well as the `setFieldValue` function, which it
+uses to add and remove items from the list.
+
+Generally, array child inputs are as easy to create as those for "regular" fields. The only difference being that they need index of the
+entry they are for inside their name like seen in the example.
+
+### Object Forms
+
+There are cases where your data structure is more complex than a flat dictionary of values and maybe some arrays.  
+For this case, Formifly allows you to create multiple ObjectValidators to hold this complex data.
+
+Doing so could look something like this:
+
+```js
+const ComplexForm = (props) => {
+    const shape = new ObjectValidator({
+        name: new StringValidator().required(),
+        open_hours: new ObjectValidator({
+            regular_hours: new ArrayValidator(
+                new ObjectValidator({
+                    from: new StringValidator().required().regex(/^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$/),
+                    until: new StringValidator().required().regex(/^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$/),
+                })
+            ).minLength(7).maxLength(7),
+            exceptional_hours: new ArrayValidator(
+                new ObjectValidator({
+                    from: new DateTimeValidator().required(),
+                    until: new DateTimeValidator().required(),
+                })
+            ),
+        }).required(),
+    });
+
+    const days = [0, 1, 2, 3, 4, 5, 6];
+
+    return <FormiflyForm shape={shape} onSubmit={props.handleSubmit}>
+        <AutomagicFormiflyField name="name" label="Name"/>
+        {days.map((day) => <React.Fragment key={"open_hours_regular" + day}>
+            <AutomagicFormiflyField name={"open_hours.regular_hours." + day + ".from"} label="From"/>
+            <AutomagicFormiflyField name={"open_hours.regular_hours." + day + ".until"} label="Until"/>
+        </React.Fragment>)}
+        <ExceptionalHoursSubForm/>
+    </FormiflyForm>
+}
+
+const ExceptionalHoursSubForm = () => {
+    const {values, setFieldValue} = useFormiflyContext();
+
+    const handleAdd = () => {
+        const newVal = [...values['open_hours']['exceptional_hours'], {from: '', until: ''}];
+        setFieldValue('open_hours.exceptional_hours', newVal);
+    }
+
+    const handleRemove = (which) => {
+        const newVal = values['open_hours']['exceptional_hours'].filter((entry, index) => index !== which);
+        setFieldValue('open_hours.exceptional_hours', newVal);
+    }
+
+    return <>
+        {values['open_hours']['exceptional_hours'].map((entry, index) => <React.Fragment key={"exceptional_hours_entry" + index}>
+            <button type="button" onClick={() => handleRemove(index)}>Remove entry</button>
+            <AutomagicFormiflyField name={"open_hours.exceptional_hours." + index + ".from"} label="From"/>
+            <AutomagicFormiflyField name={"open_hours.exceptional_hours." + index + ".until"} label="Until"/>
+        </React.Fragment>)}
+        <button type="button" onClick={handleAdd}>Add entry</button>
+    </>
+}
+```
+
+Here we are creating the opening hours for something.  
+It has both regular hours, which are always 7 since there are 7 days in a week as well as exceptional hours.  
+The regular hours are simple strings that should contain the time.  
+The exceptional hours however must contain full timestamps, using the `datetime-local` input type.
+
+Generally, object forms are almost identical to array forms, the only difference being that the key is a string instead of an integer and
+that there is no quick and easy way to add additional entries to them.
 
 ## React Components
 
