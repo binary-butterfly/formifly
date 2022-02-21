@@ -6,55 +6,43 @@ Formifly is a library that makes Form handling and frontend input validation a b
 Developed as a replacement for existing Form handling libraries, Formifly was built for performance and ease of integration with existing
 REST backends.
 
-It is currently in very early development and not actually usable yet.
-
 ## Table of contents
 
-<nav>
-<ol>
-  <li>
-    <a href="#react-components">React Components</a>
-    <ul>
-      <li><a href="#formiflyform">FormiflyFrom</a></li>
-      <li><a href="#automagicformiflyfield">AutomagicFormiflyField</a></li>
-      <li><a href="#formiflyfield">FormiflyField</a></li>
-      <li><a href="#formiflyselectfield">FormiflySelectField</a></li>
-      <li><a href="#formiflymultiselectfield">FormiflyMultiSelectField</a></li>
-      <li><a href="#formiflycheckfield">FormiflyCheckField</a></li>
-      <li><a href="#formiflyradiogroup">FormiflyRadioGroup</a></li>
-      <li><a href="#withformifly-and-useformiflycontext">withFormifly and useFormiflyContext</a></li>
-      <li><a href="#withlabelerrorsandhelp">withLabelErrorsAndHelp</a></li>
-      <li><a href="#formiflyfieldcontainer">FormiflyFieldContainer</a></li>
-      <li><a href="#formiflyinput">FormiflyInput</a></li>
-      <li><a href="#formiflyinputlabel">FormiflyInputLabel</a></li>
-      <li><a href="#formiflyerrorspan">FormiflyErrorSpan</a></li>
-      <li><a href="#formiflyhelpspan">FormiflyHelpSpan</a></li>
-      <li><a href="#formiflymultiselectoption">FormiflyMultiSelectOption</a></li>
-      <li><a href="#formiflymultiselectoptionsmenu">FormiflyMultiSelectOptionsMenu</a></li>
-      <li><a href="#formiflymultiselectoptionsanchor">FormiflyMultiSelectOptionsAnchor</a></li>
-      <li><a href="#formiflymultiselectcontainer">FormiflyMultiSelectContainer</a></li>
-      <li><a href="#formiflyprovider">FormiflyProvider</a></li>
-    </ul>
-  </li>
-  <li><a href="#styling">Styling</a></li>
-  <li>
-    <a href="#available-validators">Available Validators</a>
-    <ul>
-      <li><a href="#basevalidator">BaseValidator</a></li>
-      <li><a href="#numbervalidator">NumberValidator</a></li>
-      <li><a href="#strigvalidtor">StringValidator</a></li>
-      <li><a href="#datetimevalidator">DateTimeValidator</a></li>
-      <li><a href="#booleanvalidator">BooleanValidator</a></li>
-      <li><a href="#objectvalidator">ObjectValidator</a></li>
-      <li><a href="#arrayvalidator">ArrayValidator</a></li>
-      <li><a href="#anyofvalidator">AnyOfValidator</a></li>
-    </ul>
-  </li>
-  <li><a href="#cross-dependent-fields">Cross Dependent Fields</a></li>
-  <li><a href="#creating-your-own-validators">Creating your own validators</a></li>
-  <li><a href="#development">Development</a></li>
-</ol>
-</nav>
+1. [Quick Start](#quick-start)
+2. [React Components](#react-components)
+    - [FormiflyForm](#formiflyform)
+    - [AutomagicFormiflyField](#automagicformiflyfield)
+    - [FormiflyField](#formiflyfield)
+    - [FormiflySelectField](#formiflyselectfield)
+    - [FormiflyCheckField](#formiflycheckfield)
+    - [FormiflyRadioGroup](#formiflyradiogroup)
+    - [withFormifly and useFormiflyContext](#withformifly-and-useformiflycontext)
+    - [withLabelsErrorsAndHelp](#withlabelerrorsandhelp)
+    - [FormiflyFieldContainer](#formiflyfieldcontainer)
+    - [FormiflyInput](#formiflyinput)
+    - [FormiflyInputLabel](#formiflyinputlabel)
+    - [FormiflyErrorSpan](#formiflyerrorspan)
+    - [FormiflyHelpSpan](#formiflyhelpspan)
+    - [FormiflyMultiSelectOption](#formiflymultiselectoption)
+    - [FormiflyMultiSelectOptionsMenu](#formiflymultiselectoptionsmenu)
+    - [FormiflyMultiSelectOptionsAnchor](#formiflymultiselectoptionsanchor)
+    - [FormiflyMultiSelectContainer](#formiflymultiselectcontainer)
+    - [FormiflyProvider](#formiflyprovider)
+3. [Styling](#styling)
+4. [Available Validators](#available-validators)
+    - [BaseValidator](#basevalidator)
+    - [NumberValidator](#numbervalidator)
+    - [StringValidator](#stringvalidator)
+    - [DateTimeValidator](#datetimevalidator)
+    - [BooleanValidator](#booleanvalidator)
+    - [ObjectValidator](#objectvalidator)
+    - [ArrayValidator](#arrayvalidator)
+    - [AnyOfValidator](#anyofvalidator)
+5. [Cross Dependent Fields](#cross-dependent-fields)
+6. [Creating your own Validators](#creating-your-own-validators)
+7. [Development](#development)
+
+## Quick Start
 
 ## React Components
 
