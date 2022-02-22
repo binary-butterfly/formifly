@@ -12,6 +12,7 @@ REST backends.
     - [Basic Forms](#basic-forms)
     - [Array Forms](#array-forms)
     - [Object Forms](#object-forms)
+    - [Custom Components](#custom-components)
 2. [React Components](#react-components)
     - [FormiflyForm](#formiflyform)
     - [AutomagicFormiflyField](#automagicformiflyfield)
@@ -47,7 +48,7 @@ REST backends.
 
 ## Quick Start
 
-### tldr;
+### tl;dr
 
 Head over to the [code of the demo form](assets/js/components/demo/DemoForm.js); it contains at least one example for every kind of input
 field this library ships.
@@ -124,7 +125,7 @@ const ShoppingListForm = (props) => {
                 name: new StringValidator().required(),
                 purchased: new BooleanValidator().required(),
             })
-        ).required().minLength(1)
+        ).minLength(1),
     });
 
     return <FormiflyForm shape={shape} onSubmit={props.handleSubmit}>
@@ -185,13 +186,14 @@ Doing so could look something like this:
 
 ```js
 const ComplexForm = (props) => {
+    const timeRegex = /^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$/s;
     const shape = new ObjectValidator({
         name: new StringValidator().required(),
         open_hours: new ObjectValidator({
             regular_hours: new ArrayValidator(
                 new ObjectValidator({
-                    from: new StringValidator().required().regex(/^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$/),
-                    until: new StringValidator().required().regex(/^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$/),
+                    from: new StringValidator().required().regex(timeRegex),
+                    until: new StringValidator().required().regex(timeRegex),
                 })
             ).minLength(7).maxLength(7),
             exceptional_hours: new ArrayValidator(
@@ -240,12 +242,36 @@ const ExceptionalHoursSubForm = () => {
 ```
 
 Here we are creating the opening hours for something.  
-It has both regular hours, which are always 7 since there are 7 days in a week as well as exceptional hours.  
+It has both regular hours, which are always 7 since there are 7 days in a week, as well as exceptional hours.  
 The regular hours are simple strings that should contain the time.  
 The exceptional hours however must contain full timestamps, using the `datetime-local` input type.
 
 Generally, object forms are almost identical to array forms, the only difference being that the key is a string instead of an integer and
 that there is no quick and easy way to add additional entries to them.
+
+### Custom components
+
+While formifly provides many ways of [styling the provided components](#styling), that might not be enough for what you want to do with
+it.  
+For that case, Formifly also provides tools to make your own components work with it.
+
+Most notably, the Formifly context provides the `getFieldProps` function.  
+This function can be called with the field name to figure out all the handlers and properties that are required to include the field into
+Formifly.  
+It also has additional, optional parameters to help you fine tune your components.  
+To use this function, simply spread its return value into the props of your component somewhat like this:
+
+```js
+<CustomFormInput {...getFieldProps('cool_field', 'this field is really cool')} label="Cool"/>
+```
+
+This will render your component with the correct `value`, `onChange`, `onFocus`, `onBlur`, `aria-describedby`, `id` and `errors` properties
+set.  
+Since we also put in a help text as the second call parameter, it will also add the `help` property with our text and an additional id (
+componentId + "-help") in the `aria-describedby` prop.
+
+You can still overwrite any of the properties returned by `getFieldProps`. Do do so, simply put them after the unpacked return value when
+calling your component.
 
 ## React Components
 
