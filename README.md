@@ -849,7 +849,7 @@ All Validators come with the comparison functions `greaterThan`, `lessThan`, `gr
 , `lessThanSibling`, `greaterOrEqualToSibling` and `lessOrEqualToSibling`.
 
 These functions work in essentially the same way. The only differences being that you have to pass a relative name to the sibling
-comparison functions and the fact that the non-sibling comparison functions have a more potential to be a performance bottleneck.
+comparison functions and the fact that the non-sibling comparison functions have more potential to be a performance bottleneck.
 
 To illustrate what we mean by relative name, let's look at a simple example:
 
