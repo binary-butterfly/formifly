@@ -17,21 +17,21 @@ class AnyOfValidator extends BaseValidator {
         this.validatorOptions = validatorOptions;
     }
 
-    validate(value, otherValues = {}) {
+    validate(value, otherValues = {}, siblings = {}) {
         if (!this.isRequired && !this.validateRequired(value)) {
             return [true, value];
         }
 
-        const preValidate = super.validate(value, otherValues);
+        const preValidate = super.validate(value, otherValues, siblings);
         if (!preValidate[0]) {
             return preValidate;
         }
 
         for (const validatorOption of this.validatorOptions) {
-            const test = validatorOption.validate(value, otherValues);
+            const test = validatorOption.validate(value, otherValues, siblings);
             if (test[0]) {
                 if (typeof this.mutationFunc === 'function') {
-                    return [true, this.mutationFunc(test[1], otherValues)];
+                    return [true, this.mutationFunc(test[1], otherValues, siblings)];
                 }
                 return test;
             }

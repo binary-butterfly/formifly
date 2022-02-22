@@ -30,8 +30,8 @@ class ObjectValidator extends BaseValidator {
         return ret;
     }
 
-    validate(value, otherValues) {
-        const preValidate = super.validate(value, otherValues);
+    validate(value, otherValues, siblings) {
+        const preValidate = super.validate(value, otherValues, siblings);
         if (!preValidate[0]) {
             return preValidate;
         }
@@ -41,7 +41,7 @@ class ObjectValidator extends BaseValidator {
         let allOk = true;
         let tests = {};
         for (const fieldName in this.fields) {
-            const test = this.fields[fieldName].validate(testValue[fieldName], testValue);
+            const test = this.fields[fieldName].validate(testValue[fieldName], otherValues, testValue);
             tests[fieldName] = test;
             if (test[0] === false) {
                 allOk = false;

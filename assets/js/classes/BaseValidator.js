@@ -54,16 +54,16 @@ class BaseValidator {
         return this;
     }
 
-    validateDependent(value, otherValues) {
+    validateDependent(value, otherValues, siblings) {
         const dependentValue = getFieldValueFromKeyString(this.dependent[0], otherValues);
         if (this.dependent[1](dependentValue, value)) {
-            return this.dependent[2].validate(value, otherValues);
+            return this.dependent[2].validate(value, otherValues, siblings);
         } else {
-            return this.validateIndependent(value);
+            return this.validateIndependent(value, otherValues, siblings);
         }
     }
 
-    validateIndependent(value) {
+    validateIndependent(value, otherValues, siblings) {
         for (const entry of this.validateFuncs) {
             if (!this.isRequired && !this.validateRequired(value)) {
                 // Skip validation for empty value if required is false
@@ -71,7 +71,7 @@ class BaseValidator {
             }
 
             const func = entry[0];
-            const test = func(value);
+            const test = func(value, otherValues, siblings);
             if (test === false) {
                 return [false, entry[1] ?? this.defaultErrorMsg];
             } else if (test !== true) {
@@ -79,21 +79,198 @@ class BaseValidator {
                 value = test;
             }
         }
+
         return [true, value];
     }
 
-    validate(value, otherValues = {}) {
+    /**
+     * Check if the fields value is greater than another value
+     * @param {String} name
+     * @param {String} [msg]
+     * @return {BaseValidator}
+     */
+    greaterThan(name, msg) {
+        if (msg === undefined) {
+            msg = 'This value must be greater than the value of ' + name;
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues) => {
+                const otherVal = getFieldValueFromKeyString(name, otherValues);
+                return value > otherVal;
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is less than another value
+     * @param {String} name
+     * @param {String} [msg]
+     * @return {BaseValidator}
+     */
+    lessThan(name, msg) {
+        if (msg === undefined) {
+            msg = 'This value must be less than the value of ' + name;
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues) => {
+                const otherVal = getFieldValueFromKeyString(name, otherValues);
+                return value < otherVal;
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is greater than or equal to another value
+     * @param {String} name
+     * @param {String} [msg]
+     * @return {BaseValidator}
+     */
+    greaterOrEqualTo(name, msg) {
+        if (msg === undefined) {
+            msg = 'This value must be greater than or equal to the value of ' + name;
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues) => {
+                const otherVal = getFieldValueFromKeyString(name, otherValues);
+                return value >= otherVal;
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is less than or equal to another value
+     * @param {String} name
+     * @param {String} [msg]
+     * @return {BaseValidator}
+     */
+    lessOrEqualTo(name, msg) {
+        if (msg === undefined) {
+            msg = 'This value must be less than or equal to the value of ' + name;
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues) => {
+                const otherVal = getFieldValueFromKeyString(name, otherValues);
+                return value <= otherVal;
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is greater than the value of one of its siblings
+     * @param {String|Number} key
+     * @param {String} [msg]
+     * @return {BaseValidator}
+     */
+    greaterThanSibling(key, msg) {
+        if (msg === undefined) {
+            msg = 'This value must be greater than the value of its sibling ' + key;
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues, siblings) => {
+                const otherVal = getFieldValueFromKeyString(key, siblings);
+                return value > otherVal;
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is less than the value of one of its siblings
+     * @param {String|Number} key
+     * @param {String} [msg]
+     * @return {BaseValidator}
+     */
+    lessThanSibling(key, msg) {
+        if (msg === undefined) {
+            msg = 'This value must be less than the value of its sibling ' + key;
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues, siblings) => {
+                const otherVal = getFieldValueFromKeyString(key, siblings);
+                return value < otherVal;
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is greater or equal to the value of one of its siblings
+     * @param {String|Number} key
+     * @param {String} [msg]
+     * @return {BaseValidator}
+     */
+    greaterOrEqualToSibling(key, msg) {
+        if (msg === undefined) {
+            msg = 'This value must be greater than or equal to the value of its sibling ' + key;
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues, siblings) => {
+                const otherVal = getFieldValueFromKeyString(key, siblings);
+                return value >= otherVal;
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is less than or equal to the value of one of its siblings
+     * @param {String|Number} key
+     * @param {String} [msg]
+     * @return {BaseValidator}
+     */
+    lessOrEqualToSibling(key, msg) {
+        if (msg === undefined) {
+            msg = 'This value must be less than or equal to the value of its sibling ' + key;
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues, siblings) => {
+                const otherVal = getFieldValueFromKeyString(key, siblings);
+                return value <= otherVal;
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
+    validate(value, otherValues = {}, siblings = {}) {
         let ret;
         if (this.dependent) {
-            ret = this.validateDependent(value, otherValues);
+            ret = this.validateDependent(value, otherValues, siblings);
         } else {
-            ret = this.validateIndependent(value);
+            ret = this.validateIndependent(value, otherValues, siblings);
         }
 
         if (!ret[0] && typeof this.onError === 'function') {
             this.onError(value, otherValues);
         } else if (ret[0] && typeof this.mutationFunc === 'function') {
-            ret[1] = this.mutationFunc(ret[1], otherValues);
+            ret[1] = this.mutationFunc(ret[1], otherValues, siblings);
         }
 
         return ret;

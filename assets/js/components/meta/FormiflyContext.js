@@ -169,7 +169,7 @@ export const FormiflyProvider = (props) => {
 
     const validateAll = () => {
         return new Promise((resolve, reject) => {
-            const result = shape.validate(values);
+            const result = shape.validate(values, values, values);
             if (result[0]) {
                 resolve(result[1]);
             } else {
