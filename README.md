@@ -6,55 +6,325 @@ Formifly is a library that makes Form handling and frontend input validation a b
 Developed as a replacement for existing Form handling libraries, Formifly was built for performance and ease of integration with existing
 REST backends.
 
-It is currently in very early development and not actually usable yet.
-
 ## Table of contents
 
-<nav>
-<ol>
-  <li>
-    <a href="#react-components">React Components</a>
-    <ul>
-      <li><a href="#formiflyform">FormiflyFrom</a></li>
-      <li><a href="#automagicformiflyfield">AutomagicFormiflyField</a></li>
-      <li><a href="#formiflyfield">FormiflyField</a></li>
-      <li><a href="#formiflyselectfield">FormiflySelectField</a></li>
-      <li><a href="#formiflymultiselectfield">FormiflyMultiSelectField</a></li>
-      <li><a href="#formiflycheckfield">FormiflyCheckField</a></li>
-      <li><a href="#formiflyradiogroup">FormiflyRadioGroup</a></li>
-      <li><a href="#withformifly-and-useformiflycontext">withFormifly and useFormiflyContext</a></li>
-      <li><a href="#withlabelerrorsandhelp">withLabelErrorsAndHelp</a></li>
-      <li><a href="#formiflyfieldcontainer">FormiflyFieldContainer</a></li>
-      <li><a href="#formiflyinput">FormiflyInput</a></li>
-      <li><a href="#formiflyinputlabel">FormiflyInputLabel</a></li>
-      <li><a href="#formiflyerrorspan">FormiflyErrorSpan</a></li>
-      <li><a href="#formiflyhelpspan">FormiflyHelpSpan</a></li>
-      <li><a href="#formiflymultiselectoption">FormiflyMultiSelectOption</a></li>
-      <li><a href="#formiflymultiselectoptionsmenu">FormiflyMultiSelectOptionsMenu</a></li>
-      <li><a href="#formiflymultiselectoptionsanchor">FormiflyMultiSelectOptionsAnchor</a></li>
-      <li><a href="#formiflymultiselectcontainer">FormiflyMultiSelectContainer</a></li>
-      <li><a href="#formiflyprovider">FormiflyProvider</a></li>
-    </ul>
-  </li>
-  <li><a href="#styling">Styling</a></li>
-  <li>
-    <a href="#available-validators">Available Validators</a>
-    <ul>
-      <li><a href="#basevalidator">BaseValidator</a></li>
-      <li><a href="#numbervalidator">NumberValidator</a></li>
-      <li><a href="#strigvalidtor">StringValidator</a></li>
-      <li><a href="#datetimevalidator">DateTimeValidator</a></li>
-      <li><a href="#booleanvalidator">BooleanValidator</a></li>
-      <li><a href="#objectvalidator">ObjectValidator</a></li>
-      <li><a href="#arrayvalidator">ArrayValidator</a></li>
-      <li><a href="#anyofvalidator">AnyOfValidator</a></li>
-    </ul>
-  </li>
-  <li><a href="#cross-dependent-fields">Cross Dependent Fields</a></li>
-  <li><a href="#creating-your-own-validators">Creating your own validators</a></li>
-  <li><a href="#development">Development</a></li>
-</ol>
-</nav>
+1. [Quick Start](#quick-start)
+    - [Basic Forms](#basic-forms)
+    - [Array Forms](#array-forms)
+    - [Object Forms](#object-forms)
+    - [Custom Components](#custom-components)
+2. [Understanding Formifly](#understanding-formifly)
+3. [React Components](#react-components)
+    - [FormiflyForm](#formiflyform)
+    - [AutomagicFormiflyField](#automagicformiflyfield)
+    - [FormiflyField](#formiflyfield)
+    - [FormiflySelectField](#formiflyselectfield)
+    - [FormiflyCheckField](#formiflycheckfield)
+    - [FormiflyRadioGroup](#formiflyradiogroup)
+    - [withFormifly and useFormiflyContext](#withformifly-and-useformiflycontext)
+    - [withLabelsErrorsAndHelp](#withlabelerrorsandhelp)
+    - [FormiflyFieldContainer](#formiflyfieldcontainer)
+    - [FormiflyInput](#formiflyinput)
+    - [FormiflyInputLabel](#formiflyinputlabel)
+    - [FormiflyErrorSpan](#formiflyerrorspan)
+    - [FormiflyHelpSpan](#formiflyhelpspan)
+    - [FormiflyMultiSelectOption](#formiflymultiselectoption)
+    - [FormiflyMultiSelectOptionsMenu](#formiflymultiselectoptionsmenu)
+    - [FormiflyMultiSelectOptionsAnchor](#formiflymultiselectoptionsanchor)
+    - [FormiflyMultiSelectContainer](#formiflymultiselectcontainer)
+    - [FormiflyProvider](#formiflyprovider)
+4. [Styling](#styling)
+5. [Available Validators](#available-validators)
+    - [BaseValidator](#basevalidator)
+    - [NumberValidator](#numbervalidator)
+    - [StringValidator](#stringvalidator)
+    - [DateTimeValidator](#datetimevalidator)
+    - [BooleanValidator](#booleanvalidator)
+    - [ObjectValidator](#objectvalidator)
+    - [ArrayValidator](#arrayvalidator)
+    - [AnyOfValidator](#anyofvalidator)
+6. [Cross Dependent Fields](#cross-dependent-fields)
+7. [Creating your own Validators](#creating-your-own-validators)
+8. [Development](#development)
+
+## Quick Start
+
+### tl;dr
+
+Head over to the [code of the demo form](assets/js/components/demo/DemoForm.js); it contains at least one example for every kind of input
+field this library ships.
+
+### Basic forms
+
+Generally, there are only a few things you will need to know for most use cases.  
+First of all, you will need to know how to create the validators you need.
+
+To do so, you will always have to start by creating a new [`ObjectValidator`](#objectvalidator) as a base with your fields as keys.  
+A minimal example for a login form could look like this:
+
+```js
+const LoginForm = (props) => {
+    const shape = new ObjectValidator({
+        username: new StringValidator().required('Please enter your username'),
+        password: new StringValidator().minLength(8, 'Passwords are at least 8 chars long').required('A password is required to log in'),
+        stayLoggedIn: new BooleanValidator(),
+    });
+
+    return <FormiflyForm shape={shape} onSubmit={props.handleSubmit}>
+        <AutomagicFormiflyField name="username" label="Username"/>
+        <AutomagicFormiflyField name="password" label="Password" type="password"/>
+        <AutomagicFormiflyField name="stayLoggedIn" label="Stay logged in"/>
+        <button type="submit">Log in</button>
+    </FormiflyForm>
+}
+```
+
+In this example, we first create an ObjectValidator with the fields `username`, `password` and `stayLoggedIn`.  
+Username is a required text field, just like password. However, a password must be at least 8 characters long. (Although I would advise
+against such validation for a login field since you may change your password guidelines at some point and you will still want people to be
+able to log in with their old passwords, but I digress.)  
+Then lastly there is the Boolean field `stayLoggedIn`.
+
+Now we can look at the components that are being returned.  
+Firstly we've got the `FormiflyForm` as a container for everything.  
+This component already includes the context provider so everything that is contained within it can get the field values and validators by
+using either the `withFormifly` HOC or the `useFormiflyContext` React hook.  
+The form requires at least a shape (which is always an ObjectValidator that contains all form fields) and a submission handler.  
+You may also pass `defaultValues` if you do not want the default values to be taken from the validators, like in an edit form for
+example.  
+Further options about the `FormiflyForm` can be found in [its documentation](#formiflyform).
+
+Within the form we have three AutomagicFormiflyFields.  
+These are the easiest way you can create input fields since they get most of their properties automatically from the validator that has
+their name.  
+Since the password field does not use a specific password validator, we have to override its input type to make it a password input instead
+of a simple text input.  
+For most inputs you do not need more properties than the field name and label, however there are certain cases where one might need more.  
+In the case of select inputs or radio groups, you will also have to pass the available options. To find out more about that
+see [the AutomagicFormiflyField documentation](#automagicformiflyfield).
+
+The last `AutomagicFormiflyField` included in this example is for our Boolean field.  
+It will render a checkbox by default.
+
+At the very last we have a simple `submit` button that will submit the form just like you would use for any regular form.
+
+### Array forms
+
+There are cases where you need multiple entries for similarly formed data.  
+You could simply build multiple forms for that but doing so would not scale, especially if your form also contains regular, non array
+data.  
+Luckily for you, Formifly provides the possibility of rendering array inputs.
+
+A simple example would look like this:
+
+```js
+const ShoppingListForm = (props) => {
+    const shape = new ObjectValidator({
+        store: new StringValidator().required,
+        items: new ArrayValidator(
+            new ObjectValidator({
+                name: new StringValidator().required(),
+                purchased: new BooleanValidator().required(),
+            })
+        ).minLength(1),
+    });
+
+    return <FormiflyForm shape={shape} onSubmit={props.handleSubmit}>
+        <AutomagicFormiflyField name="store" label="Store"/>
+        <ItemsSubForm/>
+        <button type="submit">Save</button>
+    </FormiflyForm>
+}
+
+const ItemsSubForm = withFormifly((props) => {
+    const {values, setFieldValue} = props;
+
+    const handleAddClick = () => {
+        const newItems = [...values.items, {name: '', purchased: false}];
+        setFieldValue('items', newItems);
+    };
+
+    const handleRemoveClick = (which) => {
+        const newItems = values.items.filter((item, index) => index !== which);
+        setFieldValue(items, newItems);
+    }
+
+    return <>
+        {values.items.map((item, index) => <React.Fragment key={index}>
+            <button type="button" onClick={() => handleRemoveClick(index)}>Delete item</button>
+            <AutomagicFormiflyField name={"items." + index + ".name"} label="Name"/>
+            <AutomagicFormiflyField name={"items." + index + ".purchased"} label="Purchased"/>
+        </React.Fragment>)}
+        <button type="button" onClick={handleAddClick}>Add another item</button>
+    </>
+})
+```
+
+As you can see, the `ArrayValidator` accepts another validator as its first constructor parameter.  
+This validator is then used to validate all child fields.  
+In our case, since there are multiple children, we have to use an `ObjectValidator` to hold them.
+
+The `ArrayValidator` has a minimum length of 1.  
+This prevents the form from being submitted without any items set.  
+This would also has the effect of filling in a child entry with the default values of its validators.
+
+The form rendering itself is rather simple, the only complicated thing about it being that we had to move `ItemsSubForm` to its own
+component.  
+That had to be done since in order to render the input fields, we need information from the context that is not available in the component
+that creates the context.  
+This component is wrapped within the `withFormifly` HOC to get access to that information as well as the `setFieldValue` function, which it
+uses to add and remove items from the list.
+
+Generally, array child inputs are as easy to create as those for "regular" fields. The only difference being that they need index of the
+entry they are for inside their name like seen in the example.
+
+### Object Forms
+
+There are cases where your data structure is more complex than a flat dictionary of values and maybe some arrays.  
+For this case, Formifly allows you to create multiple ObjectValidators to hold this complex data.
+
+Doing so could look something like this:
+
+```js
+const ComplexForm = (props) => {
+    const timeRegex = /^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$/s;
+    const shape = new ObjectValidator({
+        name: new StringValidator().required(),
+        open_hours: new ObjectValidator({
+            regular_hours: new ArrayValidator(
+                new ObjectValidator({
+                    from: new StringValidator().required().regex(timeRegex),
+                    until: new StringValidator().required().regex(timeRegex),
+                })
+            ).minLength(7).maxLength(7),
+            exceptional_hours: new ArrayValidator(
+                new ObjectValidator({
+                    from: new DateTimeValidator().required(),
+                    until: new DateTimeValidator().required(),
+                })
+            ),
+        }).required(),
+    });
+
+    const days = [0, 1, 2, 3, 4, 5, 6];
+
+    return <FormiflyForm shape={shape} onSubmit={props.handleSubmit}>
+        <AutomagicFormiflyField name="name" label="Name"/>
+        {days.map((day) => <React.Fragment key={"open_hours_regular" + day}>
+            <AutomagicFormiflyField name={"open_hours.regular_hours." + day + ".from"} label="From"/>
+            <AutomagicFormiflyField name={"open_hours.regular_hours." + day + ".until"} label="Until"/>
+        </React.Fragment>)}
+        <ExceptionalHoursSubForm/>
+    </FormiflyForm>
+}
+
+const ExceptionalHoursSubForm = () => {
+    const {values, setFieldValue} = useFormiflyContext();
+
+    const handleAdd = () => {
+        const newVal = [...values['open_hours']['exceptional_hours'], {from: '', until: ''}];
+        setFieldValue('open_hours.exceptional_hours', newVal);
+    }
+
+    const handleRemove = (which) => {
+        const newVal = values['open_hours']['exceptional_hours'].filter((entry, index) => index !== which);
+        setFieldValue('open_hours.exceptional_hours', newVal);
+    }
+
+    return <>
+        {values['open_hours']['exceptional_hours'].map((entry, index) => <React.Fragment key={"exceptional_hours_entry" + index}>
+            <button type="button" onClick={() => handleRemove(index)}>Remove entry</button>
+            <AutomagicFormiflyField name={"open_hours.exceptional_hours." + index + ".from"} label="From"/>
+            <AutomagicFormiflyField name={"open_hours.exceptional_hours." + index + ".until"} label="Until"/>
+        </React.Fragment>)}
+        <button type="button" onClick={handleAdd}>Add entry</button>
+    </>
+}
+```
+
+Here we are creating the opening hours for something.  
+It has both regular hours, which are always 7 since there are 7 days in a week, as well as exceptional hours.  
+The regular hours are simple strings that should contain the time.  
+The exceptional hours however must contain full timestamps, using the `datetime-local` input type.
+
+Generally, object forms are almost identical to array forms, the only difference being that the key is a string instead of an integer and
+that there is no quick and easy way to add additional entries to them.
+
+### Custom components
+
+While formifly provides many ways of [styling the provided components](#styling), that might not be enough for what you want to do with
+it.  
+For that case, Formifly also provides tools to make your own components work with it.
+
+Most notably, the Formifly context provides the `getFieldProps` function.  
+This function can be called with the field name to figure out all the handlers and properties that are required to include the field into
+Formifly.  
+It also has additional, optional parameters to help you fine tune your components.  
+To use this function, simply spread its return value into the props of your component somewhat like this:
+
+```js
+<CustomFormInput {...getFieldProps('cool_field', 'this field is really cool')} label="Cool"/>
+```
+
+This will render your component with the correct `value`, `onChange`, `onFocus`, `onBlur`, `aria-describedby`, `id` and `errors` properties
+set.  
+Since we also put in a help text as the second call parameter, it will also add the `help` property with our text and an additional id (
+componentId + "-help") in the `aria-describedby` prop.
+
+You can still overwrite any of the properties returned by `getFieldProps`. Do do so, simply put them after the unpacked return value when
+calling your component.
+
+## Understanding Formifly
+
+Knowing how to use a library is one thing; understanding it is another.  
+In this part of the documentation I wanted to give a bit of an overview for the design decisions taken while developing this library.
+
+First of all, the whole library is somewhat built around the `getFieldProps` function that was in some ways stolen from another form
+handling library.  
+(Although ours is arguably better :p)  
+This function returns all properties needed to render a field and have it work with Formifly.  
+Do do so, it inspects the current field values, current validation errors, which fields have been touched and the validator for this
+specific field.
+
+It is recommended that you use the `AutomagicFormiflyField` wherever possible since it takes care of calling the `getFieldProps` function
+with the correct parameters as well as figuring out which component is the correct one to render every specific input.  
+To do that, it also takes a look at which Validator is used for the field.  
+ArrayValidators only make sense for a multi-select field while BooleanValidators may be used for checkboxes or radios.  
+In addition to that, if you pass an array of `options`, we can assume you want either a radio group (which is a more accessible and
+semantic way of defining multiple radio inputs) or a select field.  
+We don't want to use a text input for those, so we have custom components that are used instead.
+
+Sooner or later you will want to build your own validators.  
+When building the library, making this easy was one of the most important priorities.  
+Validators are built to be reusable and as generic as possible while still being useful for what they are.  
+That is why many validators will allow most inputs by default and only get more strict once you call their constraint functions.  
+If you end up calling the same functions over and over, it may be a good idea to build a quick validator that already contains those by
+default.
+
+Validators may also be mutators:  
+Every step of the validation has the possibility to mutate a value and have that value used for both all later validation steps as well as
+submission.  
+This is why the order in which you call your constraint functions actually does matter in some cases.  
+The mutated value will not, however, be put back into the form values since that might confuse users. (Many users really hate it when form
+values change without their input, even if it makes sense for them to do so.)  
+Some may say having validators that also mutate values violates the single responsibility principle, and they may be correct.  
+However, allowing validators to mutate the values is extremely useful in many cases (like locales that use commas instead of dots for
+decimal points) and also improves performance because if you were to run a set of mutators after doing the validation, you would have to go
+through the entire set of values again.  
+These mutators are also really helpful when you are communicating with a REST api that is more strict when it comes to typing than
+JavaScript is.  
+Since we do not have integers, floats or decimals in js, we have to use the number type for all of those.  
+That can often cause issues that are annoying to fix, which we tried to mitigate by allowing mutations here.
+
+You may be wondering why the components shipped with this library do not look very pretty.  
+This is due to the fact that we can never build a single style that would fit every app that people might want to build, so instead of spending lots
+of time styling each end every component, we limited styles to a minimum and provided lots of ways for you
+to [customize those styles](#styling).  
+It is recommended that you do this once and create your own custom components to use in your app.
+
+The validators shipped with this library may be useful in a node.js or deno backend as well, and reusing the same code may be a good idea
+to avoid inconsistency in front- and backend validation.  
+However, this use case is **not supported** at the moment. While it may work, we simply do not have the time to test it at the moment.
 
 ## React Components
 

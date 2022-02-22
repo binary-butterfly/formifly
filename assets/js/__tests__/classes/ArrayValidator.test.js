@@ -62,8 +62,13 @@ test('Test ArrayValidator can fail on child fail', () => {
     expect(validator.validate([1, -2])).toStrictEqual([false, [[false, 'This value must be negative'], [true, -2]]]);
 });
 
+test('Test Array Validator getDefaultValue returns empty array if minLength is not set', () => {
+    const validator = new ArrayValidator(new StringValidator());
+    expect(validator.getDefaultValue()).toStrictEqual([]);
+})
+
 test('Test ArrayValidator getDefaultValue returns the children\'s default values', () => {
-    const validator = new ArrayValidator(new NumberValidator(undefined, 0));
+    const validator = new ArrayValidator(new NumberValidator(undefined, 0)).minLength(1);
     expect(validator.getDefaultValue()).toStrictEqual([0]);
 });
 

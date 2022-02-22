@@ -57,7 +57,7 @@ describe.each([
                 new ObjectValidator({
                     tasty: new BooleanValidator(),
                 }),
-            ),
+            ).minLength(1),
         },
         {
             fruit: [{tasty: false}],
