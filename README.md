@@ -13,7 +13,8 @@ REST backends.
     - [Array Forms](#array-forms)
     - [Object Forms](#object-forms)
     - [Custom Components](#custom-components)
-2. [React Components](#react-components)
+2. [Understanding Formifly](#understanding-formifly)
+3. [React Components](#react-components)
     - [FormiflyForm](#formiflyform)
     - [AutomagicFormiflyField](#automagicformiflyfield)
     - [FormiflyField](#formiflyfield)
@@ -32,8 +33,8 @@ REST backends.
     - [FormiflyMultiSelectOptionsAnchor](#formiflymultiselectoptionsanchor)
     - [FormiflyMultiSelectContainer](#formiflymultiselectcontainer)
     - [FormiflyProvider](#formiflyprovider)
-3. [Styling](#styling)
-4. [Available Validators](#available-validators)
+4. [Styling](#styling)
+5. [Available Validators](#available-validators)
     - [BaseValidator](#basevalidator)
     - [NumberValidator](#numbervalidator)
     - [StringValidator](#stringvalidator)
@@ -42,9 +43,9 @@ REST backends.
     - [ObjectValidator](#objectvalidator)
     - [ArrayValidator](#arrayvalidator)
     - [AnyOfValidator](#anyofvalidator)
-5. [Cross Dependent Fields](#cross-dependent-fields)
-6. [Creating your own Validators](#creating-your-own-validators)
-7. [Development](#development)
+6. [Cross Dependent Fields](#cross-dependent-fields)
+7. [Creating your own Validators](#creating-your-own-validators)
+8. [Development](#development)
 
 ## Quick Start
 
@@ -272,6 +273,58 @@ componentId + "-help") in the `aria-describedby` prop.
 
 You can still overwrite any of the properties returned by `getFieldProps`. Do do so, simply put them after the unpacked return value when
 calling your component.
+
+## Understanding Formifly
+
+Knowing how to use a library is one thing; understanding it is another.  
+In this part of the documentation I wanted to give a bit of an overview for the design decisions taken while developing this library.
+
+First of all, the whole library is somewhat built around the `getFieldProps` function that was in some ways stolen from another form
+handling library.  
+(Although ours is arguably better :p)  
+This function returns all properties needed to render a field and have it work with Formifly.  
+Do do so, it inspects the current field values, current validation errors, which fields have been touched and the validator for this
+specific field.
+
+It is recommended that you use the `AutomagicFormiflyField` wherever possible since it takes care of calling the `getFieldProps` function
+with the correct parameters as well as figuring out which component is the correct one to render every specific input.  
+To do that, it also takes a look at which Validator is used for the field.  
+ArrayValidators only make sense for a multi-select field while BooleanValidators may be used for checkboxes or radios.  
+In addition to that, if you pass an array of `options`, we can assume you want either a radio group (which is a more accessible and
+semantic way of defining multiple radio inputs) or a select field.  
+We don't want to use a text input for those, so we have custom components that are used instead.
+
+Sooner or later you will want to build your own validators.  
+When building the library, making this easy was one of the most important priorities.  
+Validators are built to be reusable and as generic as possible while still being useful for what they are.  
+That is why many validators will allow most inputs by default and only get more strict once you call their constraint functions.  
+If you end up calling the same functions over and over, it may be a good idea to build a quick validator that already contains those by
+default.
+
+Validators may also be mutators:  
+Every step of the validation has the possibility to mutate a value and have that value used for both all later validation steps as well as
+submission.  
+This is why the order in which you call your constraint functions actually does matter in some cases.  
+The mutated value will not, however, be put back into the form values since that might confuse users. (Many users really hate it when form
+values change without their input, even if it makes sense for them to do so.)  
+Some may say having validators that also mutate values violates the single responsibility principle, and they may be correct.  
+However, allowing validators to mutate the values is extremely useful in many cases (like locales that use commas instead of dots for
+decimal points) and also improves performance because if you were to run a set of mutators after doing the validation, you would have to go
+through the entire set of values again.  
+These mutators are also really helpful when you are communicating with a REST api that is more strict when it comes to typing than
+JavaScript is.  
+Since we do not have integers, floats or decimals in js, we have to use the number type for all of those.  
+That can often cause issues that are annoying to fix, which we tried to mitigate by allowing mutations here.
+
+You may be wondering why the components shipped with this library do not look very pretty.  
+This is due to the fact that we can never build a single style that would fit every app that people might want to build, so instead of spending lots
+of time styling each end every component, we limited styles to a minimum and provided lots of ways for you
+to [customize those styles](#styling).  
+It is recommended that you do this once and create your own custom components to use in your app.
+
+The validators shipped with this library may be useful in a node.js or deno backend as well, and reusing the same code may be a good idea
+to avoid inconsistency in front- and backend validation.  
+However, this use case is **not supported** at the moment. While it may work, we simply do not have the time to test it at the moment.
 
 ## React Components
 
