@@ -193,14 +193,14 @@ const ComplexForm = (props) => {
         open_hours: new ObjectValidator({
             regular_hours: new ArrayValidator(
                 new ObjectValidator({
-                    from: new StringValidator().required().regex(timeRegex),
-                    until: new StringValidator().required().regex(timeRegex),
+                    from: new StringValidator().required().regex(timeRegex).lessThanSibling('until'),
+                    until: new StringValidator().required().regex(timeRegex).greaterThanSibling('from'),
                 })
             ).minLength(7).maxLength(7),
             exceptional_hours: new ArrayValidator(
                 new ObjectValidator({
-                    from: new DateTimeValidator().required(),
-                    until: new DateTimeValidator().required(),
+                    from: new DateTimeValidator().required().lessThanSibling('until'),
+                    until: new DateTimeValidator().required().greaterThanSibling('from'),
                 })
             ),
         }).required(),
@@ -317,8 +317,8 @@ Since we do not have integers, floats or decimals in js, we have to use the numb
 That can often cause issues that are annoying to fix, which we tried to mitigate by allowing mutations here.
 
 You may be wondering why the components shipped with this library do not look very pretty.  
-This is due to the fact that we can never build a single style that would fit every app that people might want to build, so instead of spending lots
-of time styling each end every component, we limited styles to a minimum and provided lots of ways for you
+This is due to the fact that we can never build a single style that would fit every app that people might want to build, so instead of
+spending lots of time styling each end every component, we limited styles to a minimum and provided lots of ways for you
 to [customize those styles](#styling).  
 It is recommended that you do this once and create your own custom components to use in your app.
 
@@ -628,9 +628,22 @@ for the kind of date you need. (In which cases it is a good idea to build your o
 
 The validator may be used in code examples within this documentation in cases where the validator that is actually used does not matter.
 
+**Important**  
+Please read [Cross Dependent Fields](#cross-dependent-fields) before using any of the comparison functions!
+
 Available methods:
 
 - `required(msg: [String])` Make the field required. A field that is not required will pass all validators if it is empty.
+- `greaterThan(name: String, msg: [String])` Enforce this fields value to be greater than the value of another field
+- `lessThan(name: String, msg: [String])` Enforce this fields value to be less than the value of another field.
+- `greaterOrEqualTo(name: String, msg: [String])` Enforce this fields value to be greater than or equal to the value of another field.
+- `lessOrEqualTo(name: String, msg: [String])` Enforce this fields value to be less than or equal to the value of another field.
+- `greaterThanSibling(key: String|Number, msg: [String])` Enforce this fields value to be greater than the value of one of its siblings.
+- `lessThanSibling(key: String|Number, msg: [String])` Enforce this fields value to be less than the value of one of its siblings.
+- `greaterOrEqualToSibling(key: String|Number, msg: [String])` Enforce this fields value to be greater than or equal to the value of one of
+  its siblings.
+- `lessOrEqualToSibling(key: String|Number, msg: [String])` Enforce this fields value to be less than or equal to the value of one of its
+  siblings.
 - `alwaysFalse(msg: [String])` Make the validation always return false. This may be useful when building more complex dependent validators.
 - `getDefaultValue()` Return the field's default value.
 - `getPropType()` Returns the validator represented as PropTypes
@@ -832,7 +845,46 @@ This has the added benefit that you can hardcode the validator options if you us
 
 ## Cross Dependent Fields
 
-You can use different validators for fields depending on the value of other fields.  
+All Validators come with the comparison functions `greaterThan`, `lessThan`, `greaterOrEqualTo`, `lessOrEqualTo`, `greaterThanSibling`
+, `lessThanSibling`, `greaterOrEqualToSibling` and `lessOrEqualToSibling`.
+
+These functions work in essentially the same way. The only differences being that you have to pass a relative name to the sibling
+comparison functions and the fact that the non-sibling comparison functions have a more potential to be a performance bottleneck.
+
+To illustrate what we mean by relative name, let's look at a simple example:
+
+```js
+const shape = new ObjectValidator({
+    name: new StringValidator().required(),
+    hours: new ArrayValidator(
+        new ObjectValidator({
+            from: new StringValidator().required().lessThanSibling('until'),
+            until: new StringValidator().required().greaterThanSibling('from'),
+        }).required(),
+    ).required(),
+})
+```
+
+Here we are comparing the `from` and `until` fields of each entry within the `hours` array to make sure from is never after until.
+
+You should always use the sibling comparison functions, unless you are comparing a field with one that is lower in the data tree.
+For example:
+
+```js
+const shape = new ObjectValidator({
+    someNumber: new NumberValidator().required().greaterThanSibling('banana.tasty'),
+    banana: new ObjectValidator({
+        tasty: new NumberValdidator().required().lessThan('someNumber'),
+    }).required(),
+})
+```
+
+As you can see, we used the sibling comparison function for `someNumber`, since `tasty` is a field of its sibling `banana`.  
+We could not use the sibling comparison for `tasty` since it is deeper within the tree than `tasty` is.
+
+### Super custom validators
+
+If this is not enough for you, can also use different validators for fields depending on the value of other fields.  
 This behaviour is pretty bare bones at the moment and may be subject to change at a later date.
 
 In order to make a field's Validator dependent on another field, pass an array to the `dependent` constructor param.

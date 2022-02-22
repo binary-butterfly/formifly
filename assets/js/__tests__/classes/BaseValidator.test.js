@@ -36,7 +36,7 @@ describe.each([
     ['abc', {banana: 'apple'}, [true, 'abc'], 'uses dependent validator and can pass when condition is met'],
 ])('Test dependent validator', (value, otherValues, expected, name) => {
     test(name, () => {
-        const validator = new BaseValidator(undefined, undefined, undefined,undefined, [
+        const validator = new BaseValidator(undefined, undefined, undefined, undefined, [
             'banana',
             value => value === 'apple',
             new BaseValidator().required(),
@@ -75,8 +75,53 @@ test('Test getPropType required', () => {
 test('Test mutationFunc', () => {
     const mutation = (value) => {
         return value + 'banana';
-    }
+    };
     const validator = new BaseValidator(undefined, undefined, mutation);
 
     expect(validator.validate('my favourite fruit is the ')).toStrictEqual([true, 'my favourite fruit is the banana']);
-})
+});
+
+describe.each([
+    [2, {foo: 2, banana: 1}, 'banana', undefined, [true, 2], 'Returns true for greater value'],
+    [1, {foo: 1, banana: 2}, 'banana', undefined, [false, 'This value must be greater than the value of banana'], 'returns false for smaller value'],
+    [2, {foo: 2, banana: 2}, 'banana', 'apple', [false, 'apple'], 'returns false for same value'],
+])('Test greaterThan', (value, otherValues, otherName, msg, expected, name) => {
+    test(name, () => {
+        const validator = new BaseValidator().greaterThan(otherName, msg);
+        expect(validator.validate(value, otherValues)).toStrictEqual(expected);
+    });
+});
+
+describe.each([
+    [1, {foo: 1, banana: 2}, 'banana', undefined, [true, 1], 'Returns true for smaller value'],
+    [2, {foo: 2, banana: 1}, 'banana', undefined, [false, 'This value must be less than the value of banana'], 'returns false for greater value'],
+    [2, {foo: 2, banana: 2}, 'banana', 'apple', [false, 'apple'], 'returns false for same value'],
+])('Test lessThan', (value, otherValues, otherName, msg, expected, name) => {
+    test(name, () => {
+        const validator = new BaseValidator().lessThan(otherName, msg);
+        expect(validator.validate(value, otherValues)).toStrictEqual(expected);
+    });
+});
+
+
+describe.each([
+    [2, {foo: 2, banana: 1}, 'banana', undefined, [true, 2], 'Returns true for greater value'],
+    [2, {foo: 2, banana: 2}, 'banana', undefined, [true, 2], 'returns false for same value'],
+    [1, {foo: 1, banana: 2}, 'banana', 'apple', [false, 'apple'], 'returns false for smaller value'],
+])('Test greaterOrEqualTo', (value, otherValues, otherName, msg, expected, name) => {
+    test(name, () => {
+        const validator = new BaseValidator().greaterOrEqualTo(otherName, msg);
+        expect(validator.validate(value, otherValues)).toStrictEqual(expected);
+    });
+});
+
+describe.each([
+    [1, {foo: 1, banana: 2}, 'banana', undefined, [true, 1], 'Returns true for smaller value'],
+    [2, {foo: 2, banana: 2}, 'banana', undefined, [true, 2], 'returns false for same value'],
+    [2, {foo: 2, banana: 1}, 'banana', 'apple', [false, 'apple'], 'returns false for greater value'],
+])('Test lessOrEqualTo', (value, otherValues, otherName, msg, expected, name) => {
+    test(name, () => {
+        const validator = new BaseValidator().lessOrEqualTo(otherName, msg);
+        expect(validator.validate(value, otherValues)).toStrictEqual(expected);
+    });
+});

@@ -12,7 +12,7 @@ const config = {
     input: 'assets/js/components/demo/DemoPage.js',
     output: {
         file: 'dist/formifly.js',
-        format: 'cjs',
+        format: 'umd',
         sourcemap: env !== 'production',
         globals: {
             'react': 'React',
@@ -49,6 +49,7 @@ if (env === 'production') {
     config.external = [
         'react',
         'reactDOM',
+        'prop-types',
     ];
     config.plugins.push(terser());
 }

@@ -101,9 +101,9 @@ class ArrayValidator extends BaseValidator {
         return ret;
     }
 
-    validate(values, otherValues = {}) {
+    validate(values, otherValues = {}, siblings = {}) {
         // First we validate the amount of entries as well as dependent filters and requirement filters
-        const preValidate = super.validate(values, otherValues);
+        const preValidate = super.validate(values, otherValues, siblings);
         if (preValidate[0] === false) {
             return preValidate;
         }
@@ -114,7 +114,7 @@ class ArrayValidator extends BaseValidator {
         for (const index in values) {
             const value = values[index];
 
-            const test = this.of.validate(value, otherValues);
+            const test = this.of.validate(value, otherValues, values);
             tests.push(test);
             if (test[0] === false) {
                 allOk = false;

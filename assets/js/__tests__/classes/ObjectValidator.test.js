@@ -152,3 +152,59 @@ test('Test ObjectValidator works with alwaysFalse', () => {
     const validator = new ObjectValidator({foo: new StringValidator()}).alwaysFalse('test!');
     expect(validator.validate('banana')).toStrictEqual([false, 'test!']);
 });
+
+describe.each([
+    [{foo: 1, bar: 2}, undefined, [true, {foo: 1, bar: 2}], 'returns true for greater value'],
+    [{foo: 2, bar: 1}, undefined, [false, {foo: [true, 2], bar: [false, 'This value must be greater than the value of its sibling foo']}], 'returns false for smaller value'],
+    [{foo: 2, bar: 2}, 'banana', [false, {foo: [true, 2], bar: [false, 'banana']}], 'returns false for equal value'],
+])('Test ObjectValidator greaterThanSibling', (value, msg, expected, name) => {
+    test(name, () => {
+        const validator = new ObjectValidator({
+            foo: new NumberValidator(),
+            bar: new NumberValidator().greaterThanSibling('foo', msg),
+        });
+        expect(validator.validate(value)).toStrictEqual(expected);
+    });
+});
+
+describe.each([
+    [{foo: 1, bar: 2}, undefined, [true, {foo: 1, bar: 2}], 'returns true for greater value'],
+    [{foo: 2, bar: 2}, undefined, [true, {foo: 2, bar: 2}], 'returns true for equal value'],
+    [{foo: 2, bar: 1}, 'banana', [false, {foo: [true, 2], bar: [false, 'banana']}], 'returns false for smaller value'],
+])('Test ObjectValidator greaterOrEqualToSibling', (value, msg, expected, name) => {
+    test(name, () => {
+        const validator = new ObjectValidator({
+            foo: new NumberValidator(),
+            bar: new NumberValidator().greaterOrEqualToSibling('foo', msg),
+        });
+        expect(validator.validate(value)).toStrictEqual(expected);
+    });
+});
+
+describe.each([
+    [{foo: 2, bar: 1}, undefined, [true, {foo: 2, bar: 1}], 'returns true for smaller value'],
+    [{foo: 1, bar: 2}, undefined, [false, {foo: [true, 1], bar: [false, 'This value must be less than the value of its sibling foo']}], 'returns false for greater value'],
+    [{foo: 2, bar: 2}, 'banana', [false, {foo: [true, 2], bar: [false, 'banana']}], 'returns false for equal value'],
+])('Test ObjectValidator lessThanSibling', (value, msg, expected, name) => {
+    test(name, () => {
+        const validator = new ObjectValidator({
+            foo: new NumberValidator(),
+            bar: new NumberValidator().lessThanSibling('foo', msg),
+        });
+        expect(validator.validate(value)).toStrictEqual(expected);
+    });
+});
+
+describe.each([
+    [{foo: 2, bar: 1}, undefined, [true, {foo: 2, bar: 1}], 'returns true for smaller value'],
+    [{foo: 2, bar: 2}, 'banana', [true, {foo: 2, bar: 2}], 'returns true for equal value'],
+    [{foo: 1, bar: 2}, undefined, [false, {foo: [true, 1], bar: [false, 'This value must be less than or equal to the value of its sibling foo']}], 'returns false for greater value'],
+])('Test ObjectValidator lessOrEqualToSibling', (value, msg, expected, name) => {
+    test(name, () => {
+        const validator = new ObjectValidator({
+            foo: new NumberValidator(),
+            bar: new NumberValidator().lessOrEqualToSibling('foo', msg),
+        });
+        expect(validator.validate(value)).toStrictEqual(expected);
+    });
+});
