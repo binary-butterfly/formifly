@@ -45,7 +45,34 @@ const config = {
 
 if (env === 'production') {
     config.input = 'assets/js/main.js';
-    config.output.file = 'dist/formifly.min.js';
+    config.output = [
+        {
+            file: 'dist/umd/formifly.js',
+            format: 'umd',
+            sourcemap: false,
+            globals: {
+                'react': 'React',
+                'react-dom': 'ReactDOM',
+                'prop-types': 'PropTypes',
+            },
+            name: 'Formifly',
+            inlineDynamicImports: true,
+            exports: 'auto',
+        },
+        {
+            file: 'dist/esm/index.js',
+            format: 'esm',
+            sourcemap: false,
+            globals: {
+                'react': 'React',
+                'react-dom': 'ReactDOM',
+                'prop-types': 'PropTypes',
+            },
+            name: 'Formifly',
+            inlineDynamicImports: true,
+            exports: 'auto',
+        },
+    ];
     config.external = [
         'react',
         'reactDOM',

@@ -1,8 +1,13 @@
 {
   "name": "formifly",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "React form handling as light as a butterfly",
-  "main": "dist/formifly.min.js",
+  "main": "dist/umd/formifly.js",
+  "module": "dist/esm/index.js",
+  "files": [
+    "dist/esm/*",
+    "dist/umd/*"
+  ],
   "scripts": {
     "test": "jest --config jest.config.js ",
     "coverage": "jest --config jest.config.js --collectCoverage",
