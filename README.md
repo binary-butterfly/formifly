@@ -291,6 +291,27 @@ componentId + "-help") in the `aria-describedby` prop.
 You can still overwrite any of the properties returned by `getFieldProps`. Do do so, simply put them after the unpacked return value when
 calling your component.
 
+### Changing fields after creating the shape
+
+You can also change or add new fields to the shape after creating it.  
+This may be useful in cases where you're creating a shape that is similar for multiple use cases but has some slight differences.
+
+Here's an example on how to do that:
+
+```js
+function getShape(isEditing = false) {
+    const shape = new ObjectValidator({
+        field: new StringValidator(),
+    });
+
+    if (isEditing) {
+        shape.fields.editingField = new StringValidator().required();
+    }
+    
+    return shape;
+}
+```
+
 ## Understanding Formifly
 
 Knowing how to use a library is one thing; understanding it is another.  
