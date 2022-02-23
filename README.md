@@ -245,7 +245,10 @@ const ExceptionalHoursSubForm = () => {
 Here we are creating the opening hours for something.  
 It has both regular hours, which are always 7 since there are 7 days in a week, as well as exceptional hours.  
 The regular hours are simple strings that should contain the time.  
-The exceptional hours however must contain full timestamps, using the `datetime-local` input type.
+The exceptional hours however must contain full timestamps, using the `datetime-local` input type.  
+Both regular hours and exceptional hours have an additional constraint on the `from` and `until` fields to make sure that no open hours end
+before they begin.  
+To find out more about how this works, read up on [cross dependent fields](#cross-dependent-fields).
 
 Generally, object forms are almost identical to array forms, the only difference being that the key is a string instead of an integer and
 that there is no quick and easy way to add additional entries to them.
@@ -263,6 +266,20 @@ It also has additional, optional parameters to help you fine tune your component
 To use this function, simply spread its return value into the props of your component somewhat like this:
 
 ```js
+// An extremely basic example for how your component may look.
+// You should not use this in production.
+const CustomFormInput = (props) => {
+    return <div>
+        <label htmlFor={props.id}>{props.label}</label>
+        <input type={props.type} id={props.id} value={props.value} aria-describedby={props['aria-describedby']}
+               aria-invalid={props['aria-invalid']} onChange={props.onChange} onFocus={props.onFocus} onBlur={props.onBlur}/>
+        <span id={props.id + '-errors'}>{props.errors}</span>
+        <span id={props.id + '-help'}>{props.help}</span>
+    </div>
+}
+
+// [...]
+
 <CustomFormInput {...getFieldProps('cool_field', 'this field is really cool')} label="Cool"/>
 ```
 
@@ -321,6 +338,14 @@ This is due to the fact that we can never build a single style that would fit ev
 spending lots of time styling each end every component, we limited styles to a minimum and provided lots of ways for you
 to [customize those styles](#styling).  
 It is recommended that you do this once and create your own custom components to use in your app.
+
+There are many situations where you need the name of a field. Since the library supports pretty much any data structure, this had to be
+done in a way that works for all structures while being understandable and not too verbose.  
+That is why we went with something that should look familiar to most people who have worked with object based data before.  
+Internally, these names are split at the dots to traverse through the actual data.  
+That may not be the most performant way to do that and is subject to change (although the names will definitely stay the same).  
+This is why, when working with [dependent fields](#cross-dependent-fields), you should use the sibling selectors wherever possible to
+reduce the amount of string operations necessary to retrieve the data for validation.
 
 The validators shipped with this library may be useful in a node.js or deno backend as well, and reusing the same code may be a good idea
 to avoid inconsistency in front- and backend validation.  
@@ -867,7 +892,7 @@ const shape = new ObjectValidator({
 
 Here we are comparing the `from` and `until` fields of each entry within the `hours` array to make sure from is never after until.
 
-You should always use the sibling comparison functions, unless you are comparing a field with one that is lower in the data tree.
+You should always use the sibling comparison functions, unless you are comparing a field with one that is lower in the data tree.  
 For example:
 
 ```js
@@ -880,7 +905,7 @@ const shape = new ObjectValidator({
 ```
 
 As you can see, we used the sibling comparison function for `someNumber`, since `tasty` is a field of its sibling `banana`.  
-We could not use the sibling comparison for `tasty` since it is deeper within the tree than `tasty` is.
+We could not use the sibling comparison for `tasty` since it is deeper within the tree than `someNumber` is.
 
 ### Super custom validators
 
