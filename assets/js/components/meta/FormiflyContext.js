@@ -79,7 +79,7 @@ export const FormiflyProvider = (props) => {
             } else {
                 setErrors(setFieldValueFromKeyString(name, validated[1], errors));
             }
-            setTouched(setFieldValueFromKeyString(event.target.name, true, touched));
+            setTouched(setFieldValueFromKeyString(name, true, touched));
             return resolve();
         });
     };
