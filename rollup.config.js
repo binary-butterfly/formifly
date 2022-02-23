@@ -4,7 +4,6 @@ import replace from '@rollup/plugin-replace';
 import globals from 'rollup-plugin-node-globals';
 import styles from 'rollup-plugin-styles';
 import babel from '@rollup/plugin-babel';
-import {terser} from 'rollup-plugin-terser';
 
 const env = process.env.NODE_ENV;
 
@@ -78,7 +77,6 @@ if (env === 'production') {
         'reactDOM',
         'prop-types',
     ];
-    config.plugins.push(terser());
 }
 
 export default config;
