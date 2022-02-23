@@ -1,4 +1,5 @@
 import FormiflyField from './components/input/FormiflyField';
+import FormiflySelectField from './components/input/FormiflySelectField';
 import FormiflyCheckField from './components/input/FormiflyCheckField';
 import AutomagicFormiflyField from './components/input/AutomagicFormiflyField';
 import FormiflyForm from './components/meta/FormiflyForm';
@@ -25,6 +26,7 @@ export {
     FormiflyCheckField,
     AutomagicFormiflyField,
     FormiflyRadioGroup,
+    FormiflySelectField,
     FormiflyMultiSelectField,
     FormiflyForm,
     FormiflyProvider,
