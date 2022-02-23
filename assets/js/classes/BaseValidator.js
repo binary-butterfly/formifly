@@ -259,6 +259,27 @@ class BaseValidator {
         return this;
     }
 
+    /**
+     * Checks if the value is one included in the provided array
+     * @param {Array} values
+     * @param {String} [msg]
+     * @return {BaseValidator}
+     */
+    oneOf(values, msg) {
+        if (msg === undefined) {
+            msg = 'This value must be one of these: ' + values.join(', ');
+        }
+
+        this.validateFuncs.push([
+            (value) => {
+                return values.includes(value);
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
     validate(value, otherValues = {}, siblings = {}) {
         let ret;
         if (this.dependent) {

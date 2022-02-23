@@ -83,7 +83,10 @@ test('Test mutationFunc', () => {
 
 describe.each([
     [2, {foo: 2, banana: 1}, 'banana', undefined, [true, 2], 'Returns true for greater value'],
-    [1, {foo: 1, banana: 2}, 'banana', undefined, [false, 'This value must be greater than the value of banana'], 'returns false for smaller value'],
+    [1, {
+        foo: 1,
+        banana: 2,
+    }, 'banana', undefined, [false, 'This value must be greater than the value of banana'], 'returns false for smaller value'],
     [2, {foo: 2, banana: 2}, 'banana', 'apple', [false, 'apple'], 'returns false for same value'],
 ])('Test greaterThan', (value, otherValues, otherName, msg, expected, name) => {
     test(name, () => {
@@ -94,7 +97,10 @@ describe.each([
 
 describe.each([
     [1, {foo: 1, banana: 2}, 'banana', undefined, [true, 1], 'Returns true for smaller value'],
-    [2, {foo: 2, banana: 1}, 'banana', undefined, [false, 'This value must be less than the value of banana'], 'returns false for greater value'],
+    [2, {
+        foo: 2,
+        banana: 1,
+    }, 'banana', undefined, [false, 'This value must be less than the value of banana'], 'returns false for greater value'],
     [2, {foo: 2, banana: 2}, 'banana', 'apple', [false, 'apple'], 'returns false for same value'],
 ])('Test lessThan', (value, otherValues, otherName, msg, expected, name) => {
     test(name, () => {
@@ -123,5 +129,16 @@ describe.each([
     test(name, () => {
         const validator = new BaseValidator().lessOrEqualTo(otherName, msg);
         expect(validator.validate(value, otherValues)).toStrictEqual(expected);
+    });
+});
+
+describe.each([
+    ['foo', ['foo', 'bar', 'blub'],undefined, [true, 'foo'], 'returns true for included value'],
+    ['foo', ['banana', 'apple'], undefined, [false, 'This value must be one of these: banana, apple'], 'returns false for non included value'],
+    ['foo', ['fo', 'fooo'], 'banana', [false, 'banana'], 'uses correct error message'],
+])('Test oneOf', (value, values, msg, expected, name) => {
+    test(name, () => {
+        const validator = new BaseValidator().oneOf(values, msg);
+        expect(validator.validate(value)).toStrictEqual(expected);
     });
 });
