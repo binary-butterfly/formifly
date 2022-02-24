@@ -52,11 +52,11 @@ export const completeDefaultValues = (validatorDefaults, userDefaults) => {
             }
             validatorDefaults[key] = completeDefaultValues(validatorDefaults[key], value);
         } else if (typeof value === 'object') {
-            if (validatorDefaults[key] === undefined){
+            if (validatorDefaults[key] === undefined) {
                 validatorDefaults[key] = {};
             }
             validatorDefaults[key] = completeDefaultValues(validatorDefaults[key], value);
-        }else {
+        } else {
             validatorDefaults[key] = value;
         }
     });
