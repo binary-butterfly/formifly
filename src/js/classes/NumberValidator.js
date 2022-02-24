@@ -93,7 +93,6 @@ class NumberValidator extends BaseValidator {
      */
     positive(msg = 'This value must be positive') {
         this.validateFuncs.push([value => value > 0, msg]);
-        this.minNum = 0.000000001;
         return this;
     }
 
@@ -104,7 +103,6 @@ class NumberValidator extends BaseValidator {
      */
     negative(msg = 'This value must be negative') {
         this.validateFuncs.push([value => value < 0, msg]);
-        this.maxNum = -0.000000001;
         return this;
     }
 
