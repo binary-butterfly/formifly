@@ -1,5 +1,7 @@
 import React from 'react';
 import {fireEvent, render, screen} from '@testing-library/react';
+import ArrayValidator from '../../../classes/ArrayValidator';
+import BooleanValidator from '../../../classes/BooleanValidator';
 import ObjectValidator from '../../../classes/ObjectValidator';
 import StringValidator from '../../../classes/StringValidator';
 import AutomagicFormiflyField from '../../../components/input/AutomagicFormiflyField';
@@ -56,10 +58,30 @@ describe('FormiflyContext', () => {
         );
 
         fireEvent.click(screen.getByText('Submit'));
-        return screen.findByText('{"status":400}').then((result) => {
-            expect(screen.getByText('Submission did not succeed')).not.toBeNull()
+        return screen.findByText('{"status":400}').then(() => {
+            expect(screen.getByText('Submission did not succeed')).not.toBeNull();
         }).catch((reason) => {
             expect(reason).toBeNull();
-        })
+        });
+    });
+
+    it('completes default values', () => {
+        const shape = new ObjectValidator({
+            fruit: new ArrayValidator(new ObjectValidator({
+                name: new StringValidator(),
+                tasty: new BooleanValidator(),
+            })),
+            foo: new StringValidator('bar'),
+        });
+
+        render(<FormiflyForm shape={shape} onSubmit={() => null} defaultValues={{fruit: [{name: 'banana', tasty: true}]}}>
+            <AutomagicFormiflyField label="Name" name="fruit.0.name"/>
+            <AutomagicFormiflyField label="Tasty" name="fruit.0.tasty"/>
+            <AutomagicFormiflyField label="Foo" name="foo"/>
+        </FormiflyForm>);
+
+        expect(screen.getByLabelText('Name').value).toStrictEqual('banana');
+        expect(screen.getByLabelText('Tasty').checked).toBe(true);
+        expect(screen.getByLabelText('Foo').value).toStrictEqual('bar');
     });
 });

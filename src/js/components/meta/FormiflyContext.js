@@ -6,6 +6,7 @@ import DateTimeValidator from '../../classes/DateTimeValidator';
 import NumberValidator from '../../classes/NumberValidator';
 import ObjectValidator from '../../classes/ObjectValidator';
 import {
+    completeDefaultValues,
     convertDateObjectToInputString,
     getFieldValueFromKeyString,
     setFieldValueFromKeyString,
@@ -18,7 +19,15 @@ Context.displayName = 'FormiflyContext';
 export const FormiflyProvider = (props) => {
     const {shape, initialValues, children} = props;
 
-    const [values, setValues] = React.useState(initialValues ?? shape.getDefaultValue());
+    const [values, setValues] = React.useState(() => {
+        const defaultValues = shape.getDefaultValue();
+        if (!initialValues) {
+            return defaultValues;
+        }
+
+        return completeDefaultValues(defaultValues, initialValues);
+    });
+
     const [errors, setErrors] = React.useState({});
     const [touched, setTouched] = React.useState({});
     const [submitting, setSubmitting] = React.useState(false);

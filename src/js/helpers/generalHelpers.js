@@ -43,3 +43,22 @@ export const convertDateObjectToInputString = (date) => {
         second: '2-digit',
     }).replace(' ', 'T');
 };
+
+export const completeDefaultValues = (validatorDefaults, userDefaults) => {
+    Object.entries(userDefaults).map(([key, value]) => {
+        if (Array.isArray(value)) {
+            if (validatorDefaults[key] === undefined) {
+                validatorDefaults[key] = [];
+            }
+            validatorDefaults[key] = completeDefaultValues(validatorDefaults[key], value);
+        } else if (typeof value === 'object') {
+            if (validatorDefaults[key] === undefined){
+                validatorDefaults[key] = {};
+            }
+            validatorDefaults[key] = completeDefaultValues(validatorDefaults[key], value);
+        }else {
+            validatorDefaults[key] = value;
+        }
+    });
+    return validatorDefaults;
+};
