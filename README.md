@@ -92,6 +92,8 @@ using either the `withFormifly` HOC or the `useFormiflyContext` React hook.
 The form requires at least a shape (which is always an ObjectValidator that contains all form fields) and a submission handler.  
 You may also pass `defaultValues` if you do not want the default values to be taken from the validators, like in an edit form for
 example.  
+If you do this, the validator default values will be overridden with the ones you supplied while non supplied values will still be taken
+from the validator defaults.  
 Further options about the `FormiflyForm` can be found in [its documentation](#formiflyform).
 
 Within the form we have three AutomagicFormiflyFields.  
@@ -307,7 +309,7 @@ function getShape(isEditing = false) {
     if (isEditing) {
         shape.fields.editingField = new StringValidator().required();
     }
-    
+
     return shape;
 }
 ```
@@ -388,7 +390,7 @@ It accepts the following params:
 - `defaultValues` default values for your form fields (optional)
   This should only be used for a form that is used to edit existing database entries since the validators themselves are also capable of
   holding default values, which is the preferred way to set those.  
-  Note that when this param is set, you will have to set **all** of the field values in it.
+  Note that when this param is set, all fields not set in it will have their initial value taken from their validator.
 - `theme` override the default styling of the provided components. (Optional)  
   Available keys:
     - `inputBackgroundColor` Background color for input fields
