@@ -1,4 +1,5 @@
 import {
+    completeDefaultValues,
     convertDateObjectToInputString,
     getFieldValueFromKeyString,
     setFieldValueFromKeyString,
@@ -87,5 +88,51 @@ describe.each([
 ])('Test setFieldValueFromKeyString', (fieldName, newValue, oldValues, expected, name) => {
     test(name, () => {
         expect(setFieldValueFromKeyString(fieldName, newValue, oldValues)).toStrictEqual(expected);
+    });
+});
+
+describe.each([
+    [
+        {
+            fruit:
+                [
+                    {name: '', tasty: false}], foo: 'bar',
+        },
+        {
+            fruit:
+                [
+                    {name: 'banana', tasty: true},
+                    {name: 'apple', tasty: true},
+                ],
+        },
+        {
+            fruit:
+                [
+                    {name: 'banana', tasty: true},
+                    {name: 'apple', tasty: true},
+                ],
+            foo: 'bar',
+        },
+        'does its job'],
+    [
+        {
+            fruit: [],
+        },
+        {
+            fruit:
+                [
+                    {name: 'banana', tasty: true},
+                ],
+        },
+        {
+            fruit: [
+                {name: 'banana', tasty: true},
+            ],
+        },
+        'works with empty arrays from validatorDefaults'],
+    [{}, {fruit: [{name: 'banana'}]}, {fruit: [{name: 'banana'}]}, 'works with empty validatorDefaults'],
+])('Test completeDefaultValues', (validatorDefaults, userDefaults, expected, name) => {
+    test(name, () => {
+        expect(completeDefaultValues(validatorDefaults, userDefaults)).toStrictEqual(expected);
     });
 });
