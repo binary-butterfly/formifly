@@ -51,7 +51,7 @@ REST backends.
 
 ### tl;dr
 
-Head over to the [code of the demo form](assets/js/components/demo/DemoForm.js); it contains at least one example for every kind of input
+Head over to the [code of the demo form](src/js/components/demo/DemoForm.js); it contains at least one example for every kind of input
 field this library ships.
 
 ### Basic forms

@@ -14,7 +14,7 @@
     "watch": "rollup -c rollup.config.js -w",
     "build:dev": "rollup -c rollup.config.js",
     "build:prod": "NODE_ENV=production rollup -c rollup.config.js",
-    "browse": "browser-sync start --s --ss build --index assets/html/index.html --files dist/* --no-notify",
+    "browse": "browser-sync start --s --ss build --index src/html/index.html --files dist/* --no-notify",
     "start": "npm-run-all --parallel watch browse",
     "prepublishOnly": "npm run build:prod"
   },
