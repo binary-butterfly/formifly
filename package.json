@@ -1,6 +1,6 @@
 {
   "name": "formifly",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "React form handling as light as a butterfly",
   "main": "dist/umd/formifly.js",
   "module": "dist/esm/index.js",
@@ -14,7 +14,7 @@
     "watch": "rollup -c rollup.config.js -w",
     "build:dev": "rollup -c rollup.config.js",
     "build:prod": "NODE_ENV=production rollup -c rollup.config.js",
-    "browse": "browser-sync start --s --ss build --index assets/html/index.html --files dist/* --no-notify",
+    "browse": "browser-sync start --s --ss build --index src/html/index.html --files dist/* --no-notify",
     "start": "npm-run-all --parallel watch browse",
     "prepublishOnly": "npm run build:prod"
   },

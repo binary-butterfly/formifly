@@ -8,7 +8,7 @@ import babel from '@rollup/plugin-babel';
 const env = process.env.NODE_ENV;
 
 const config = {
-    input: 'assets/js/components/demo/DemoPage.js',
+    input: 'src/js/components/demo/DemoPage.js',
     output: {
         file: 'dist/formifly.js',
         format: 'umd',
@@ -29,7 +29,7 @@ const config = {
             extensions: ['.js', '.ts', '.tsx'],
         }),
         commonjs({
-            exclude: 'assets/**',
+            exclude: 'src/**',
         }),
         babel({
             'babelHelpers': 'runtime',
@@ -43,7 +43,7 @@ const config = {
 };
 
 if (env === 'production') {
-    config.input = 'assets/js/main.js';
+    config.input = 'src/js/main.js';
     config.output = [
         {
             file: 'dist/umd/formifly.js',
