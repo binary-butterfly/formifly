@@ -45,7 +45,9 @@ REST backends.
     - [AnyOfValidator](#anyofvalidator)
 6. [Cross Dependent Fields](#cross-dependent-fields)
 7. [Creating your own Validators](#creating-your-own-validators)
-8. [Development](#development)
+8. [Tips and tricks](#tips-and-tricks)
+   - [Multi step forms](#multi-step-forms) 
+9. [Development](#development)
 
 ## Quick Start
 
@@ -1027,6 +1029,52 @@ This validator does the following things:
   input by sending validation emails.)
 - It adds a function called `notFromDomain`.  
   This function can be used to forbid email addresses hosted on a certain domain.
+
+## Tips and tricks
+
+### Multi step forms
+
+Do you have a multi step form where each step is its own ObjectValidator?  
+You can easily check if a step has errors or if any field within the step has been touched using the `hasErrors` and `hasBeenTouched`
+function provided by the context.
+
+Example:
+
+```js
+const multiStepShape = new ObjectValidator({
+    stepOne: new ObjectValidator({
+        foo: new StringValidator().required(),
+        bar: new StringValidator(),
+    }),
+    stepTwo: new ObjectValidator({
+        username: new StringValidator().required(),
+        password: new StringValidator().required(),
+    })
+});
+
+return <FormiflyForm shape={multiStepShape} onSubmit={() => null}>
+    <FormContent/>
+</FormiflyForm>
+
+//[..]
+
+const FormContent = (props) => {
+    const {hasBeenTouched, hasErrors} = useFormiflyContext();
+    const [currentStep, setCurrentStep] = React.useState(0);
+
+    return <SomeStepper currentStep={currentStep}
+                        setCurrentStep={setCurrentStep}
+                        failed={[Boolean(hasErrors('stepOne')), Boolean(hasErrors('stepTwo'))]}
+                        touched={[hasBeenTouched('stepOne'), hasBeenTouched('stepTwo')]}>
+        {currentStep === 0 && <StepOneForm/> || currentStep === 1 && <StepTwoForm/>}
+    </SomeStepper>
+}
+```
+
+Note that (despite what one might expect from its not especially well chosen name) the `hasErrors` function returns either the error text
+or `false` if there are no errors, so you might have to convert its result into a boolean depending on what your stepper expects.  
+This library does not provide any stepper functionality on its own, so you will have to build your own or use one from a component library
+that you like.
 
 ## Development
 

@@ -131,6 +131,7 @@ describe.each([
         },
         'works with empty arrays from validatorDefaults'],
     [{}, {fruit: [{name: 'banana'}]}, {fruit: [{name: 'banana'}]}, 'works with empty validatorDefaults'],
+    [{fruit: []}, {fruit: null}, {fruit: []}, 'skips null values'],
 ])('Test completeDefaultValues', (validatorDefaults, userDefaults, expected, name) => {
     test(name, () => {
         expect(completeDefaultValues(validatorDefaults, userDefaults)).toStrictEqual(expected);
