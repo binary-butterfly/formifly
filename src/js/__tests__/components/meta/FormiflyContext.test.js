@@ -2,6 +2,7 @@ import React from 'react';
 import {fireEvent, render, screen} from '@testing-library/react';
 import ArrayValidator from '../../../classes/ArrayValidator';
 import BooleanValidator from '../../../classes/BooleanValidator';
+import NumberValidator from '../../../classes/NumberValidator';
 import ObjectValidator from '../../../classes/ObjectValidator';
 import StringValidator from '../../../classes/StringValidator';
 import AutomagicFormiflyField from '../../../components/input/AutomagicFormiflyField';
@@ -83,5 +84,44 @@ describe('FormiflyContext', () => {
         expect(screen.getByLabelText('Name').value).toStrictEqual('banana');
         expect(screen.getByLabelText('Tasty').checked).toBe(true);
         expect(screen.getByLabelText('Foo').value).toStrictEqual('bar');
+    });
+
+    it('can check if objects have errors or touched fields within them', async () => {
+        const shape = new ObjectValidator({
+            stepOne: new ObjectValidator({
+                field: new NumberValidator().positive().required(),
+            }),
+            stepTwo: new ObjectValidator({
+                field: new StringValidator(),
+            }),
+        });
+
+        const SubFormThing = () => {
+            const {hasErrors, hasBeenTouched} = useFormiflyContext();
+            return <>
+                {hasErrors('stepOne') && <b>Step one has errors</b>}
+                {hasBeenTouched('stepOne') && <b>Step one has been touched</b>}
+                {!hasErrors('stepTwo') && <b>Step two has no errors</b>}
+                {!hasBeenTouched('stepTwo') && <b>Step two has not been touched</b>}
+                <AutomagicFormiflyField label={'field one'} name={'stepOne.field'}/>
+                <AutomagicFormiflyField label={'field two'} name={'stepTwo.field'}/>
+            </>;
+        };
+
+        render(<FormiflyForm shape={shape} onSubmit={() => Promise.resolve()}>
+            <SubFormThing/>
+            <button type="submit">Submit</button>
+        </FormiflyForm>);
+
+        expect(screen.getByText('Step two has not been touched')).not.toBeNull();
+
+        const fieldOne = screen.getByLabelText('field one');
+        fireEvent.focus(fieldOne);
+        fireEvent.change(fieldOne, {target: {value: 0}});
+        fireEvent.blur(fieldOne);
+
+        expect(screen.getByText('Step one has been touched')).not.toBeNull();
+        expect(screen.getByText('Step one has errors')).not.toBeNull();
+        expect(screen.getByText('Step two has no errors')).not.toBeNull();
     });
 });

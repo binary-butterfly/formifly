@@ -65,3 +65,16 @@ export const completeDefaultValues = (validatorDefaults, userDefaults) => {
     });
     return validatorDefaults;
 };
+
+export const containsValuesThatAreNotFalse = (obj) => {
+    if (Array.isArray(obj)) {
+        return obj.filter((value) => {
+            return containsValuesThatAreNotFalse(value) !== false;
+        }).length > 0;
+    } else if (typeof (obj) === 'object' && obj !== null) {
+        return Object.entries(obj).filter((entry) => {
+            return containsValuesThatAreNotFalse(entry[1]) !== false;
+        }).length > 0;
+    }
+    return obj !== false;
+};

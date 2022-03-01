@@ -1,5 +1,6 @@
 import {
     completeDefaultValues,
+    containsValuesThatAreNotFalse,
     convertDateObjectToInputString,
     getFieldValueFromKeyString,
     setFieldValueFromKeyString,
@@ -135,5 +136,19 @@ describe.each([
 ])('Test completeDefaultValues', (validatorDefaults, userDefaults, expected, name) => {
     test(name, () => {
         expect(completeDefaultValues(validatorDefaults, userDefaults)).toStrictEqual(expected);
+    });
+});
+
+describe.each([
+    [true, true, 'works with true'],
+    [false, false, 'works with false'],
+    [[false, false, false], false, 'works with arrays that only contain false'],
+    [[false, false, true], true, 'works with arrays that contain true'],
+    [{foo: false, bar: 'banana'}, true, 'works with objects that contain a string'],
+    [{foo: [{bar: 'banana'}]}, true, 'works with an object inside an array inside an object containing a string'],
+    [{foo: [{bar: false}]}, false, 'works with an object inside of an array inside of an object containing false'],
+])('Test containsValuesThatAreNotFalse', (obj, expected, name) => {
+    test(name, () => {
+        expect(containsValuesThatAreNotFalse(obj)).toStrictEqual(expected);
     });
 });

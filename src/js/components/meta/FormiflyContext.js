@@ -6,7 +6,7 @@ import DateTimeValidator from '../../classes/DateTimeValidator';
 import NumberValidator from '../../classes/NumberValidator';
 import ObjectValidator from '../../classes/ObjectValidator';
 import {
-    completeDefaultValues,
+    completeDefaultValues, containsValuesThatAreNotFalse,
     convertDateObjectToInputString,
     getFieldValueFromKeyString,
     setFieldValueFromKeyString,
@@ -40,7 +40,13 @@ export const FormiflyProvider = (props) => {
 
     const hasErrors = (fieldName) => {
         try {
-            return getFieldValueFromKeyString(fieldName, errors);
+            const errorsRes = getFieldValueFromKeyString(fieldName, errors);
+            if (Array.isArray(errorsRes) || (typeof errorsRes === 'object' && errorsRes !== null)) {
+                if (!containsValuesThatAreNotFalse(errorsRes)) {
+                    return false;
+                }
+            }
+            return errorsRes;
         } catch {
             return false;
         }
@@ -48,7 +54,7 @@ export const FormiflyProvider = (props) => {
 
     const hasBeenTouched = (fieldName) => {
         try {
-            return submitSuccess === false ? true : getFieldValueFromKeyString(fieldName, touched);
+            return submitSuccess === true ? true : getFieldValueFromKeyString(fieldName, touched);
         } catch {
             return false;
         }
