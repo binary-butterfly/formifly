@@ -46,7 +46,8 @@ REST backends.
 6. [Cross Dependent Fields](#cross-dependent-fields)
 7. [Creating your own Validators](#creating-your-own-validators)
 8. [Tips and tricks](#tips-and-tricks)
-   - [Multi step forms](#multi-step-forms) 
+    - [Multi step forms](#multi-step-forms)
+    - [Too many constructor params?](#too-many-constructor-params)
 9. [Development](#development)
 
 ## Quick Start
@@ -707,6 +708,13 @@ Available methods:
 - `validate(value, [otherValues])` Validate the field.  
   You should not need to use this function. If you do for some reason, pass the field's value as value and
   (if there are dependencies) all other values as otherValues.
+- `setDefaultInputType(newDefaultInputType: String)` Sets the default input type for field's that are validated by this validator
+- `setDefaultValue(newDefaultValue)` Sets the default value to override the one given in the constructor
+- `setDefaultErrorMsg(newDefaultErrorMsg: String)` Sets the default error message to override the one given in the constructor
+- `setMutationFunc(newMutationFunc: [function])` Sets the mutation function to override the one given in the constructor
+- `setOnError(newOnError: [function])` Sets the onError handler to override the one given in the constructor
+- `setDependent(newDependent: [Boolean|Array])` Sets the dependent value used for [dependent validators](#cross-dependent-fields) to override
+  the one passed to the constructor
 
 ### NumberValidator
 
@@ -1081,6 +1089,20 @@ Note that (despite what one might expect from its not especially well chosen nam
 or `false` if there are no errors, so you might have to convert its result into a boolean depending on what your stepper expects.  
 This library does not provide any stepper functionality on its own, so you will have to build your own or use one from a component library
 that you like.
+
+### Too many constructor params?
+
+The validators accept a wide range of constructor params and due to the fact that keyword arguments are not supported in ES currently, this
+can be a bit annoying when you have to pass a bunch of `undefined`s just to set the last one.  
+Most constructor params also have their own dedicated setter functions.
+
+These are:
+
+- `setDefaultValue`
+- `setDefaultErrorMsg`
+- `setMutationFunc`
+- `setOnError`
+- `setDependent`
 
 ## Development
 
