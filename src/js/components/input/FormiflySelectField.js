@@ -45,6 +45,7 @@ const FormiflySelectField = (props) => {
                            data-has-errors={!!errors}
                            className={'formifly-field-input formifly-select-field-input ' + (inputClassName ?? '')}
                            aria-describedby={props['aria-describedby']}
+                           aria-required={props['aria-required']}
                            aria-invalid={props['aria-invalid']}>
         {(value === '' || !required) && <OptionComponent value="" disabled={required}> </OptionComponent>}
         {options.map((option, index) => <OptionComponent className={'formifly-field-option ' + (optionClassName ?? '')}

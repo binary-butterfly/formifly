@@ -393,6 +393,12 @@ It accepts the following params:
   This should only be used for a form that is used to edit existing database entries since the validators themselves are also capable of
   holding default values, which is the preferred way to set those.  
   Note that when this param is set, all fields not set in it will have their initial value taken from their validator.
+- `disableNativeRequired` set this to true to disable passing of the `required` property to input fields in the form.  
+  This is useful since the browser validation can be a bit annoying, especially with hidden fields as it disables submission (and
+  therefore) automatic js validation when the field is empty.  
+  Instead of the `required` prop, `aria-required` will be passed to communicate the requirement to screen readers.
+- `disableNativeMinMax` set this to true to disable the passing of `min` and `max` properties to input fields in the form.  
+  This is once again useful in cases where the browser validation is getting in the way of your JavaScript handlers.
 - `theme` override the default styling of the provided components. (Optional)  
   Available keys:
     - `inputBackgroundColor` Background color for input fields

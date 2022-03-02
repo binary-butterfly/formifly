@@ -124,4 +124,32 @@ describe('FormiflyContext', () => {
         expect(screen.getByText('Step one has errors')).not.toBeNull();
         expect(screen.getByText('Step two has no errors')).not.toBeNull();
     });
+
+    it('can disable the required prop', () => {
+        const shape = new ObjectValidator({
+            foo: new StringValidator().required(),
+        });
+
+        render(<FormiflyForm disableNativeRequired={true} shape={shape} onSubmit={() => null}>
+            <AutomagicFormiflyField label="Foo" name="foo"/>
+        </FormiflyForm>);
+
+        const input = screen.getByLabelText('Foo');
+        expect(input.required).toBe(false);
+        expect(input.attributes['aria-required']).toBeTruthy();
+    });
+
+    it('can disable the native min and max props', () => {
+        const shape = new ObjectValidator({
+            foo: new NumberValidator().min(0).max(1),
+        });
+
+        render(<FormiflyForm shape={shape} onSubmit={() => null} disableNativeMinMax={true}>
+            <AutomagicFormiflyField label="Foo" name="foo"/>
+        </FormiflyForm>);
+
+        const input = screen.getByLabelText('Foo');
+        expect(input.attributes.min).toBeUndefined();
+        expect(input.attributes.max).toBeUndefined();
+    });
 });
