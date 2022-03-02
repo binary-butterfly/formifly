@@ -150,7 +150,7 @@ const FormiflyMultiSelectField = (props) => {
                     : value.length > selectionDisplayCutoff
                         ? numSelectedText.replace('{{num}}', String(value.length))
                         : getSelectedLabels().join(', ')}</SelectedDisplay>
-        <MenuComponent className={'formifly-multi-select-menu ' + (menuClassName ?? '')}>
+        <MenuComponent className={'formifly-multi-select-menu ' + (menuClassName ?? '')} aria-required={props["aria-required"]}>
             <OptionComponent className={'formifly-multi-select-option formifly-multi-select-all-option ' + (optionClassName ?? '')}
                              label={selectAllText}
                              onChange={handleSelectAllClick}

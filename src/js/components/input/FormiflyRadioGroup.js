@@ -62,6 +62,7 @@ const FormiflyRadioGroup = (props) => {
                                 onChange={onChange}
                                 onBlur={onBlur}
                                 required={required}
+                                aria-required={props['aria-required']}
                                 value={option.value}/>
                 {option.label}
             </LabelComponent>)}

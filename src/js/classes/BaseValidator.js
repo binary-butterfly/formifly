@@ -28,6 +28,54 @@ class BaseValidator {
         this.defaultValue = defaultValue;
     }
 
+    /**
+     * Sets the input type that will be passed to fields that this validator validates
+     * @param {String} newDefaultInputType
+     */
+    setDefaultInputType(newDefaultInputType) {
+        this.defaultInputType = newDefaultInputType;
+    }
+
+    /**
+     * Sets the default value for this validator
+     * @param {any} newDefaultValue
+     */
+    setDefaultValue(newDefaultValue) {
+        this.defaultValue = newDefaultValue;
+    }
+
+    /**
+     * Sets the default error message for this validator
+     * @param {String} newDefaultErrorMsg
+     */
+    setDefaultErrorMsg(newDefaultErrorMsg) {
+        this.defaultErrorMsg = newDefaultErrorMsg;
+    }
+
+    /**
+     * Set the validators mutation function
+     * @param {function} newMutationFunc
+     */
+    setMutationFunc(newMutationFunc) {
+        this.mutationFunc = newMutationFunc;
+    }
+
+    /**
+     * Set the validators onError handler
+     * @param {function} newOnError
+     */
+    setOnError(newOnError) {
+        this.onError = newOnError;
+    }
+
+    /**
+     * Set the validators dependent field
+     * @param {Array|boolean} newDependent
+     */
+    setDependent(newDependent) {
+        this.dependent = newDependent;
+    }
+
     validateRequired(value) {
         return (value !== '' && value !== null && value !== undefined && (!(value instanceof Array) || value.length > 0));
     }

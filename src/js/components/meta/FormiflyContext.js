@@ -17,7 +17,7 @@ export const Context = React.createContext({});
 Context.displayName = 'FormiflyContext';
 
 export const FormiflyProvider = (props) => {
-    const {shape, initialValues, children} = props;
+    const {shape, initialValues, children, disableNativeRequired, disableNativeMinMax} = props;
 
     const [values, setValues] = React.useState(() => {
         const defaultValues = shape.getDefaultValue();
@@ -133,10 +133,10 @@ export const FormiflyProvider = (props) => {
                 additionalProps.value = convertDateObjectToInputString(new Date(fieldValue));
             }
         } else if (fieldValidator instanceof NumberValidator) {
-            if (fieldValidator.minNum !== undefined) {
+            if (!disableNativeMinMax && fieldValidator.minNum !== undefined) {
                 additionalProps.min = fieldValidator.minNum;
             }
-            if (fieldValidator.maxNum !== undefined) {
+            if (!disableNativeMinMax && fieldValidator.maxNum !== undefined) {
                 additionalProps.max = fieldValidator.maxNum;
             }
         } else if (fieldValidator instanceof BooleanValidator) {
@@ -150,10 +150,13 @@ export const FormiflyProvider = (props) => {
             throw new Error('Object validators must not be used for input fields directly.');
         }
 
-        additionalProps.required = fieldValidator.isRequired;
+        if (disableNativeRequired) {
+            additionalProps['aria-required'] = fieldValidator.isRequired;
+        } else {
+            additionalProps.required = fieldValidator.isRequired;
+        }
 
         id = id ?? 'formifly-input-field-' + name;
-
 
         additionalProps['aria-describedby'] = id + '-errors';
 
@@ -199,7 +202,7 @@ export const FormiflyProvider = (props) => {
         setSubmitSuccess(false);
         setSubmitFailureReason(null);
         validateAll().then((changedValues) => {
-            onSubmit(changedValues).then(() => {
+            onSubmit(changedValues, setErrors).then(() => {
                 setSubmitting(false);
                 setSubmitSuccess(true);
             }).catch(reason => setSubmitFailureReason(reason));
@@ -235,6 +238,8 @@ export const FormiflyProvider = (props) => {
 FormiflyProvider.propTypes = {
     shape: PropTypes.object.isRequired,
     initialValues: PropTypes.object,
+    disableNativeMinMax: PropTypes.bool,
+    disableNativeRequired: PropTypes.bool,
 };
 
 export const useFormiflyContext = () => {

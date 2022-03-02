@@ -46,7 +46,9 @@ REST backends.
 6. [Cross Dependent Fields](#cross-dependent-fields)
 7. [Creating your own Validators](#creating-your-own-validators)
 8. [Tips and tricks](#tips-and-tricks)
-   - [Multi step forms](#multi-step-forms) 
+    - [Multi step forms](#multi-step-forms)
+    - [Handling backend validation errors](#handling-backend-validation-errors)
+    - [Too many constructor params?](#too-many-constructor-params)
 9. [Development](#development)
 
 ## Quick Start
@@ -386,13 +388,21 @@ It accepts the following params:
 - `onSubmit` your custom submit handler  
   This has to return a promise that resolves when the form was submitted correctly.  
   Field validation is handled automatically before running your function.  
-  If your promise is rejected, the reason will be saved to `submitFailureReason` in the Formifly Context.
+  If your promise is rejected, the reason will be saved to `submitFailureReason` in the Formifly Context.  
+  Your function will be passed the forms values as first argument and the setErrors function as second.  
+  The latter is useful when you are receiving validation errors from your backend and want to show those in the form
 - `shape` your validators  
   This has to be an `ObjectValidator` containing all fields in your form.
 - `defaultValues` default values for your form fields (optional)
   This should only be used for a form that is used to edit existing database entries since the validators themselves are also capable of
   holding default values, which is the preferred way to set those.  
   Note that when this param is set, all fields not set in it will have their initial value taken from their validator.
+- `disableNativeRequired` set this to true to disable passing of the `required` property to input fields in the form.  
+  This is useful since the browser validation can be a bit annoying, especially with hidden fields as it disables submission (and
+  therefore) automatic js validation when the field is empty.  
+  Instead of the `required` prop, `aria-required` will be passed to communicate the requirement to screen readers.
+- `disableNativeMinMax` set this to true to disable the passing of `min` and `max` properties to input fields in the form.  
+  This is once again useful in cases where the browser validation is getting in the way of your JavaScript handlers.
 - `theme` override the default styling of the provided components. (Optional)  
   Available keys:
     - `inputBackgroundColor` Background color for input fields
@@ -701,6 +711,13 @@ Available methods:
 - `validate(value, [otherValues])` Validate the field.  
   You should not need to use this function. If you do for some reason, pass the field's value as value and
   (if there are dependencies) all other values as otherValues.
+- `setDefaultInputType(newDefaultInputType: String)` Sets the default input type for field's that are validated by this validator
+- `setDefaultValue(newDefaultValue)` Sets the default value to override the one given in the constructor
+- `setDefaultErrorMsg(newDefaultErrorMsg: String)` Sets the default error message to override the one given in the constructor
+- `setMutationFunc(newMutationFunc: [function])` Sets the mutation function to override the one given in the constructor
+- `setOnError(newOnError: [function])` Sets the onError handler to override the one given in the constructor
+- `setDependent(newDependent: [Boolean|Array])` Sets the dependent value used for [dependent validators](#cross-dependent-fields) to
+  override the one passed to the constructor
 
 ### NumberValidator
 
@@ -1075,6 +1092,59 @@ Note that (despite what one might expect from its not especially well chosen nam
 or `false` if there are no errors, so you might have to convert its result into a boolean depending on what your stepper expects.  
 This library does not provide any stepper functionality on its own, so you will have to build your own or use one from a component library
 that you like.
+
+### Handling backend validation errors
+
+Since the validators you define in Formifly are only used in the frontend, your backend validation may return errors when Formifly does
+not.  
+For this case, Formifly passes its `setErrors` function to your `onSubmit` function as a second argument.
+
+Displaying backend errors from our Python validation library [validataclass](https://github.com/binary-butterfly/validataclass) could look
+something like this:
+
+```js
+const unpackValidataclassErrors = (error) => {
+    let ret = {};
+    if (error.code === 'field_errors' || error.code === 'list_item_errors') {
+        Object.entries(error.field_errors).map(([key, value]) => {
+            ret[key] = unpackValidataclassErrors(value);
+        })
+    } else {
+        ret = error.code;
+    }
+    return ret;
+}
+
+const handleSubmit = (values, setErrors) => {
+    return fetch('https://your_rest_backend.invalid.tld', values).then((result) => {
+        if (result.status === 400) {
+            result.json().then((parsed) => {
+                setErrors(unpackValidataclassErrors(parsed));
+                return Promise.reject('server side validation');
+            });
+
+            //[..]
+        }
+    })
+}
+```
+
+This would not make for the most user friendly error messages (since it uses the codes as validation errors directly), so you would
+probably want to put those in a localization library but that is out of scope for this documentation.
+
+### Too many constructor params?
+
+The validators accept a wide range of constructor params and due to the fact that keyword arguments are not supported in ES currently, this
+can be a bit annoying when you have to pass a bunch of `undefined`s just to set the last one.  
+Most constructor params also have their own dedicated setter functions.
+
+These are:
+
+- `setDefaultValue`
+- `setDefaultErrorMsg`
+- `setMutationFunc`
+- `setOnError`
+- `setDependent`
 
 ## Development
 

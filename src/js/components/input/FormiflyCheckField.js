@@ -51,6 +51,7 @@ const FormiflyCheckField = (props) => {
                                 value={value}
                                 className={'formifly-field-input formifly-' + type + '-field-input ' + (inputClassName ?? '')}
                                 aria-describedby={props['aria-describedby']}
+                                aria-required={props['aria-required']}
                                 aria-invalid={props['aria-invalid']}/>
                 {label}
             </LabelComponent>

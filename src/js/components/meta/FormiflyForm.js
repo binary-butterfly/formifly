@@ -11,7 +11,7 @@ const Form = (props) => {
 };
 
 const FormiflyForm = (props) => {
-    const {shape, defaultValues, onSubmit, children, className} = props;
+    const {shape, defaultValues, onSubmit, children, className, disableNativeRequired, disableNativeMinMax} = props;
     const theme = props.theme ?? {};
 
     const scTheme = {
@@ -26,7 +26,10 @@ const FormiflyForm = (props) => {
     };
 
     return <ThemeProvider theme={scTheme}>
-        <FormiflyProvider initialValues={defaultValues} shape={shape}>
+        <FormiflyProvider initialValues={defaultValues}
+                          shape={shape}
+                          disableNativeRequired={disableNativeRequired ?? false}
+                          disableNativeMinMax={disableNativeMinMax ?? false}>
             <Form onSubmit={onSubmit} className={className}>
                 {children}
             </Form>
@@ -39,6 +42,8 @@ FormiflyForm.propTypes = {
     onSubmit: PropTypes.func.isRequired,
     className: PropTypes.string,
     defaultValues: PropTypes.object,
+    disableNativeRequired: PropTypes.bool,
+    disableNativeMinMax: PropTypes.bool,
     theme: PropTypes.shape({
         inputBackgroundColor: PropTypes.string,
         errorColor: PropTypes.string,

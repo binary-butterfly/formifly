@@ -133,7 +133,7 @@ describe.each([
 });
 
 describe.each([
-    ['foo', ['foo', 'bar', 'blub'],undefined, [true, 'foo'], 'returns true for included value'],
+    ['foo', ['foo', 'bar', 'blub'], undefined, [true, 'foo'], 'returns true for included value'],
     ['foo', ['banana', 'apple'], undefined, [false, 'This value must be one of these: banana, apple'], 'returns false for non included value'],
     ['foo', ['fo', 'fooo'], 'banana', [false, 'banana'], 'uses correct error message'],
 ])('Test oneOf', (value, values, msg, expected, name) => {
@@ -141,4 +141,47 @@ describe.each([
         const validator = new BaseValidator().oneOf(values, msg);
         expect(validator.validate(value)).toStrictEqual(expected);
     });
+});
+
+test('Test set default input type', () => {
+    const validator = new BaseValidator();
+    validator.setDefaultInputType('number');
+    expect(validator.defaultInputType).toStrictEqual('number');
+});
+
+test('Test set default value', () => {
+    const validator = new BaseValidator();
+    validator.setDefaultValue('banana');
+    expect(validator.defaultValue).toStrictEqual('banana');
+});
+
+test('Test set onError', () => {
+    const handler = jest.fn();
+    const validator = new BaseValidator();
+    validator.setOnError(handler);
+
+    validator.onError();
+    expect(handler).toHaveBeenCalledTimes(1);
+});
+
+test('Test set dependent', () => {
+    const validator = new BaseValidator();
+    validator.setDependent([]);
+    expect(validator.dependent).toStrictEqual([]);
+});
+
+test('Test setDefaultErrorMsg', () => {
+    const validator = new BaseValidator();
+    validator.setDefaultErrorMsg('banana');
+    expect(validator.defaultErrorMsg).toStrictEqual('banana');
+});
+
+test('Test setMutationFunc', () => {
+    const mutationFunc = jest.fn();
+    const validator = new BaseValidator();
+
+    validator.setMutationFunc(mutationFunc);
+    validator.mutationFunc();
+
+    expect(mutationFunc).toHaveBeenCalledTimes(1);
 });
