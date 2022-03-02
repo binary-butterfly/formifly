@@ -47,6 +47,7 @@ REST backends.
 7. [Creating your own Validators](#creating-your-own-validators)
 8. [Tips and tricks](#tips-and-tricks)
     - [Multi step forms](#multi-step-forms)
+    - [Handling backend validation errors](#handling-backend-validation-errors)
     - [Too many constructor params?](#too-many-constructor-params)
 9. [Development](#development)
 
@@ -387,7 +388,9 @@ It accepts the following params:
 - `onSubmit` your custom submit handler  
   This has to return a promise that resolves when the form was submitted correctly.  
   Field validation is handled automatically before running your function.  
-  If your promise is rejected, the reason will be saved to `submitFailureReason` in the Formifly Context.
+  If your promise is rejected, the reason will be saved to `submitFailureReason` in the Formifly Context.  
+  Your function will be passed the forms values as first argument and the setErrors function as second.  
+  The latter is useful when you are receiving validation errors from your backend and want to show those in the form
 - `shape` your validators  
   This has to be an `ObjectValidator` containing all fields in your form.
 - `defaultValues` default values for your form fields (optional)
@@ -713,8 +716,8 @@ Available methods:
 - `setDefaultErrorMsg(newDefaultErrorMsg: String)` Sets the default error message to override the one given in the constructor
 - `setMutationFunc(newMutationFunc: [function])` Sets the mutation function to override the one given in the constructor
 - `setOnError(newOnError: [function])` Sets the onError handler to override the one given in the constructor
-- `setDependent(newDependent: [Boolean|Array])` Sets the dependent value used for [dependent validators](#cross-dependent-fields) to override
-  the one passed to the constructor
+- `setDependent(newDependent: [Boolean|Array])` Sets the dependent value used for [dependent validators](#cross-dependent-fields) to
+  override the one passed to the constructor
 
 ### NumberValidator
 
@@ -1089,6 +1092,45 @@ Note that (despite what one might expect from its not especially well chosen nam
 or `false` if there are no errors, so you might have to convert its result into a boolean depending on what your stepper expects.  
 This library does not provide any stepper functionality on its own, so you will have to build your own or use one from a component library
 that you like.
+
+### Handling backend validation errors
+
+Since the validators you define in Formifly are only used in the frontend, your backend validation may return errors when Formifly does
+not.  
+For this case, Formifly passes its `setErrors` function to your `onSubmit` function as a second argument.
+
+Displaying backend errors from our Python validation library [validataclass](https://github.com/binary-butterfly/validataclass) could look
+something like this:
+
+```js
+const unpackValidataclassErrors = (error) => {
+    let ret = {};
+    if (error.code === 'field_errors' || error.code === 'list_item_errors') {
+        Object.entries(error.field_errors).map(([key, value]) => {
+            ret[key] = unpackValidataclassErrors(value);
+        })
+    } else {
+        ret = error.code;
+    }
+    return ret;
+}
+
+const handleSubmit = (values, setErrors) => {
+    return fetch('https://your_rest_backend.invalid.tld', values).then((result) => {
+        if (result.status === 400) {
+            result.json().then((parsed) => {
+                setErrors(unpackValidataclassErrors(parsed));
+                return Promise.reject('server side validation');
+            });
+
+            //[..]
+        }
+    })
+}
+```
+
+This would not make for the most user friendly error messages (since it uses the codes as validation errors directly), so you would
+probably want to put those in a localization library but that is out of scope for this documentation.
 
 ### Too many constructor params?
 
