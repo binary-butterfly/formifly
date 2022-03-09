@@ -185,6 +185,10 @@ export const FormiflyProvider = (props) => {
         };
     };
 
+    /**
+     * Validates all fields
+     * @return {Promise<unknown>}
+     */
     const validateAll = () => {
         return new Promise((resolve, reject) => {
             const result = shape.validate(values, values, values);
@@ -231,6 +235,7 @@ export const FormiflyProvider = (props) => {
         setFieldValue,
         getFieldProps,
         validateField,
+        validateAll,
     };
     return <Context.Provider value={FormiflyContext}>{children}</Context.Provider>;
 };
