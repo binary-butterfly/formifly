@@ -53,6 +53,10 @@ REST backends.
 
 ## Quick Start
 
+### Installation
+
+To install Formifly, simply run `npm install --save formifly` within your project's directory.
+
 ### tl;dr
 
 Head over to the [code of the demo form](src/js/components/demo/DemoForm.js); it contains at least one example for every kind of input
