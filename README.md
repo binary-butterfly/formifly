@@ -53,6 +53,10 @@ REST backends.
 
 ## Quick Start
 
+### Installation
+
+To install Formifly, simply run `npm install --save formifly` within your project's directory.
+
 ### tl;dr
 
 Head over to the [code of the demo form](src/js/components/demo/DemoForm.js); it contains at least one example for every kind of input
@@ -563,6 +567,8 @@ They will return an object containing/ add the following props:
   You call this with the field name as first param and the new value as the second one.  
   Note that this does not trigger field validation.
 - `validateField` A function that allows you to trigger validation for a specific field by passing its name.
+- `valiadteAll` A function that allows you to trigger validation for all fields within the form.  
+  It returns a Promise that will either resolve with potentially mutated field values or reject with the validation errors that occurred.
 - `getFieldProps` A function that returns most properties a field might need. (See [FormiflyField](#formiflyfield) for more info on
   this.)  
   This function accepts the following parameters: `name`, `help`, `type`, `value`, `id`, `additionalDescribedBy`.  
@@ -984,6 +990,29 @@ new ObjectValidator({
 ```
 
 This example will make the field `agreement` required if the field `fruit.banana` contains the value `nom!`.
+
+It is also possible to have multiple dependent validators for one field.  
+Take this simplified example for validating zip codes for example:
+
+```js
+const validator = new BaseValidator();
+validator.setDependent([
+    [
+        ['country', country => country === 'de', new StringValidator().regex(/^\d{5}$/)],
+        ['country', country => country === 'us', new StringValidator().regex(/^\d{5}-\d{4}$/, 'no us zip code :(')],
+    ],
+]);
+```
+
+Here, we are passing an array of dependent validators within the first entry of the dependent field.  
+What this does is iterate through every single entry to figure out which validator should be used.
+
+As you can see, German zip codes are numeric only, while zip codes in the US are longer and contain a dash.  
+We could use one validator that would return true for any valid zip code of any country, but this would get complicated rather quickly.  
+Instead, here we specify rules for the countries that we would expect to be entered and validate with the correct ruleset for the country
+that the user selected.  
+If the user has not selected a country that we wrote a validator for, the generic `BaseValidator` that allows everything will be used.  
+This may or may not be the behaviour you want.
 
 ## Creating your own validators
 

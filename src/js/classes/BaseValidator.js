@@ -102,13 +102,31 @@ class BaseValidator {
         return this;
     }
 
-    validateDependent(value, otherValues, siblings) {
-        const dependentValue = getFieldValueFromKeyString(this.dependent[0], otherValues);
-        if (this.dependent[1](dependentValue, value)) {
-            return this.dependent[2].validate(value, otherValues, siblings);
+    validateDependentStep(step, value, otherValues, siblings) {
+        const dependentValue = getFieldValueFromKeyString(step[0], otherValues);
+        if (step[1](dependentValue, value)) {
+            return [true, step[2].validate(value, otherValues, siblings)];
         } else {
-            return this.validateIndependent(value, otherValues, siblings);
+            return [false];
         }
+    }
+
+    validateDependent(value, otherValues, siblings) {
+        if (Array.isArray(this.dependent[0])) {
+            for (const step of this.dependent[0]) {
+                const validated = this.validateDependentStep(step, value, otherValues, siblings);
+                if (validated[0]) {
+                    return (validated[1]);
+                }
+            }
+        } else {
+            const validated = this.validateDependentStep(this.dependent, value, otherValues, siblings);
+            if (validated[0]) {
+                return validated[1];
+            }
+        }
+
+        return this.validateIndependent(value, otherValues, siblings);
     }
 
     validateIndependent(value, otherValues, siblings) {
