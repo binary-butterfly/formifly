@@ -976,8 +976,7 @@ Dependent validators may be chained.
 Example:
 
 ```js
-const validator = new ObjectValidator();
-validator.setDependent({
+new ObjectValidator({
     agreement: new BaseValidator(undefined, undefined, undefined, undefined, [
         'fruit.banana',
         value => value === 'nom!',
@@ -987,7 +986,7 @@ validator.setDependent({
         banana: new StringValidator(),
         apple: new StringValidator(),
     })
-});
+})
 ```
 
 This example will make the field `agreement` required if the field `fruit.banana` contains the value `nom!`.
