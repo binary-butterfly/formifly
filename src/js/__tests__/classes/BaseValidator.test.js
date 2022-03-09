@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import BaseValidator from '../../classes/BaseValidator';
+import StringValidator from '../../classes/StringValidator';
+import NumberValidator from '../../classes/NumberValidator';
 
 describe.each([
     ['abc', true, 'returns true for random value'],
@@ -41,6 +43,51 @@ describe.each([
             value => value === 'apple',
             new BaseValidator().required(),
         ]);
+        expect(validator.validate(value, otherValues)).toStrictEqual(expected);
+    });
+});
+
+describe.each([
+    [
+        '12345',
+        {country: 'de', zip: '12345'},
+        [
+            [
+                ['country', country => country === 'de', new StringValidator().regex(/^\d{5}$/)],
+                ['country', country => country === 'us', new StringValidator().regex(/^\d{5}-\d{4}$/)],
+            ],
+        ],
+        [true, '12345'],
+        'can validate first dependent',
+    ],
+    [
+        '12345',
+        {country: 'us', zip: '12345'},
+        [
+            [
+                ['country', country => country === 'de', new StringValidator().regex(/^\d{5}$/)],
+                ['country', country => country === 'us', new StringValidator().regex(/^\d{5}-\d{4}$/, 'no us zip code :(')],
+            ],
+        ],
+        [false, 'no us zip code :('],
+        'can validate second dependent',
+    ],
+    [
+        '12345',
+        {country: 'ch', zip: '12345'},
+        [
+            [
+                ['country', country => country === 'de', new NumberValidator(true)],
+                ['country', country => country === 'invalid', new BaseValidator().alwaysFalse()]
+            ],
+        ],
+        [true, '12345'],
+        'will use default validator if no dependent check matches'
+    ],
+])('Test dependent validator with multiple dependents', (value, otherValues, dependent, expected, name) => {
+    test(name, () => {
+        const validator = new BaseValidator();
+        validator.setDependent(dependent);
         expect(validator.validate(value, otherValues)).toStrictEqual(expected);
     });
 });
@@ -108,7 +155,6 @@ describe.each([
         expect(validator.validate(value, otherValues)).toStrictEqual(expected);
     });
 });
-
 
 describe.each([
     [2, {foo: 2, banana: 1}, 'banana', undefined, [true, 2], 'Returns true for greater value'],

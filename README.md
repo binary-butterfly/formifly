@@ -991,6 +991,29 @@ new ObjectValidator({
 
 This example will make the field `agreement` required if the field `fruit.banana` contains the value `nom!`.
 
+It is also possible to have multiple dependent validators for one field.  
+Take this simplified example for validating zip codes for example:
+
+```js
+const validator = new BaseValidator();
+validator.setDependent([
+    [
+        ['country', country => country === 'de', new StringValidator().regex(/^\d{5}$/)],
+        ['country', country => country === 'us', new StringValidator().regex(/^\d{5}-\d{4}$/, 'no us zip code :(')],
+    ],
+]);
+```
+
+Here, we are passing an array of dependent validators within the first entry of the dependent field.  
+What this does is iterate through every single entry to figure out which validator should be used.
+
+As you can see, German zip codes are numeric only, while zip codes in the US are longer and contain a dash.  
+We could use one validator that would return true for any valid zip code of any country, but this would get complicated rather quickly.  
+Instead, here we specify rules for the countries that we would expect to be entered and validate with the correct ruleset for the country
+that the user selected.  
+If the user has not selected a country that we wrote a validator for, the generic `BaseValidator` that allows everything will be used.  
+This may or may not be the behaviour you want.
+
 ## Creating your own validators
 
 This library is written in a way to make is especially easy to write your own validators.  
