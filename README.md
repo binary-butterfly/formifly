@@ -49,6 +49,7 @@ REST backends.
     - [Multi step forms](#multi-step-forms)
     - [Handling backend validation errors](#handling-backend-validation-errors)
     - [Too many constructor params?](#too-many-constructor-params)
+    - [Creating empty array entries](#creating-empty-array-entries)
 9. [Development](#development)
 
 ## Quick Start
@@ -1174,6 +1175,48 @@ These are:
 - `setMutationFunc`
 - `setOnError`
 - `setDependent`
+
+### Creating empty array entries
+
+When adding a new entry into an array, you have to insert an empty child into the values for said array.  
+You may do this simply by writing down all the values that an empty child would have.  
+This does get tedious for large object children and introduces another source of truth, which you probably don't want.  
+So, instead of creating an empty child by hand, use the `getDefaultValue` function of the child's validator like this:
+
+```js
+// [..]
+
+const shape = new ObjectValidator({
+    fruit: new ArrayValidator(new ObjectValidator({
+        tasty: new BooleanValidator(true),
+        name: new BooleanValidator().isRequired()
+    })),
+});
+
+<FormiflyForm shape={shape} onSubmit={() => null}>
+    <FruitSubForm/>
+    {/*[..]*/}
+</FormiflyForm>
+
+//[..]
+
+const FruitSubForm = withFormifly((props) => {
+    const {values, setFieldValue, shape} = props;
+
+    const handleAddClick = () => {
+        setFieldValue('fruit', [...values.fruit, shape.fields.fruit.of.getDefaultValue()]);
+    }
+
+    return <>
+        {values.fruit.map((fruit, index) => <React.Fragment key={index}>
+            <AutomagicFormiflyField name={'fruit.' + index + '.tasty'} label="tasty"/>
+            <AutomagicFormiflyField name={'fruit.' + index + '.name'} label="name"/>
+        </React.Fragment>)}
+        <button onClick={handleAddClick}/>
+    </>
+});
+
+```
 
 ## Development
 
