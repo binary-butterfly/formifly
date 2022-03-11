@@ -36,14 +36,20 @@ describe('FormiflyContext', () => {
                 <ObjectComponent/>
             </FormiflyForm>);
         };
+        const error =  jest.fn();
+        global.console.error = error;
         expect(failingFunc).toThrowError('Object validators must not be used for input fields directly');
+        expect(error).toHaveBeenCalledTimes(2);
     });
 
     it('throws an error when trying to get context outside of a provider', () => {
         const failingFunc = () => {
             render(<NotInProviderComponent/>);
         };
+        const error = jest.fn();
+        global.console.error = error;
         expect(failingFunc).toThrowError('Attempted to use formifly context outside of a provider. Only call useFormiflyContext from a component within a FormiflyForm.');
+        expect(error).toHaveBeenCalledTimes(2);
     });
 
     it('sets failure reason when onSubmit promise is rejected', () => {
