@@ -561,6 +561,12 @@ They will return an object containing/ add the following props:
 - `submitFailureReason` This will be populated with the reason that caused the submission promise to be rejected.  
   Note that this will not contain anything for validation errors and is instead used to hold information about fetch errors and the like.
 - `handleSubmit` The submission handler.
+- `handleFocus` The focus event handler used by default on input fields
+- `handleBlur` The blur event handler used by default on input fields
+- `handleChange` The change event handler used by default on most input fields
+- `handleCheckChange` The change event listener used by default on checkbox inputs
+- `handleRadioChange` The change event listener used by default on radio groups and radio inputs
+- `handleMultiSelectChange` The change event listener used by default on multi selects
 - `hasErrors` A function that returns if a field has errors when called with the field name. For non-shallow schemas the name will look
   like this: `object.key`.
 - `hasBeenTouched` Similar to `hasErrors`, this returns whether the user has touched an input field.
