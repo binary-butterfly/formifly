@@ -51,7 +51,7 @@ describe('DemoForm', () => {
 
         fireEvent.focus(numberInput);
         fireEvent.blur(numberInput);
-        expect(screen.getByText('This field must be a number')).not.toBeNull();
+        expect(screen.getByText('This field is required')).not.toBeNull();
 
         changeInputValue(numberInput, 3);
         expect(screen.queryByText('This field must be a number')).toBeNull();

@@ -21,7 +21,7 @@ test('Test NumberValidator does not accept empty strings if it is required', () 
     // Here we test this behaviour even though it may seem redundant.
     // This is done to make sure the delocalization step does not error out on empty strings.
     const validator = new NumberValidator().required();
-    expect(validator.validate('')).toStrictEqual([false, 'This field must be a number']);
+    expect(validator.validate('')).toStrictEqual([false, 'This field is required']);
 });
 
 describe.each([
