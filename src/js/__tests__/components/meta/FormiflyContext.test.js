@@ -36,7 +36,7 @@ describe('FormiflyContext', () => {
                 <ObjectComponent/>
             </FormiflyForm>);
         };
-        const error =  jest.fn();
+        const error = jest.fn();
         global.console.error = error;
         expect(failingFunc).toThrowError('Object validators must not be used for input fields directly');
         expect(error).toHaveBeenCalledTimes(2);
@@ -157,5 +157,105 @@ describe('FormiflyContext', () => {
         const input = screen.getByLabelText('Foo');
         expect(input.attributes.min).toBeUndefined();
         expect(input.attributes.max).toBeUndefined();
+    });
+
+    it('can trigger field validation', () => {
+        const CheckForm = withFormifly((props) => {
+            const {validateField} = props;
+            const [valid1, setValid1] = React.useState();
+            const [valid2, setValid2] = React.useState();
+
+            const handleTestButtonClick = () => validateField('foo').then((valid) => {
+                setValid1(valid);
+                validateField('bar').then(valid2 => {
+                    setValid2(valid2);
+                });
+            });
+
+            return <>
+                <p>Valid1: {valid1}</p>
+                <p>Valid2: {valid2}</p>
+                <AutomagicFormiflyField label="foo" name="foo"/>
+                <AutomagicFormiflyField label="bar" name="bar"/>
+                <button onClick={handleTestButtonClick}>Click</button>
+            </>;
+        });
+
+        const shape = new ObjectValidator({
+            foo: new StringValidator(),
+            bar: new StringValidator().required(),
+        });
+
+        render(<FormiflyForm shape={shape} onSubmit={() => null}>
+            <CheckForm/>
+        </FormiflyForm>);
+
+        fireEvent.click(screen.getByText('Click'));
+        expect(screen.findByText('Valid1: true')).not.toBeNull();
+        expect(screen.findByText('Valid2: false')).not.toBeNull();
+    });
+
+    it('returns a promise with the new values from setFieldValue', () => {
+        const FormThatMakesNoSense = withFormifly((props) => {
+            const {setFieldValue} = props;
+            const [fooText, setFooText] = React.useState();
+
+            const handleCoolButtonClick = () => {
+                setFieldValue('foo', 'foo').then((newValues) => {
+                    setFooText(newValues.foo);
+                });
+            };
+
+            return <>
+                <p>{fooText}</p>
+                <button onClick={handleCoolButtonClick}>Cool button m8</button>
+            </>;
+        });
+
+        const shape = new ObjectValidator({
+            foo: new StringValidator(),
+        });
+
+        render(<FormiflyForm shape={shape} onSubmit={() => null}>
+            <FormThatMakesNoSense/>
+        </FormiflyForm>);
+
+        fireEvent.click(screen.getByText('Cool button m8'));
+        expect(screen.findByText('foo')).not.toBeNull();
+    });
+
+    it('can set multiple field values at once', () => {
+        const AwesomeForm = withFormifly((props) => {
+            const {setMultipleFieldValues} = props;
+            const [fooText, setFooText] = React.useState();
+            const [barText, setBarText] = React.useState();
+
+
+            const handleButtonClick = () => {
+                setMultipleFieldValues([['foo', 'foo'], ['bar', 'bar']]).then((newValues) => {
+                    setFooText(newValues.foo);
+                    setBarText(newValues.bar);
+                });
+            };
+
+            return <>
+                <p>{fooText}</p>
+                <p>{barText}</p>
+                <button onClick={handleButtonClick}>Button</button>
+            </>;
+        });
+
+        const shape = new ObjectValidator({
+            foo: new StringValidator(),
+            bar: new StringValidator(),
+        });
+
+        render(<FormiflyForm shape={shape} onSubmit={() => null}>
+            <AwesomeForm/>
+        </FormiflyForm>);
+
+        fireEvent.click(screen.getByText('Button'));
+        expect(screen.findByText('foo')).not.toBeNull();
+        expect(screen.findByText('bar')).not.toBeNull();
     });
 });

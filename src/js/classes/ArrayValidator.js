@@ -38,7 +38,7 @@ class ArrayValidator extends BaseValidator {
         this.validateFuncs.push([values => values.length >= num, msg]);
 
         if (num > 0) {
-            this.isRequired = true;
+            this.required(msg);
         }
         this.minChildCount = num;
         return this;
@@ -81,7 +81,7 @@ class ArrayValidator extends BaseValidator {
         this.validateFuncs.push([values => values.length >= min && values.length <= max, msg]);
 
         if (min > 0) {
-            this.isRequired = true;
+            this.required(msg);
         }
         this.minChildCount = min;
         this.maxChildCount = max;

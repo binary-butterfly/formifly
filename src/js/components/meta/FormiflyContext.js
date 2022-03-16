@@ -34,8 +34,23 @@ export const FormiflyProvider = (props) => {
     const [submitSuccess, setSubmitSuccess] = React.useState(false);
     const [submitFailureReason, setSubmitFailureReason] = React.useState(null);
 
-    const setFieldValue = (field, value) => {
-        setValues(setFieldValueFromKeyString(field, value, values));
+    const setFieldValue = (field, value, oldValues = values) => {
+        return new Promise((resolve) => {
+            const newValues = setFieldValueFromKeyString(field, value, oldValues);
+            setValues(newValues);
+            resolve(newValues);
+        });
+    };
+
+    const setMultipleFieldValues = (pairs, oldValues = values) => {
+        return new Promise((resolve) => {
+            let newValues = oldValues;
+            for (const pair in pairs) {
+                newValues = setFieldValueFromKeyString(pair[0], pair[1], newValues);
+            }
+            setValues(newValues);
+            resolve(newValues);
+        });
     };
 
     const hasErrors = (fieldName) => {
@@ -86,16 +101,17 @@ export const FormiflyProvider = (props) => {
 
     const validateField = (name, value) => {
         return new Promise((resolve) => {
-            // TODO: also validate all fields that depend on this one.
+            setTouched(setFieldValueFromKeyString(name, true, touched));
+
             const fieldValidator = findFieldValidatorFromName(name, shape);
             const validated = fieldValidator.validate(value, values);
             if (validated[0]) {
                 setErrors(setFieldValueFromKeyString(name, false, errors));
+                return resolve(true);
             } else {
                 setErrors(setFieldValueFromKeyString(name, validated[1], errors));
+                return resolve(false);
             }
-            setTouched(setFieldValueFromKeyString(name, true, touched));
-            return resolve();
         });
     };
 
@@ -242,6 +258,7 @@ export const FormiflyProvider = (props) => {
         getFieldProps,
         validateField,
         validateAll,
+        setMultipleFieldValues,
     };
     return <Context.Provider value={FormiflyContext}>{children}</Context.Provider>;
 };

@@ -3,6 +3,7 @@ import {getFieldValueFromKeyString} from '../helpers/generalHelpers';
 
 class BaseValidator {
     defaultInputType = 'text';
+    requiredError;
     validateFuncs = [];
     isRequired = false;
     defaultErrorMsg = '';
@@ -87,7 +88,7 @@ class BaseValidator {
      */
     required(msg = 'This field is required') {
         this.isRequired = true;
-        this.validateFuncs.push([this.validateRequired, msg]);
+        this.requiredError = msg;
         return this;
     }
 
@@ -130,19 +131,20 @@ class BaseValidator {
     }
 
     validateIndependent(value, otherValues, siblings) {
-        for (const entry of this.validateFuncs) {
-            if (!this.isRequired && !this.validateRequired(value)) {
-                // Skip validation for empty value if required is false
-                continue;
+        if (!this.validateRequired(value)) {
+            if (this.isRequired) {
+                return [false, this.requiredError ?? this.defaultErrorMsg];
             }
-
-            const func = entry[0];
-            const test = func(value, otherValues, siblings);
-            if (test === false) {
-                return [false, entry[1] ?? this.defaultErrorMsg];
-            } else if (test !== true) {
-                // Allows validators to modify the value
-                value = test;
+        } else {
+            for (const entry of this.validateFuncs) {
+                const func = entry[0];
+                const test = func(value, otherValues, siblings);
+                if (test === false) {
+                    return [false, entry[1]];
+                } else if (test !== true) {
+                    // Allows validators to modify the value
+                    value = test;
+                }
             }
         }
 
