@@ -34,8 +34,23 @@ export const FormiflyProvider = (props) => {
     const [submitSuccess, setSubmitSuccess] = React.useState(false);
     const [submitFailureReason, setSubmitFailureReason] = React.useState(null);
 
-    const setFieldValue = (field, value) => {
-        setValues(setFieldValueFromKeyString(field, value, values));
+    const setFieldValue = (field, value, oldValues = values) => {
+        return new Promise((resolve) => {
+            const newValues = setFieldValueFromKeyString(field, value, oldValues);
+            setValues(newValues);
+            resolve(newValues);
+        });
+    };
+
+    const setMultipleFieldValues = (pairs, oldValues = values) => {
+        return new Promise((resolve) => {
+            let newValues = oldValues;
+            for (const pair in pairs) {
+                newValues = setFieldValueFromKeyString(pair[0], pair[1], newValues);
+            }
+            setValues(newValues);
+            resolve(newValues);
+        });
     };
 
     const hasErrors = (fieldName) => {
@@ -243,6 +258,7 @@ export const FormiflyProvider = (props) => {
         getFieldProps,
         validateField,
         validateAll,
+        setMultipleFieldValues,
     };
     return <Context.Provider value={FormiflyContext}>{children}</Context.Provider>;
 };

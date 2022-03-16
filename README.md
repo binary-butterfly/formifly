@@ -50,6 +50,7 @@ REST backends.
     - [Handling backend validation errors](#handling-backend-validation-errors)
     - [Too many constructor params?](#too-many-constructor-params)
     - [Creating empty array entries](#creating-empty-array-entries)
+    - [Race condition when setting multiple child fields?](#race-condition-when-setting-multiple-child-fields)
 9. [Development](#development)
 
 ## Quick Start
@@ -572,7 +573,14 @@ They will return an object containing/ add the following props:
 - `hasBeenTouched` Similar to `hasErrors`, this returns whether the user has touched an input field.
 - `setFieldValue` A function that allows you to manually set a field's value.  
   You call this with the field name as first param and the new value as the second one.  
+  You can also optionally call this function with an object to override the previous field values as third parameter.  
+  This function will return a promise that resolves with all values after the change.  
   Note that this does not trigger field validation.
+- `setMultipleFieldValues` A function that allows you to manually set multiple field values at once.  
+  You can call it with an array of arrays that contain the field names at the first entry and the new value as the second.  
+  You can also optionally call this function with an object to override the previous field values as second parameter.  
+  This function returns a promise that resolves with all values after the change.  
+  Note that this does not trigger validation.
 - `validateField` A function that allows you to trigger validation for a specific field by passing its name.  
   This function returns a promise that will be resolved with either `true` or `false` depending on if the field is valdi.
 - `valiadteAll` A function that allows you to trigger validation for all fields within the form.  
@@ -1222,8 +1230,15 @@ const FruitSubForm = withFormifly((props) => {
         <button onClick={handleAddClick}/>
     </>
 });
-
 ```
+
+### Race condition when setting multiple child fields?
+
+If you need to set multiple child fields of an object or array validator at once, you may try to do this by running `setFieldValue`
+multiple times in a row.  
+Sadly, this will not always work as you think since race conditions can occur that will undo the first change you do.  
+Instead of running the `setFieldValue` function multiple times, use the `setMultipleFieldValues` function instead and call it with an array
+of arrays that describe all changes you want to do.
 
 ## Development
 
