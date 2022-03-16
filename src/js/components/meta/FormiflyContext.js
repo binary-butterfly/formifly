@@ -86,16 +86,17 @@ export const FormiflyProvider = (props) => {
 
     const validateField = (name, value) => {
         return new Promise((resolve) => {
-            // TODO: also validate all fields that depend on this one.
+            setTouched(setFieldValueFromKeyString(name, true, touched));
+
             const fieldValidator = findFieldValidatorFromName(name, shape);
             const validated = fieldValidator.validate(value, values);
             if (validated[0]) {
                 setErrors(setFieldValueFromKeyString(name, false, errors));
+                return resolve(true);
             } else {
                 setErrors(setFieldValueFromKeyString(name, validated[1], errors));
+                return resolve(false);
             }
-            setTouched(setFieldValueFromKeyString(name, true, touched));
-            return resolve();
         });
     };
 

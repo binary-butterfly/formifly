@@ -573,7 +573,8 @@ They will return an object containing/ add the following props:
 - `setFieldValue` A function that allows you to manually set a field's value.  
   You call this with the field name as first param and the new value as the second one.  
   Note that this does not trigger field validation.
-- `validateField` A function that allows you to trigger validation for a specific field by passing its name.
+- `validateField` A function that allows you to trigger validation for a specific field by passing its name.  
+  This function returns a promise that will be resolved with either `true` or `false` depending on if the field is valdi.
 - `valiadteAll` A function that allows you to trigger validation for all fields within the form.  
   It returns a Promise that will either resolve with potentially mutated field values or reject with the validation errors that occurred.
 - `getFieldProps` A function that returns most properties a field might need. (See [FormiflyField](#formiflyfield) for more info on
