@@ -53,6 +53,7 @@ REST backends.
     - [Too many constructor params?](#too-many-constructor-params)
     - [Creating empty array entries](#creating-empty-array-entries)
     - [Race condition when setting multiple child fields?](#race-condition-when-setting-multiple-child-fields)
+    - [Race condition when validating multiple child fields?](#race-condition-when-validating-multiple-child-fields)
 9. [Development](#development)
 
 ## Quick Start
@@ -1247,6 +1248,22 @@ multiple times in a row.
 Sadly, this will not always work as you think since race conditions can occur that will undo the first change you do.  
 Instead of running the `setFieldValue` function multiple times, use the `setMultipleFieldValues` function instead and call it with an array
 of arrays that describe all changes you want to do.
+
+```js
+setMultipleFieldValues([['field1', 'foo'], ['field2', 'bar']]);
+```
+
+### Race condition when validating multiple child fields?
+
+The `validateField` function suffers from the same issue as the `setFieldValue` one does.  
+So, instead of running it multiple times in a row for child fields, use the `setMultipleFieldValues` function like this:
+
+```js
+validateMultipleFields([['field1', 'valueOfField1'], ['field2']]);
+```
+
+As you can see, the value is optional, but passing it improves performance of the function.  
+In any case, you will have to pass an array of arrays that contain at least the field names as their respective first entries.
 
 ## Development
 
