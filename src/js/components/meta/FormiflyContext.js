@@ -45,7 +45,7 @@ export const FormiflyProvider = (props) => {
     const setMultipleFieldValues = (pairs, oldValues = values) => {
         return new Promise((resolve) => {
             let newValues = oldValues;
-            for (const pair in pairs) {
+            for (const pair of pairs) {
                 newValues = setFieldValueFromKeyString(pair[0], pair[1], newValues);
             }
             setValues(newValues);

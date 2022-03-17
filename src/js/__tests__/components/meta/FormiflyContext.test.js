@@ -1,5 +1,5 @@
 import React from 'react';
-import {fireEvent, render, screen} from '@testing-library/react';
+import {fireEvent, render, screen, waitFor} from '@testing-library/react';
 import ArrayValidator from '../../../classes/ArrayValidator';
 import BooleanValidator from '../../../classes/BooleanValidator';
 import NumberValidator from '../../../classes/NumberValidator';
@@ -195,7 +195,7 @@ describe('FormiflyContext', () => {
         expect(screen.findByText('Valid2: false')).not.toBeNull();
     });
 
-    it('returns a promise with the new values from setFieldValue', () => {
+    it('returns a promise with the new values from setFieldValue', async () => {
         const FormThatMakesNoSense = withFormifly((props) => {
             const {setFieldValue} = props;
             const [fooText, setFooText] = React.useState();
@@ -208,6 +208,7 @@ describe('FormiflyContext', () => {
 
             return <>
                 <p>{fooText}</p>
+                <AutomagicFormiflyField label='fooField' name='foo'/>
                 <button onClick={handleCoolButtonClick}>Cool button m8</button>
             </>;
         });
@@ -222,25 +223,24 @@ describe('FormiflyContext', () => {
 
         fireEvent.click(screen.getByText('Cool button m8'));
         expect(screen.findByText('foo')).not.toBeNull();
+        await (waitFor(() => expect(screen.getByLabelText('fooField').value).toBe('foo')));
     });
 
-    it('can set multiple field values at once', () => {
+    it('can set multiple field values at once', async () => {
         const AwesomeForm = withFormifly((props) => {
             const {setMultipleFieldValues} = props;
             const [fooText, setFooText] = React.useState();
-            const [barText, setBarText] = React.useState();
 
 
             const handleButtonClick = () => {
                 setMultipleFieldValues([['foo', 'foo'], ['bar', 'bar']]).then((newValues) => {
                     setFooText(newValues.foo);
-                    setBarText(newValues.bar);
                 });
             };
 
             return <>
-                <p>{fooText}</p>
-                <p>{barText}</p>
+                <p>Foo: {fooText}</p>
+                <AutomagicFormiflyField label="barField" name="bar"/>
                 <button onClick={handleButtonClick}>Button</button>
             </>;
         });
@@ -255,7 +255,7 @@ describe('FormiflyContext', () => {
         </FormiflyForm>);
 
         fireEvent.click(screen.getByText('Button'));
-        expect(screen.findByText('foo')).not.toBeNull();
-        expect(screen.findByText('bar')).not.toBeNull();
+        expect(screen.findByText('Foo: foo')).not.toBeNull();
+        await (waitFor(() => expect(screen.getByLabelText('barField').value).toBe('bar')));
     });
 });
