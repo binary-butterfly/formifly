@@ -195,7 +195,7 @@ describe('FormiflyContext', () => {
         expect(screen.findByText('Valid2: false')).not.toBeNull();
     });
 
-    it('returns a promise with the new values from setFieldValue', () => {
+    it('returns a promise with the new values from setFieldValue', async () => {
         const FormThatMakesNoSense = withFormifly((props) => {
             const {setFieldValue} = props;
             const [fooText, setFooText] = React.useState();
@@ -208,6 +208,7 @@ describe('FormiflyContext', () => {
 
             return <>
                 <p>{fooText}</p>
+                <AutomagicFormiflyField label='fooField' name='foo'/>
                 <button onClick={handleCoolButtonClick}>Cool button m8</button>
             </>;
         });
@@ -222,6 +223,7 @@ describe('FormiflyContext', () => {
 
         fireEvent.click(screen.getByText('Cool button m8'));
         expect(screen.findByText('foo')).not.toBeNull();
+        await (waitFor(() => expect(screen.getByLabelText('fooField').value).toBe('foo')));
     });
 
     it('can set multiple field values at once', async () => {
