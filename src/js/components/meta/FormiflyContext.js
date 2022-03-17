@@ -216,7 +216,7 @@ export const FormiflyProvider = (props) => {
         });
     };
 
-    const handleSubmit = (onSubmit, e) => {
+    const handleSubmit = (onSubmit, onSubmitValidationError, e) => {
         e.preventDefault();
         setSubmitting(true);
         setSubmitSuccess(false);
@@ -234,6 +234,10 @@ export const FormiflyProvider = (props) => {
             setErrors(newErrors);
             setSubmitSuccess(false);
             setSubmitting(false);
+
+            if (typeof onSubmitValidationError === 'function') {
+                onSubmitValidationError(newErrors);
+            }
         });
     };
 

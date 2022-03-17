@@ -411,6 +411,8 @@ It accepts the following params:
   Instead of the `required` prop, `aria-required` will be passed to communicate the requirement to screen readers.
 - `disableNativeMinMax` set this to true to disable the passing of `min` and `max` properties to input fields in the form.  
   This is once again useful in cases where the browser validation is getting in the way of your JavaScript handlers.
+- `onSubmitValidationError` a function to be run when validation prior to running your onSubmit function fails. (Optional)  
+  The function will be called with all field errors that have been found.
 - `theme` override the default styling of the provided components. (Optional)  
   Available keys:
     - `inputBackgroundColor` Background color for input fields
