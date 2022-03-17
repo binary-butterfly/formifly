@@ -100,6 +100,10 @@ export const FormiflyProvider = (props) => {
     };
 
     const validateField = (name, value) => {
+        if (value === undefined) {
+            value = getFieldValueFromKeyString(name, values);
+        }
+
         return new Promise((resolve) => {
             setTouched(setFieldValueFromKeyString(name, true, touched));
 

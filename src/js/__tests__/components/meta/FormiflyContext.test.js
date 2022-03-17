@@ -165,16 +165,16 @@ describe('FormiflyContext', () => {
             const [valid1, setValid1] = React.useState();
             const [valid2, setValid2] = React.useState();
 
-            const handleTestButtonClick = () => validateField('foo').then((valid) => {
+            const handleTestButtonClick = () => validateField('foo', '').then((valid) => {
                 setValid1(valid);
-                validateField('bar').then(valid2 => {
+                validateField('bar', '').then(valid2 => {
                     setValid2(valid2);
                 });
             });
 
             return <>
-                <p>Valid1: {valid1}</p>
-                <p>Valid2: {valid2}</p>
+                <p>Valid1: {String(valid1)}</p>
+                <p>Valid2: {String(valid2)}</p>
                 <AutomagicFormiflyField label="foo" name="foo"/>
                 <AutomagicFormiflyField label="bar" name="bar"/>
                 <button onClick={handleTestButtonClick}>Click</button>
@@ -191,8 +191,11 @@ describe('FormiflyContext', () => {
         </FormiflyForm>);
 
         fireEvent.click(screen.getByText('Click'));
-        expect(screen.findByText('Valid1: true')).not.toBeNull();
-        expect(screen.findByText('Valid2: false')).not.toBeNull();
+
+        return screen.findByText('Valid1: true').then((found) => {
+            expect(found).not.toBeNull();
+            expect(screen.getByText('Valid2: false')).not.toBeNull();
+        });
     });
 
     it('returns a promise with the new values from setFieldValue', async () => {
@@ -277,6 +280,41 @@ describe('FormiflyContext', () => {
 
         expect(screen.queryByText('Submission has failed')).toBeNull();
         fireEvent.click(screen.getByText('Submit'));
-        expect(screen.findByText('Submission has failed')).not.toBeNull();
+
+        return screen.findByText('Submission has failed')
+            .then((result) => expect(result).not.toBeNull());
+    });
+
+    it('can get the field value if it is not passed to validateField', () => {
+        const Form = withFormifly((props) => {
+            const [fieldValid, setFieldValid] = React.useState(false);
+            const {validateField} = props;
+
+            const handleClick = () => {
+                validateField('foo').then((valid) => {
+                    setFieldValid(valid);
+                });
+            };
+
+            return <>
+                {fieldValid && <p>That field is valid!</p>}
+                <button onClick={handleClick}>Validate that field!</button>
+            </>;
+        });
+
+        const shape = new ObjectValidator({
+            foo: new StringValidator().required(),
+        });
+
+        render(<FormiflyForm shape={shape} onSubmit={() => null} defaultValues={{foo: 'bar'}}>
+            <Form/>
+        </FormiflyForm>);
+
+        expect(screen.queryByText('That field is valid!')).toBeNull();
+        fireEvent.click(screen.getByText('Validate that field!'));
+
+        return screen.findByText('That field is valid!').then((found) =>
+            expect(found).not.toBeNull(),
+        );
     });
 });

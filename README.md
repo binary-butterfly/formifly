@@ -585,7 +585,8 @@ They will return an object containing/ add the following props:
   You can also optionally call this function with an object to override the previous field values as second parameter.  
   This function returns a promise that resolves with all values after the change.  
   Note that this does not trigger validation.
-- `validateField` A function that allows you to trigger validation for a specific field by passing its name **and a value**.  
+- `validateField` A function that allows you to trigger validation for a specific field by passing its name and optionally, to improve
+  performance, the field's value.  
   This function returns a promise that will be resolved with either `true` or `false` depending on if the value is valid.
 - `valiadteAll` A function that allows you to trigger validation for all fields within the form.  
   It returns a Promise that will either resolve with potentially mutated field values or reject with the validation errors that occurred.
