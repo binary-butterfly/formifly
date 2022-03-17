@@ -317,4 +317,41 @@ describe('FormiflyContext', () => {
             expect(found).not.toBeNull(),
         );
     });
+
+    it('can validate multiple fields at once', () => {
+        const NotReallyAForm = withFormifly((props) => {
+            const {validateMultipleFields} = props;
+            const [allPassed, setAllPassed] = React.useState(true);
+
+            const handleClick = () => {
+                validateMultipleFields([['foo', ''], ['bar']]).then((allPassed) => setAllPassed(allPassed));
+            };
+
+            return <>
+                {!allPassed && <p>Not all fields have passed validation</p>}
+                <AutomagicFormiflyField label="foo" name="foo" id="foo-input"/>
+                <AutomagicFormiflyField label="bar" name="bar" id="bar-input"/>
+                <button onClick={handleClick}>Validate those fields!</button>
+            </>;
+        });
+
+        const shape = new ObjectValidator({
+            foo: new StringValidator(),
+            bar: new StringValidator().required('this would have been required'),
+        });
+
+        render(<FormiflyForm shape={shape} onSubmit={() => null}>
+            <NotReallyAForm/>
+        </FormiflyForm>);
+
+        expect(screen.queryByText('Not all fields have passed validation')).toBeNull();
+        fireEvent.click(screen.getByText('Validate those fields!'));
+
+        return screen.findByText('this would have been required').then((found) => {
+            expect(found).not.toBeNull();
+            expect(screen.getByText('Not all fields have passed validation')).not.toBeNull();
+            expect(document.getElementById('foo-input').getAttribute('aria-invalid')).toBe('false');
+            expect(document.getElementById('bar-input').getAttribute('aria-invalid')).toBe('true');
+        });
+    });
 });

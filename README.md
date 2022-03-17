@@ -588,6 +588,9 @@ They will return an object containing/ add the following props:
 - `validateField` A function that allows you to trigger validation for a specific field by passing its name and optionally, to improve
   performance, the field's value.  
   This function returns a promise that will be resolved with either `true` or `false` depending on if the value is valid.
+- `validateMultipleFields` A function that allows you to trigger validation for a specific set of fields by passing their names (and
+  optionally values to improve performance) inside an array of arrays.  
+  This function returns a promise that will be resolved with either `true` or `false` depending on if all fields passed validation
 - `valiadteAll` A function that allows you to trigger validation for all fields within the form.  
   It returns a Promise that will either resolve with potentially mutated field values or reject with the validation errors that occurred.
 - `getFieldProps` A function that returns most properties a field might need. (See [FormiflyField](#formiflyfield) for more info on
