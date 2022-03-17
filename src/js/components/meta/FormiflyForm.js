@@ -5,13 +5,22 @@ import {FormiflyProvider, useFormiflyContext} from './FormiflyContext';
 
 const Form = (props) => {
     const {handleSubmit} = useFormiflyContext();
-    return <form onSubmit={(e) => handleSubmit(props.onSubmit, e)} className={'formifly-form ' + (props.className ?? '')}>
+    return <form onSubmit={(e) => handleSubmit(props.onSubmit, props.onSubmitValidationError, e)} className={'formifly-form ' + (props.className ?? '')}>
         {props.children}
     </form>;
 };
 
 const FormiflyForm = (props) => {
-    const {shape, defaultValues, onSubmit, children, className, disableNativeRequired, disableNativeMinMax} = props;
+    const {
+        shape,
+        defaultValues,
+        onSubmit,
+        onSubmitValidationError,
+        children,
+        className,
+        disableNativeRequired,
+        disableNativeMinMax,
+    } = props;
     const theme = props.theme ?? {};
 
     const scTheme = {
@@ -30,7 +39,7 @@ const FormiflyForm = (props) => {
                           shape={shape}
                           disableNativeRequired={disableNativeRequired ?? false}
                           disableNativeMinMax={disableNativeMinMax ?? false}>
-            <Form onSubmit={onSubmit} className={className}>
+            <Form onSubmit={onSubmit} className={className} onSubmitValidationError={onSubmitValidationError}>
                 {children}
             </Form>
         </FormiflyProvider>
@@ -40,6 +49,7 @@ const FormiflyForm = (props) => {
 FormiflyForm.propTypes = {
     shape: PropTypes.object.isRequired,
     onSubmit: PropTypes.func.isRequired,
+    onSubmitValidationError: PropTypes.func,
     className: PropTypes.string,
     defaultValues: PropTypes.object,
     disableNativeRequired: PropTypes.bool,

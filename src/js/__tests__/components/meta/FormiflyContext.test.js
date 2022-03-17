@@ -208,7 +208,7 @@ describe('FormiflyContext', () => {
 
             return <>
                 <p>{fooText}</p>
-                <AutomagicFormiflyField label='fooField' name='foo'/>
+                <AutomagicFormiflyField label="fooField" name="foo"/>
                 <button onClick={handleCoolButtonClick}>Cool button m8</button>
             </>;
         });
@@ -257,5 +257,26 @@ describe('FormiflyContext', () => {
         fireEvent.click(screen.getByText('Button'));
         expect(screen.findByText('Foo: foo')).not.toBeNull();
         await (waitFor(() => expect(screen.getByLabelText('barField').value).toBe('bar')));
+    });
+
+    it('runs onSubmitValidationError handler', () => {
+        const Form = () => {
+            const [submitError, setSubmitError] = React.useState(false);
+
+            const shape = new ObjectValidator({
+                foo: new StringValidator().required(),
+            });
+
+            return <FormiflyForm shape={shape} onSubmit={() => null} onSubmitValidationError={() => setSubmitError(true)}>
+                {submitError && <p>Submission has failed</p>}
+                <button type="submit">Submit</button>
+            </FormiflyForm>;
+        };
+
+        render(<Form/>);
+
+        expect(screen.queryByText('Submission has failed')).toBeNull();
+        fireEvent.click(screen.getByText('Submit'));
+        expect(screen.findByText('Submission has failed')).not.toBeNull();
     });
 });
