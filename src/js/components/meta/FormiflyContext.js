@@ -100,6 +100,10 @@ export const FormiflyProvider = (props) => {
     };
 
     const validateField = (name, value) => {
+        if (value === undefined) {
+            value = getFieldValueFromKeyString(name, values);
+        }
+
         return new Promise((resolve) => {
             setTouched(setFieldValueFromKeyString(name, true, touched));
 
@@ -112,6 +116,30 @@ export const FormiflyProvider = (props) => {
                 setErrors(setFieldValueFromKeyString(name, validated[1], errors));
                 return resolve(false);
             }
+        });
+    };
+
+    const validateMultipleFields = (pairs) => {
+        return new Promise((resolve) => {
+            let allValid = true;
+            let newTouched = touched;
+            let newErrors = errors;
+            for (const pair of pairs) {
+                const name = pair[0];
+                const value = pair[1] ?? getFieldValueFromKeyString(name, values);
+                const fieldValidator = findFieldValidatorFromName(name, shape);
+                const validated = fieldValidator.validate(value, values);
+                if (validated[0]) {
+                    newErrors = setFieldValueFromKeyString(name, false, newErrors);
+                } else {
+                    newErrors = setFieldValueFromKeyString(name, validated[1], newErrors);
+                    allValid = false;
+                }
+                newTouched = setFieldValueFromKeyString(name, true, newTouched);
+            }
+            setTouched(newTouched);
+            setErrors(newErrors);
+            resolve(allValid);
         });
     };
 
@@ -263,6 +291,7 @@ export const FormiflyProvider = (props) => {
         validateField,
         validateAll,
         setMultipleFieldValues,
+        validateMultipleFields,
     };
     return <Context.Provider value={FormiflyContext}>{children}</Context.Provider>;
 };
