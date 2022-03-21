@@ -1161,7 +1161,7 @@ something like this:
 const unpackValidataclassErrors = (error) => {
     let ret = {};
     if (error.code === 'field_errors' || error.code === 'list_item_errors') {
-        Object.entries(error.field_errors).map(([key, value]) => {
+        Object.entries(error.field_errors ?? error.item_errors).map(([key, value]) => {
             ret[key] = unpackValidataclassErrors(value);
         })
     } else {
