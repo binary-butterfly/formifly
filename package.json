@@ -18,9 +18,6 @@
     "start": "npm-run-all --parallel watch browse",
     "prepublishOnly": "npm run build:prod"
   },
-  "jest-junit": {
-    "outputDirectory": "reports/"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/binary-butterfly/formifly.git"
