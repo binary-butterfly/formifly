@@ -12,7 +12,7 @@ module.exports = {
     transform: {
         '^.+\\.(js)$': 'babel-jest',
     },
-    reporters: ['default', 'jest-junit'],
+    reporters: ['default'],
     transformIgnorePatterns: [],
     clearMocks: true,
 };
