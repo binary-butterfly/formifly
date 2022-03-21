@@ -3,6 +3,7 @@
 ***React form handling as light as a butterfly***
 
 [![.github/workflows/test.yml](https://github.com/binary-butterfly/formifly/actions/workflows/test.yml/badge.svg)](https://github.com/binary-butterfly/formifly/actions/workflows/test.yml)
+[![Coverage Status](https://coveralls.io/repos/github/binary-butterfly/formifly/badge.svg?branch=main)](https://coveralls.io/github/binary-butterfly/formifly?branch=main)
 
 Formifly is a library that makes Form handling and frontend input validation a breeze.  
 Developed as a replacement for existing Form handling libraries, Formifly was built for performance and ease of integration with existing
