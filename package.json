@@ -11,7 +11,6 @@
   "scripts": {
     "test": "jest --config jest.config.js ",
     "coverage": "jest --config jest.config.js --collectCoverage",
-    "coveralls": "jest --config jest.config.js --collectCoverage && coveralls < coverage/lcov.info",
     "watch": "rollup -c rollup.config.js -w",
     "build:dev": "rollup -c rollup.config.js",
     "build:prod": "NODE_ENV=production rollup -c rollup.config.js",
@@ -47,7 +46,6 @@
     "@testing-library/react": "^12.1.2",
     "babel-plugin-styled-components": "^2.0.2",
     "browser-sync": "^2.27.7",
-    "coveralls": "^3.1.1",
     "jest": "^27.4.7",
     "jest-junit": "^13.0.0",
     "jsdom": "^19.0.0",
