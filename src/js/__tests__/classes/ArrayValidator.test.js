@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import ArrayValidator from '../../classes/ArrayValidator';
+import BooleanValidator from '../../classes/BooleanValidator';
 import NumberValidator from '../../classes/NumberValidator';
+import ObjectValidator from '../../classes/ObjectValidator';
 import StringValidator from '../../classes/StringValidator';
 
 describe.each([
@@ -65,7 +67,7 @@ test('Test ArrayValidator can fail on child fail', () => {
 test('Test Array Validator getDefaultValue returns empty array if minLength is not set', () => {
     const validator = new ArrayValidator(new StringValidator());
     expect(validator.getDefaultValue()).toStrictEqual([]);
-})
+});
 
 test('Test ArrayValidator getDefaultValue returns the children\'s default values', () => {
     const validator = new ArrayValidator(new NumberValidator(undefined, 0)).minLength(1);
@@ -80,9 +82,16 @@ test('Test ArrayValidator getDefaultValue returns as many default values as ther
 test('Test getPropType', () => {
     const validator = new ArrayValidator(new StringValidator());
     expect(String(validator.getPropType())).toBe(String(PropTypes.arrayOf(PropTypes.string)));
-})
+});
 
 test('Test getPropType required', () => {
     const validator = new ArrayValidator(new StringValidator().required());
     expect(String(validator.getPropType())).toBe(String(PropTypes.arrayOf(PropTypes.string.isRequired).isRequired));
-})
+});
+
+test('Test arrayValidator does not mutate children', () => {
+    const array = [{foo: true}];
+    const validator = new ArrayValidator(new ObjectValidator({foo: new BooleanValidator()}));
+    validator.validate(array);
+    expect(array[0].foo).toBe(true);
+});
