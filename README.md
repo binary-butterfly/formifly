@@ -737,6 +737,10 @@ Available methods:
   its siblings.
 - `lessOrEqualToSibling(key: String|Number, msg: [String])` Enforce this fields value to be less than or equal to the value of one of its
   siblings.
+- `oneOfArrayFieldValues(key: String|Number, checkFn: [function], msg: [String])` Enforce this field's value to be included within an array
+  field or check this fields value against the values included in an array field with a custom function
+- `oneOfArraySiblingFieldValues(key: String|Number, checkFn: [function], msg: [String])` Enforce this field's value to be included within a
+  sibling array field or check this fields value against the values included in a sibling array field with a custom function
 - `alwaysFalse(msg: [String])` Make the validation always return false. This may be useful when building more complex dependent validators.
 - `getDefaultValue()` Return the field's default value.
 - `getPropType()` Returns the validator represented as PropTypes
@@ -945,6 +949,8 @@ This has the added benefit that you can hardcode the validator options if you us
 
 ## Cross Dependent Fields
 
+### Simple comparisons
+
 All Validators come with the comparison functions `greaterThan`, `lessThan`, `greaterOrEqualTo`, `lessOrEqualTo`, `greaterThanSibling`
 , `lessThanSibling`, `greaterOrEqualToSibling` and `lessOrEqualToSibling`.
 
@@ -981,6 +987,55 @@ const shape = new ObjectValidator({
 
 As you can see, we used the sibling comparison function for `someNumber`, since `tasty` is a field of its sibling `banana`.  
 We could not use the sibling comparison for `tasty` since it is deeper within the tree than `someNumber` is.
+
+### Array comparisons
+
+The validators also have the functions `oneOfArrayFieldValues` and `oneOfArraySiblingFieldValues`. They behave similar
+to [simple comparisons](#simple-comparisons) in that one should always use the sibling function if that is possible.  
+Their main difference is that they only allow comparison to array fields and that they have an added `checkFn` parameter that allows you to
+override the check function that is used by default.
+
+If you do not provide a custom `checkFn` function, the field value will have to be included directly within the array field's value.  
+This could be useful for something like this:
+
+```js
+const iceCreamShape = new ObjectValidator({
+    tastesAvailable: new ArrayValidator(new StringValidator()),
+    orders: new ArrayValidator(new ObjectValidator({
+        taste: new StringValidator().oneOfArrayFieldValues('tastesAvailable').required(),
+        amount: new NumberValidator().positive().required(),
+    }))
+})
+```
+
+This would only allow orders that have selected a taste that was included in tastesAvailable.
+
+However, if our first array is a bit more complex and we want to check a subfield of its entries, we will need the `checkFn`:
+
+```js
+const complexIceCreamShape = new ObjectValidator({
+    tastesAvailable: new ArrayValidator(new ObjectValidator({
+        id: new NumberValidator().required(),
+        name: new StringValidator().required(),
+        vegan: new BooleanValidator().required()
+    })),
+    orders: new ArrayValidator(new ObjectValidator({
+        taste: new NumberValidator()
+            .oneOfArrayFieldValues('tastesAvailable', (compare, value) => {
+                for (const taste of compare) {
+                    if (taste.id === value) {
+                        return true;
+                    }
+                    return false;
+                }
+            })
+            .required(),
+        amount: new NumberValidator().positive().required()
+    }))
+})
+```
+
+This would compare all available tastes' ids and allow orders that have selected one of them.
 
 ### Super custom validators
 

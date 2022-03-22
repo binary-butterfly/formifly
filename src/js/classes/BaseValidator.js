@@ -155,7 +155,7 @@ class BaseValidator {
      * Check if the fields value is greater than another value
      * @param {String} name
      * @param {String} [msg]
-     * @return {BaseValidator}
+     * @return {this}
      */
     greaterThan(name, msg) {
         if (msg === undefined) {
@@ -177,7 +177,7 @@ class BaseValidator {
      * Check if the fields value is less than another value
      * @param {String} name
      * @param {String} [msg]
-     * @return {BaseValidator}
+     * @return {this}
      */
     lessThan(name, msg) {
         if (msg === undefined) {
@@ -199,7 +199,7 @@ class BaseValidator {
      * Check if the fields value is greater than or equal to another value
      * @param {String} name
      * @param {String} [msg]
-     * @return {BaseValidator}
+     * @return {this}
      */
     greaterOrEqualTo(name, msg) {
         if (msg === undefined) {
@@ -221,7 +221,7 @@ class BaseValidator {
      * Check if the fields value is less than or equal to another value
      * @param {String} name
      * @param {String} [msg]
-     * @return {BaseValidator}
+     * @return {this}
      */
     lessOrEqualTo(name, msg) {
         if (msg === undefined) {
@@ -243,7 +243,7 @@ class BaseValidator {
      * Check if the fields value is greater than the value of one of its siblings
      * @param {String|Number} key
      * @param {String} [msg]
-     * @return {BaseValidator}
+     * @return {this}
      */
     greaterThanSibling(key, msg) {
         if (msg === undefined) {
@@ -265,7 +265,7 @@ class BaseValidator {
      * Check if the fields value is less than the value of one of its siblings
      * @param {String|Number} key
      * @param {String} [msg]
-     * @return {BaseValidator}
+     * @return {this}
      */
     lessThanSibling(key, msg) {
         if (msg === undefined) {
@@ -287,7 +287,7 @@ class BaseValidator {
      * Check if the fields value is greater or equal to the value of one of its siblings
      * @param {String|Number} key
      * @param {String} [msg]
-     * @return {BaseValidator}
+     * @return {this}
      */
     greaterOrEqualToSibling(key, msg) {
         if (msg === undefined) {
@@ -309,7 +309,7 @@ class BaseValidator {
      * Check if the fields value is less than or equal to the value of one of its siblings
      * @param {String|Number} key
      * @param {String} [msg]
-     * @return {BaseValidator}
+     * @return {this}
      */
     lessOrEqualToSibling(key, msg) {
         if (msg === undefined) {
@@ -320,6 +320,70 @@ class BaseValidator {
             (value, otherValues, siblings) => {
                 const otherVal = getFieldValueFromKeyString(key, siblings);
                 return value <= otherVal;
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
+    /**
+     * Checks if the field's value is included within the values of an array field
+     * @param {String} key
+     * @param {function} [checkFn]
+     * @param {String} [msg]
+     * @return {this}
+     */
+    oneOfArrayFieldValues(key, checkFn, msg) {
+        if (msg === undefined) {
+            msg = 'This value is not allowed.';
+        }
+
+        if (checkFn === undefined) {
+            checkFn = (compare, value) => compare.includes(value);
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues) => {
+                const compare = getFieldValueFromKeyString(key, otherValues);
+                if (Array.isArray(compare)) {
+                    return checkFn(compare, value);
+                } else {
+                    console.warn('Attempted to use oneOfArrayFieldValues validator on a non array field. This is not possible.');
+                    return false;
+                }
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
+    /**
+     * Checks if the field's value is included within the values of an array field that is a sibling
+     * @param {String} key
+     * @param {function} [checkFn]
+     * @param {String} [msg]
+     * @return {this}
+     */
+    oneOfArraySiblingFieldValues(key, checkFn, msg) {
+        if (msg === undefined) {
+            msg = 'This value is not allowed.';
+        }
+
+        if (checkFn === undefined) {
+            checkFn = (compare, value) => compare.includes(value);
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues, siblings) => {
+                const compare = getFieldValueFromKeyString(key, siblings);
+                if (Array.isArray(compare)) {
+                    return checkFn(compare, value);
+                } else {
+                    console.warn('Attempted to use oneOfArraySiblingFieldValues validator on a non array field. This is not possible.');
+                    return false;
+                }
             },
             msg,
         ]);
