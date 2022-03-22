@@ -110,20 +110,22 @@ class ArrayValidator extends BaseValidator {
 
         // Then, if the amount is correct, we validate the specific entries
         const tests = [];
+        // Unpack to avoid mutations
+        const testValues = [...values];
         let allOk = true;
-        for (const index in values) {
-            const value = values[index];
+        for (const index in testValues) {
+            const value = testValues[index];
 
-            const test = this.of.validate(value, otherValues, values);
+            const test = this.of.validate(value, otherValues, testValues);
             tests.push(test);
             if (test[0] === false) {
                 allOk = false;
             } else if (allOk) {
-                values[index] = test[1];
+                testValues[index] = test[1];
             }
         }
 
-        return allOk ? [true, values] : [false, tests];
+        return allOk ? [true, testValues] : [false, tests];
     }
 }
 

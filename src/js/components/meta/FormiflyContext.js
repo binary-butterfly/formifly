@@ -250,7 +250,7 @@ export const FormiflyProvider = (props) => {
         setSubmitSuccess(false);
         setSubmitFailureReason(null);
         validateAll().then((changedValues) => {
-            onSubmit(changedValues, setErrors).then(() => {
+            return onSubmit(changedValues, setErrors).then(() => {
                 setSubmitting(false);
                 setSubmitSuccess(true);
             }).catch(reason => setSubmitFailureReason(reason));
