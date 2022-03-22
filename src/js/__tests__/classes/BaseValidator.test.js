@@ -78,11 +78,11 @@ describe.each([
         [
             [
                 ['country', country => country === 'de', new NumberValidator(true)],
-                ['country', country => country === 'invalid', new BaseValidator().alwaysFalse()]
+                ['country', country => country === 'invalid', new BaseValidator().alwaysFalse()],
             ],
         ],
         [true, '12345'],
-        'will use default validator if no dependent check matches'
+        'will use default validator if no dependent check matches',
     ],
 ])('Test dependent validator with multiple dependents', (value, otherValues, dependent, expected, name) => {
     test(name, () => {
@@ -230,4 +230,98 @@ test('Test setMutationFunc', () => {
     validator.mutationFunc();
 
     expect(mutationFunc).toHaveBeenCalledTimes(1);
+});
+
+describe('Test oneOfArrayFieldValues', () => {
+    it('Can return true if the value is included', () => {
+        const validator = new BaseValidator().oneOfArrayFieldValues('array');
+        expect(validator.validate('foo', {array: ['foo', 'bar', 'baz']})).toStrictEqual([true, 'foo']);
+    });
+
+    it('Can return fasle if the value is not included', () => {
+        const validator = new BaseValidator().oneOfArrayFieldValues('array', undefined, 'err');
+        expect(validator.validate('banana', {array: ['foo', 'bar']})).toStrictEqual([false, 'err']);
+    });
+
+    it('Works with custom check functions and can return true', () => {
+        const validator = new BaseValidator().oneOfArrayFieldValues('array', (compare, value) => {
+            for (const val of compare) {
+                if (val.id === value) {
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        expect(validator.validate('abc', {array: [{id: 'abc'}, {id: 'def'}]})).toStrictEqual([true, 'abc']);
+    });
+
+    it('Works with custom check functions and can return false', () => {
+        const validator = new BaseValidator().oneOfArrayFieldValues('array', (compare, value) => {
+            for (const val of compare) {
+                if (val.id === value) {
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        expect(validator.validate('banana', {array: [{id: 'abc'}, {id: 'def'}]})).toStrictEqual([false, 'This value is not allowed.']);
+    });
+
+    it('Warns the user if the field that is compared against is not an array field', () => {
+        const warn = jest.fn();
+        global.console.warn = warn;
+        const validator = new BaseValidator().oneOfArrayFieldValues('notAnArray');
+        expect(validator.validate('foo', {notAnArray: 'banana'})).toStrictEqual([false, 'This value is not allowed.']);
+        expect(warn).toHaveBeenCalledWith('Attempted to use oneOfArrayFieldValues validator on a non array field. This is not possible.');
+        warn.mockRestore();
+    });
+});
+
+describe('Test oneOfArraySiblingFieldValues', () => {
+    it('Can return true if the value is included', () => {
+        const validator = new BaseValidator().oneOfArraySiblingFieldValues('array');
+        expect(validator.validate('foo', {array: ['foo', 'bar', 'baz']}, {array: ['foo', 'bar', 'baz']})).toStrictEqual([true, 'foo']);
+    });
+
+    it('Can return false if the value is not included', () => {
+        const validator = new BaseValidator().oneOfArraySiblingFieldValues('array', undefined, 'err');
+        expect(validator.validate('banana', {array: ['foo', 'bar']}, {array: ['foo', 'bar']})).toStrictEqual([false, 'err']);
+    });
+
+        it('Works with custom check functions and can return true', () => {
+        const validator = new BaseValidator().oneOfArraySiblingFieldValues('array', (compare, value) => {
+            for (const val of compare) {
+                if (val.id === value) {
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        expect(validator.validate('abc', {array: [{id: 'abc'}, {id: 'def'}]}, {array: [{id: 'abc'}, {id: 'def'}]})).toStrictEqual([true, 'abc']);
+    });
+
+    it('Works with custom check functions and can return false', () => {
+        const validator = new BaseValidator().oneOfArraySiblingFieldValues('array', (compare, value) => {
+            for (const val of compare) {
+                if (val.id === value) {
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        expect(validator.validate('banana', {array: [{id: 'abc'}, {id: 'def'}]}, {array: [{id: 'abc'}, {id: 'def'}]})).toStrictEqual([false, 'This value is not allowed.']);
+    });
+
+    it('Warns the user if the field that is compared against is not an array field', () => {
+        const warn = jest.fn();
+        global.console.warn = warn;
+        const validator = new BaseValidator().oneOfArraySiblingFieldValues('notAnArray');
+        expect(validator.validate('foo', {notAnArray: 'banana'}, {notAnArray: 'banana'})).toStrictEqual([false, 'This value is not allowed.']);
+        expect(warn).toHaveBeenCalledWith('Attempted to use oneOfArraySiblingFieldValues validator on a non array field. This is not possible.');
+        warn.mockRestore();
+    });
 });
