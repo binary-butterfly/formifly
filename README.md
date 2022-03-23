@@ -862,7 +862,12 @@ It also accepts an additional param `dropEmpty`, which defaults to `true`.
 This value can also be set after constructing using the `setDropEmpty` function on the validator.  
 This param defines whether empty values will be dropped before handing them to the forms submit handler.  
 It only works on direct children of the specific ObjectValidator so if your data structure contains multiple objects, each ObjectValidator
-must have this param set.
+must have this param set.  
+Similarly, there is also the `dropNotInShape` param, which defaults to `false` and can also be set using `setDropNotInShape`.  
+If this value is set to true, the validated result will only contain child fields that have been defined.  
+This is useful when using data that came from an API to pre fill an edit form if said data contains fields (like edited timestamps) that
+are not allowed to be set by a `PATCH` request.  
+Like `dropEmpty`, this param only works for direct children and not recursively.
 
 The ObjectValidator accepts an additional parameter for its `getPropType` function.  
 If you pass `true` to the function, instead of returning `PropTypes.shape`, it will return an object that you can directly assign as

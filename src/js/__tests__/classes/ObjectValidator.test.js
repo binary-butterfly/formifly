@@ -230,3 +230,16 @@ test('Test setDropEmpty', () => {
     validator.setDropEmpty(true);
     expect(validator.validate(values)).toStrictEqual([true, {}]);
 });
+
+test('Test dropNotInShape', () => {
+    const validator = new ObjectValidator({foo: new StringValidator()}, undefined, undefined, undefined, undefined, undefined, true);
+    const values = {foo: 'bar', banana: 'tasty!'};
+
+    expect(validator.validate(values)).toStrictEqual([true, {foo: 'bar'}]);
+
+    validator.setDropNotInShape(false);
+    expect(validator.validate(values)).toStrictEqual([true, values]);
+
+    validator.setDropNotInShape(true);
+    expect(validator.validate(values)).toStrictEqual([true, {foo: 'bar'}]);
+});
