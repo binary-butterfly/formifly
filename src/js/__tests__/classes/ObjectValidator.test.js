@@ -155,7 +155,10 @@ test('Test ObjectValidator works with alwaysFalse', () => {
 
 describe.each([
     [{foo: 1, bar: 2}, undefined, [true, {foo: 1, bar: 2}], 'returns true for greater value'],
-    [{foo: 2, bar: 1}, undefined, [false, {foo: [true, 2], bar: [false, 'This value must be greater than the value of its sibling foo']}], 'returns false for smaller value'],
+    [{foo: 2, bar: 1}, undefined, [false, {
+        foo: [true, 2],
+        bar: [false, 'This value must be greater than the value of its sibling foo'],
+    }], 'returns false for smaller value'],
     [{foo: 2, bar: 2}, 'banana', [false, {foo: [true, 2], bar: [false, 'banana']}], 'returns false for equal value'],
 ])('Test ObjectValidator greaterThanSibling', (value, msg, expected, name) => {
     test(name, () => {
@@ -183,7 +186,10 @@ describe.each([
 
 describe.each([
     [{foo: 2, bar: 1}, undefined, [true, {foo: 2, bar: 1}], 'returns true for smaller value'],
-    [{foo: 1, bar: 2}, undefined, [false, {foo: [true, 1], bar: [false, 'This value must be less than the value of its sibling foo']}], 'returns false for greater value'],
+    [{foo: 1, bar: 2}, undefined, [false, {
+        foo: [true, 1],
+        bar: [false, 'This value must be less than the value of its sibling foo'],
+    }], 'returns false for greater value'],
     [{foo: 2, bar: 2}, 'banana', [false, {foo: [true, 2], bar: [false, 'banana']}], 'returns false for equal value'],
 ])('Test ObjectValidator lessThanSibling', (value, msg, expected, name) => {
     test(name, () => {
@@ -198,7 +204,10 @@ describe.each([
 describe.each([
     [{foo: 2, bar: 1}, undefined, [true, {foo: 2, bar: 1}], 'returns true for smaller value'],
     [{foo: 2, bar: 2}, 'banana', [true, {foo: 2, bar: 2}], 'returns true for equal value'],
-    [{foo: 1, bar: 2}, undefined, [false, {foo: [true, 1], bar: [false, 'This value must be less than or equal to the value of its sibling foo']}], 'returns false for greater value'],
+    [{foo: 1, bar: 2}, undefined, [false, {
+        foo: [true, 1],
+        bar: [false, 'This value must be less than or equal to the value of its sibling foo'],
+    }], 'returns false for greater value'],
 ])('Test ObjectValidator lessOrEqualToSibling', (value, msg, expected, name) => {
     test(name, () => {
         const validator = new ObjectValidator({
@@ -207,4 +216,17 @@ describe.each([
         });
         expect(validator.validate(value)).toStrictEqual(expected);
     });
+});
+
+test('Test setDropEmpty', () => {
+    const validator = new ObjectValidator({
+        foo: new StringValidator(),
+    });
+    const values = {foo: ''};
+
+    validator.setDropEmpty(false);
+    expect(validator.validate(values)).toStrictEqual([true, values]);
+
+    validator.setDropEmpty(true);
+    expect(validator.validate(values)).toStrictEqual([true, {}]);
 });

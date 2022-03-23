@@ -13,10 +13,14 @@ class ObjectValidator extends BaseValidator {
      * @param {Boolean} [dropEmpty]
      * @param {Array} [dependent]
      */
-    constructor(fields, defaultMessage,mutationFunc, onError, dependent, dropEmpty = true) {
+    constructor(fields, defaultMessage, mutationFunc, onError, dependent, dropEmpty = true) {
         super(undefined, defaultMessage, mutationFunc, onError, dependent);
         this.fields = fields;
         this.dropEmpty = dropEmpty;
+    }
+
+    setDropEmpty(newDropEmpty) {
+        this.dropEmpty = newDropEmpty;
     }
 
     /**
