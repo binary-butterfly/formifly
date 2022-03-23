@@ -4,6 +4,7 @@ import BaseValidator from './BaseValidator';
 class BooleanValidator extends BaseValidator {
     defaultInputType = 'checkbox';
     propType = PropTypes.bool;
+    realBool;
 
     /**
      * Validate a boolean field
@@ -12,10 +13,25 @@ class BooleanValidator extends BaseValidator {
      * @param {Function} [mutationFunc]
      * @param {Function} [onError]
      * @param {Array} [dependent]
+     * @param {Boolean} [realBool]
      */
-    constructor(defaultValue = false, defaultErrorMsg = 'This field has to be a boolean', mutationFunc, onError, dependent) {
+    constructor(defaultValue = false, defaultErrorMsg = 'This field has to be a boolean', mutationFunc, onError, dependent, realBool = false) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
         this.validateFuncs.push([value => (value === true || value === false || value === 'true' || value === 'false') ? String(value) : false, this.defaultErrorMsg]);
+        this.realBool = realBool;
+    }
+
+    setRealBool(newRealBool) {
+        this.realBool = newRealBool;
+    }
+
+    validate(value, otherValues = {}, siblings = {}) {
+        const result = super.validate(value, otherValues, siblings);
+        if (result[0] && this.realBool) {
+            return [result[0], result[1] === 'true'];
+        } else {
+            return result;
+        }
     }
 }
 

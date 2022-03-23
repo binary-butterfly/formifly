@@ -841,12 +841,21 @@ This will validate any date after the first of february 2020.
 This validator is used for boolean values, such as checkbox checked states. It does not have any special functions.
 
 The BooleanValidator will turn any input into a string representation of the correct boolean and fail on values that are not either a
-string representation of true or false or a real boolean.
+string representation of true or false or a real boolean.  
+You can also set the `realBool` param, either during construction or using the `setRealBool` function to make the validator return an
+actual boolean instead of a string representation.
 
 Example:
 
 ```js
-new BooleanValidator()
+const validator = new BooleanValidator();
+
+validator.validate(false);
+// returns [true, 'false']
+
+validator.setRealBool(true);
+validator.validate(false);
+// returns [true, false]
 ```
 
 This example will validate to true for `true`, `false`, `"true"` and `"false"` and return an error message for everything else.
