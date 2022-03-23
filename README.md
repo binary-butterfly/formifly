@@ -841,12 +841,21 @@ This will validate any date after the first of february 2020.
 This validator is used for boolean values, such as checkbox checked states. It does not have any special functions.
 
 The BooleanValidator will turn any input into a string representation of the correct boolean and fail on values that are not either a
-string representation of true or false or a real boolean.
+string representation of true or false or a real boolean.  
+You can also set the `realBool` param, either during construction or using the `setRealBool` function to make the validator return an
+actual boolean instead of a string representation.
 
 Example:
 
 ```js
-new BooleanValidator()
+const validator = new BooleanValidator();
+
+validator.validate(false);
+// returns [true, 'false']
+
+validator.setRealBool(true);
+validator.validate(false);
+// returns [true, false]
 ```
 
 This example will validate to true for `true`, `false`, `"true"` and `"false"` and return an error message for everything else.
@@ -859,9 +868,15 @@ When the validation fails, it will return a dictionary with all the test results
 The object validator does not have any special methods.  
 However, it has to be constructed with the field's children as the first param.  
 It also accepts an additional param `dropEmpty`, which defaults to `true`.  
+This value can also be set after constructing using the `setDropEmpty` function on the validator.  
 This param defines whether empty values will be dropped before handing them to the forms submit handler.  
 It only works on direct children of the specific ObjectValidator so if your data structure contains multiple objects, each ObjectValidator
-must have this param set.
+must have this param set.  
+Similarly, there is also the `dropNotInShape` param, which defaults to `false` and can also be set using `setDropNotInShape`.  
+If this value is set to true, the validated result will only contain child fields that have been defined.  
+This is useful when using data that came from an API to pre fill an edit form if said data contains fields (like edited timestamps) that
+are not allowed to be set by a `PATCH` request.  
+Like `dropEmpty`, this param only works for direct children and not recursively.
 
 The ObjectValidator accepts an additional parameter for its `getPropType` function.  
 If you pass `true` to the function, instead of returning `PropTypes.shape`, it will return an object that you can directly assign as

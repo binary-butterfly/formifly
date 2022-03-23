@@ -4,19 +4,38 @@ import BaseValidator from './BaseValidator';
 class ObjectValidator extends BaseValidator {
     fields = {};
     dropEmpty;
+    dropNotInShape;
 
     /**
      * @param {Object} fields
      * @param {String} [defaultMessage]
      * @param {Function} [mutationFunc]
      * @param {Function} [onError]
-     * @param {Boolean} [dropEmpty]
      * @param {Array} [dependent]
+     * @param {Boolean} [dropEmpty]
+     * @param {Boolean} [dropNotInShape]
      */
-    constructor(fields, defaultMessage,mutationFunc, onError, dependent, dropEmpty = true) {
+    constructor(fields, defaultMessage, mutationFunc, onError, dependent, dropEmpty = true, dropNotInShape = false) {
         super(undefined, defaultMessage, mutationFunc, onError, dependent);
         this.fields = fields;
         this.dropEmpty = dropEmpty;
+        this.dropNotInShape = dropNotInShape;
+    }
+
+    /**
+     * Make the validator drop empty keys
+     * @param {Boolean} newDropEmpty
+     */
+    setDropEmpty(newDropEmpty) {
+        this.dropEmpty = newDropEmpty;
+    }
+
+    /**
+     * Make the validator drop values that are not defined as a child field
+     * @param {Boolean} newDropNotInShape
+     */
+    setDropNotInShape(newDropNotInShape) {
+        this.dropNotInShape = newDropNotInShape;
     }
 
     /**
@@ -63,6 +82,15 @@ class ObjectValidator extends BaseValidator {
                 }
             }
         }
+
+        if (allOk && this.dropNotInShape) {
+            for (const key in testValue) {
+                if (this.fields[key] === undefined) {
+                    delete testValue[key];
+                }
+            }
+        }
+
         return allOk ? [true, testValue] : [false, tests];
     }
 
