@@ -1348,3 +1348,11 @@ In order to work on this library, follow these steps:
     1. Run tests and create coverage: `npm run coverage`
     2. Fix any tests that fail
     3. Check the test coverage output and make sure all of your additions are covered where that makes sense
+
+Note that this library follows semantic versioning.  
+This means that any changes which change the API in a breaking way can only be merged in mayor updates.  
+Minor updates are reserved for added features and patch updates are used for bugfixes and dependency upgrades.
+
+However, what is considered a breaking change of the API is mostly defined by behaviour documented here, not by code itself.  
+This means that bug fixes which change the API in a way that makes it conform to this documentation may be allowed in a minor or patch
+release.
