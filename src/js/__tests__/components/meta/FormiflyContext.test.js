@@ -104,14 +104,16 @@ describe('FormiflyContext', () => {
         });
 
         const defaultValues = {
-            array: [{'foo': 'banana'}],
+            array: [{'foo': 'banana'}, {'foo': 'cucumber'}],
         };
 
         render(<FormiflyForm shape={shape} onSubmit={() => null} defaultValues={defaultValues}>
             <AutomagicFormiflyField label="Sub Array Text" name="array.0.subArray.0"/>
+            <AutomagicFormiflyField label="Sub Array Text2" name="array.1.subArray.0"/>
         </FormiflyForm>);
 
         expect(screen.getByLabelText('Sub Array Text').value).toStrictEqual('apple');
+        expect(screen.getByLabelText('Sub Array Text2').value).toStrictEqual('apple');
     });
 
     it('can check if objects have errors or touched fields within them', async () => {
