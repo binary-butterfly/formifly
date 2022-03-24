@@ -1,3 +1,5 @@
+import {findFieldValidatorFromName} from './validationHelpers';
+
 export const getFieldValueFromKeyString = (keyString, values) => {
     const fieldNames = keyString.split('.');
     let dependentValue = values;
@@ -44,20 +46,26 @@ export const convertDateObjectToInputString = (date) => {
     }).replace(' ', 'T');
 };
 
-export const completeDefaultValues = (validatorDefaults, userDefaults) => {
+export const completeDefaultValues = (validatorDefaults, userDefaults, shape, keyText) => {
     Object.entries(userDefaults).map(([key, value]) => {
+        const thisKeyText = keyText === undefined ? key : keyText + '.' + key;
         if (value !== null) {
-
             if (Array.isArray(value)) {
-                if (validatorDefaults[key] === undefined) {
-                    validatorDefaults[key] = [];
+                if (validatorDefaults[key] === undefined || (validatorDefaults[key].length === 0 && value !== [])) {
+                    try {
+                        const fieldValidator = findFieldValidatorFromName(thisKeyText, shape);
+                        validatorDefaults[key] = [fieldValidator.of.getDefaultValue()];
+                    } catch (e) {
+                        // If the use has supplied some value for an array field that is not defined in the shape, we can safely ignore the shape
+                        validatorDefaults[key] = [];
+                    }
                 }
-                validatorDefaults[key] = completeDefaultValues(validatorDefaults[key], value);
+                validatorDefaults[key] = completeDefaultValues(validatorDefaults[key], value, shape, thisKeyText);
             } else if (typeof value === 'object') {
                 if (validatorDefaults[key] === undefined) {
                     validatorDefaults[key] = {};
                 }
-                validatorDefaults[key] = completeDefaultValues(validatorDefaults[key], value);
+                validatorDefaults[key] = completeDefaultValues(validatorDefaults[key], value, shape, thisKeyText);
             } else {
                 validatorDefaults[key] = value;
             }

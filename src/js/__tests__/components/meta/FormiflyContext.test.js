@@ -92,6 +92,28 @@ describe('FormiflyContext', () => {
         expect(screen.getByLabelText('Foo').value).toStrictEqual('bar');
     });
 
+    it('completes array default values', () => {
+        const shape = new ObjectValidator({
+            array: new ArrayValidator(
+                new ObjectValidator({
+                        foo: new StringValidator(),
+                        subArray: new ArrayValidator(new StringValidator('apple')).minLength(1),
+                    },
+                ),
+            ),
+        });
+
+        const defaultValues = {
+            array: [{'foo': 'banana'}],
+        };
+
+        render(<FormiflyForm shape={shape} onSubmit={() => null} defaultValues={defaultValues}>
+            <AutomagicFormiflyField label="Sub Array Text" name="array.0.subArray.0"/>
+        </FormiflyForm>);
+
+        expect(screen.getByLabelText('Sub Array Text').value).toStrictEqual('apple');
+    });
+
     it('can check if objects have errors or touched fields within them', async () => {
         const shape = new ObjectValidator({
             stepOne: new ObjectValidator({
