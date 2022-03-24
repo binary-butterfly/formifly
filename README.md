@@ -882,6 +882,11 @@ The ObjectValidator accepts an additional parameter for its `getPropType` functi
 If you pass `true` to the function, instead of returning `PropTypes.shape`, it will return an object that you can directly assign as
 the `PropTypes` of a component.
 
+In addition to the regular `validate` function, the ObjectValidator also has a `validateWithoutRecursion` function.  
+This function allows you to validate all child fields that are neither Array nor ObjectValidators.  
+This can be useful if you only need to validate a subset of a form that is split in multiple steps, with those steps being sub fields of
+each other.
+
 Example:
 
 ```js
@@ -910,6 +915,8 @@ Available methods:
 - `lengthRange(min: Number, max: Number, msg: [String])` Enforce an amount of children within an inclusive range.  
   **Note that when `min` is > 0, the field will be considered required automatically.**  
   Use `{{min}}` and/ or `{{max}}` to include the minimum and/ or maximum amount of children in your custom error string respectively.
+- `validateWithoutRecursion(values, otherValues, siblings)` This function allows you to validate the array entries non recursively.  
+   Note that it only works on Array and ObjectValidators since other validators are not recursive by design.
 
 Example:
 
@@ -1348,3 +1355,11 @@ In order to work on this library, follow these steps:
     1. Run tests and create coverage: `npm run coverage`
     2. Fix any tests that fail
     3. Check the test coverage output and make sure all of your additions are covered where that makes sense
+
+Note that this library follows semantic versioning.  
+This means that any changes which change the API in a breaking way can only be merged in mayor updates.  
+Minor updates are reserved for added features and patch updates are used for bugfixes and dependency upgrades.
+
+However, what is considered a breaking change of the API is mostly defined by behaviour documented here, not by code itself.  
+This means that bug fixes which change the API in a way that makes it conform to this documentation may be allowed in a minor or patch
+release.
