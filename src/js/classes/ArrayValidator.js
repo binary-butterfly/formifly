@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import {ensureValueIsNumeric} from '../helpers/developerInputValidators';
 import BaseValidator from './BaseValidator';
+import ObjectValidator from './ObjectValidator';
 
 class ArrayValidator extends BaseValidator {
     of;
@@ -101,7 +102,20 @@ class ArrayValidator extends BaseValidator {
         return ret;
     }
 
-    validate(values, otherValues = {}, siblings = {}) {
+    /**
+     * This function allows you to validate all child fields non recursively.
+     * Nothing will change if this.of is not an Array or ObjectValidator since it only applies to those.
+     * This means that all of their fields except those that are either Array or ObjectValidators are validated.
+     * @param {Array} values
+     * @param {Object} [otherValues]
+     * @param {any} [siblings]
+     * @return {*|[boolean, *[]]|[boolean, *[]]}
+     */
+    validateWithoutRecursion(values, otherValues, siblings) {
+        return this.validate(values, otherValues, siblings, false);
+    }
+
+    validate(values, otherValues = {}, siblings = {}, recursion = true) {
         // First we validate the amount of entries as well as dependent filters and requirement filters
         const preValidate = super.validate(values, otherValues, siblings);
         if (preValidate[0] === false) {
@@ -110,13 +124,21 @@ class ArrayValidator extends BaseValidator {
 
         // Then, if the amount is correct, we validate the specific entries
         const tests = [];
+
+        let testFunc;
+        if (recursion || !(this.of instanceof ObjectValidator || this.of instanceof ArrayValidator)) {
+            testFunc = this.of.validate.bind(this.of);
+        } else {
+            testFunc = this.of.validateWithoutRecursion.bind(this.of);
+        }
+
         // Unpack to avoid mutations
         const testValues = [...values];
         let allOk = true;
         for (const index in testValues) {
             const value = testValues[index];
 
-            const test = this.of.validate(value, otherValues, testValues);
+            const test = testFunc(value, otherValues, testValues);
             tests.push(test);
             if (test[0] === false) {
                 allOk = false;

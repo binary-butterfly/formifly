@@ -243,3 +243,19 @@ test('Test dropNotInShape', () => {
     validator.setDropNotInShape(true);
     expect(validator.validate(values)).toStrictEqual([true, {foo: 'bar'}]);
 });
+
+test('Test ObjectValidator validateWithoutRecursion', () => {
+    const validator = new ObjectValidator({
+        foo: new StringValidator(),
+        bar: new ArrayValidator(new StringValidator().minLength(10)),
+        baz: new ObjectValidator({test: new StringValidator().minLength(10)}),
+    });
+
+    const values = {
+        foo: 'abc',
+        bar: ['def', 'ghi'],
+        baz: {test: 'uff'},
+    };
+
+    expect(validator.validateWithoutRecursion(values)).toStrictEqual([true, values]);
+});

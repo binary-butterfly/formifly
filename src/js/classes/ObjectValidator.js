@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import ArrayValidator from './ArrayValidator';
 import BaseValidator from './BaseValidator';
 
 class ObjectValidator extends BaseValidator {
@@ -49,7 +50,18 @@ class ObjectValidator extends BaseValidator {
         return ret;
     }
 
-    validate(value, otherValues, siblings) {
+    /**
+     * This function allows you to validate the ObjectValidator's child fields without validating any sub objects or array children.
+     * @param {Object} value
+     * @param {Object} [otherValues]
+     * @param {Object} [siblings]
+     * @return {*|[boolean, *]|[boolean, {}]}
+     */
+    validateWithoutRecursion(value, otherValues, siblings) {
+        return this.validate(value, otherValues, siblings, false);
+    }
+
+    validate(value, otherValues, siblings, recursion = true) {
         const preValidate = super.validate(value, otherValues, siblings);
         if (!preValidate[0]) {
             return preValidate;
@@ -60,6 +72,12 @@ class ObjectValidator extends BaseValidator {
         let allOk = true;
         let tests = {};
         for (const fieldName in this.fields) {
+            if (!recursion) {
+                if (this.fields[fieldName] instanceof ArrayValidator || this.fields[fieldName] instanceof ObjectValidator) {
+                    continue;
+                }
+            }
+
             const test = this.fields[fieldName].validate(testValue[fieldName], otherValues, testValue);
             tests[fieldName] = test;
             if (test[0] === false) {

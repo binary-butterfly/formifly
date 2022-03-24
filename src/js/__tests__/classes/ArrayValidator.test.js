@@ -89,9 +89,34 @@ test('Test getPropType required', () => {
     expect(String(validator.getPropType())).toBe(String(PropTypes.arrayOf(PropTypes.string.isRequired).isRequired));
 });
 
-test('Test arrayValidator does not mutate children', () => {
+test('Test ArrayValidator does not mutate children', () => {
     const array = [{foo: true}];
     const validator = new ArrayValidator(new ObjectValidator({foo: new BooleanValidator()}));
     validator.validate(array);
     expect(array[0].foo).toBe(true);
+});
+
+test('Test ArrayValidator validateWithoutRecursion', () => {
+    const validator = new ArrayValidator(new ObjectValidator({
+        foo: new StringValidator(),
+        bar: new ObjectValidator({test: new StringValidator().minLength(10)}),
+        baz: new ArrayValidator(new StringValidator().minLength(10)),
+    }));
+
+    const values = [
+        {foo: 'abc', bar: {test: 'def'}, baz: ['ghi']},
+    ];
+
+    expect(validator.validateWithoutRecursion(values)).toStrictEqual([true, values]);
+});
+
+test('Test ArrayValidator validateWithoutRecursion works with array child fields', () => {
+    const validator = new ArrayValidator(new ArrayValidator(new ObjectValidator({
+        foo: new StringValidator(),
+        bar: new ObjectValidator({test: new StringValidator().minLength(10)}),
+        baz: new ArrayValidator(new StringValidator().minLength(10)),
+    })));
+
+    const values = [[{foo: 'abc', bar: {test: 'def'}, baz: ['ghi']}]];
+    expect(validator.validateWithoutRecursion(values)).toStrictEqual([true, values]);
 });
