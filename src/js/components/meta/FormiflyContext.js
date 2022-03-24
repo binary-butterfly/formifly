@@ -25,7 +25,7 @@ export const FormiflyProvider = (props) => {
             return defaultValues;
         }
 
-        return completeDefaultValues(defaultValues, initialValues);
+        return completeDefaultValues(defaultValues, initialValues, shape);
     });
 
     const [errors, setErrors] = React.useState({});
