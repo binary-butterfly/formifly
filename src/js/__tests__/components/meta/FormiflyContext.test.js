@@ -108,11 +108,15 @@ describe('FormiflyContext', () => {
         };
 
         render(<FormiflyForm shape={shape} onSubmit={() => null} defaultValues={defaultValues}>
+            <AutomagicFormiflyField label="Foo" name="array.0.foo"/>
             <AutomagicFormiflyField label="Sub Array Text" name="array.0.subArray.0"/>
+            <AutomagicFormiflyField label="Foo2" name="array.1.foo"/>
             <AutomagicFormiflyField label="Sub Array Text2" name="array.1.subArray.0"/>
         </FormiflyForm>);
 
+        expect(screen.getByLabelText('Foo').value).toStrictEqual('banana')
         expect(screen.getByLabelText('Sub Array Text').value).toStrictEqual('apple');
+        expect(screen.getByLabelText('Foo2').value).toStrictEqual('cucumber')
         expect(screen.getByLabelText('Sub Array Text2').value).toStrictEqual('apple');
     });
 

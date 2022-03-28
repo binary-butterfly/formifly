@@ -54,10 +54,9 @@ export const completeDefaultValues = (validatorDefaults, userDefaults, shape, ke
                 if (validatorDefaults[key] === undefined || (validatorDefaults[key].length === 0 && value !== [])) {
                     try {
                         const fieldValidator = findFieldValidatorFromName(thisKeyText, shape);
-                        const fieldDefault = fieldValidator.of.getDefaultValue();
                         validatorDefaults[key] = [];
                         for (let c = 0; c < value.length; c++) {
-                            validatorDefaults[key].push(fieldDefault);
+                            validatorDefaults[key].push(fieldValidator.of.getDefaultValue());
                         }
                     } catch (e) {
                         // If the use has supplied some value for an array field that is not defined in the shape, we can safely ignore the shape
