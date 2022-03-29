@@ -47,6 +47,7 @@ REST backends.
     - [ArrayValidator](#arrayvalidator)
     - [AnyOfValidator](#anyofvalidator)
     - [EmailValidator](#emailvalidator)
+    - [PhoneNumberValidator](#phonenumbervalidator)
 6. [Cross Dependent Fields](#cross-dependent-fields)
 7. [Creating your own Validators](#creating-your-own-validators)
 8. [Tips and tricks](#tips-and-tricks)
@@ -975,6 +976,16 @@ This has the added benefit that you can hardcode the validator options if you us
 This is a very simple validator that only checks if the given string has an @ somewhere within it and sets the default input type
 to `email`.  
 Other than that it behaves exactly like the [StringValidator](#stringvalidator).
+
+### PhoneNumberValidator
+
+This validator does nothing except set the default input type to `tel`.  
+This is done this way since phone numbers look very different around the world and building a validator that does not have any false
+positives or negatives is basically impossible.
+
+If you really want to validate phone numbers client side, you should build your own validator.
+
+This validator behaves exactly like the [StringValidator](#stringvalidator).
 
 ## Cross Dependent Fields
 
