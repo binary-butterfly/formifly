@@ -13,6 +13,7 @@ import ObjectValidator from './classes/ObjectValidator';
 import BooleanValidator from './classes/BooleanValidator';
 import NumberValidator from './classes/NumberValidator';
 import DateTimeValidator from './classes/DateTimeValidator';
+import EmailValidator from './classes/EmailValidator';
 import {findFieldValidatorFromName, unpackErrors} from './helpers/validationHelpers';
 import {convertDateObjectToInputString, getFieldValueFromKeyString, setFieldValueFromKeyString} from './helpers/generalHelpers';
 import {ensureValueIsDateObject, ensureValueIsNumeric, ensureValueIsRegexp} from './helpers/developerInputValidators';
@@ -40,6 +41,7 @@ export {
     BooleanValidator,
     NumberValidator,
     DateTimeValidator,
+    EmailValidator,
     findFieldValidatorFromName,
     unpackErrors,
     convertDateObjectToInputString,
