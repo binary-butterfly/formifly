@@ -46,6 +46,8 @@ REST backends.
     - [ObjectValidator](#objectvalidator)
     - [ArrayValidator](#arrayvalidator)
     - [AnyOfValidator](#anyofvalidator)
+    - [EmailValidator](#emailvalidator)
+    - [PhoneNumberValidator](#phonenumbervalidator)
 6. [Cross Dependent Fields](#cross-dependent-fields)
 7. [Creating your own Validators](#creating-your-own-validators)
 8. [Tips and tricks](#tips-and-tricks)
@@ -916,7 +918,7 @@ Available methods:
   **Note that when `min` is > 0, the field will be considered required automatically.**  
   Use `{{min}}` and/ or `{{max}}` to include the minimum and/ or maximum amount of children in your custom error string respectively.
 - `validateWithoutRecursion(values, otherValues, siblings)` This function allows you to validate the array entries non recursively.  
-   Note that it only works on Array and ObjectValidators since other validators are not recursive by design.
+  Note that it only works on Array and ObjectValidators since other validators are not recursive by design.
 
 Example:
 
@@ -968,6 +970,22 @@ class WeirdPasswordValidator extends AnyOfValidator {
 ```
 
 This has the added benefit that you can hardcode the validator options if you use the validator in multiple places like shown above.
+
+### EmailValidator
+
+This is a very simple validator that only checks if the given string has an @ somewhere within it and sets the default input type
+to `email`.  
+Other than that it behaves exactly like the [StringValidator](#stringvalidator).
+
+### PhoneNumberValidator
+
+This validator does nothing except set the default input type to `tel`.  
+This is done this way since phone numbers look very different around the world and building a validator that does not have any false
+positives or negatives is basically impossible.
+
+If you really want to validate phone numbers client side, you should build your own validator.
+
+This validator behaves exactly like the [StringValidator](#stringvalidator).
 
 ## Cross Dependent Fields
 
