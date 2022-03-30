@@ -2,6 +2,10 @@ import PropTypes from 'prop-types';
 import {ensureValueIsNumeric, ensureValueIsRegexp} from '../helpers/developerInputValidators';
 import BaseValidator from './BaseValidator';
 
+/**
+ * A validator that allows you to validate string fields.
+ * @extends BaseValidator
+ */
 class StringValidator extends BaseValidator {
     defaultInputType = 'text';
     propType = PropTypes.string;

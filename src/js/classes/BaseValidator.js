@@ -1,6 +1,10 @@
 import PropTypes from 'prop-types';
 import {getFieldValueFromKeyString} from '../helpers/generalHelpers';
 
+/**
+ * The validator that all validators extend.
+ * Probably should not be used on its own
+ */
 class BaseValidator {
     defaultInputType = 'text';
     requiredError;
@@ -14,7 +18,6 @@ class BaseValidator {
     mutationFunc;
 
     /**
-     * Validates a field
      * @param [defaultValue]
      * @param {String} [defaultErrorMsg]
      * @param {Function} [mutationFunc]
@@ -395,7 +398,7 @@ class BaseValidator {
      * Checks if the value is one included in the provided array
      * @param {Array} values
      * @param {String} [msg]
-     * @return {BaseValidator}
+     * @return {this}
      */
     oneOf(values, msg) {
         if (msg === undefined) {
@@ -412,6 +415,13 @@ class BaseValidator {
         return this;
     }
 
+    /**
+     * Validates a value
+     * @param value
+     * @param otherValues
+     * @param siblings
+     * @return {*}
+     */
     validate(value, otherValues = {}, siblings = {}) {
         let ret;
         if (this.dependent) {
@@ -429,10 +439,18 @@ class BaseValidator {
         return ret;
     }
 
+    /**
+     * Returns the validator's default value
+     * @return {any}
+     */
     getDefaultValue() {
         return this.defaultValue;
     }
 
+    /**
+     * Returns the validator's PropTypes representation
+     * @return {Validator<NonNullable<any>>|Requireable<any>}
+     */
     getPropType() {
         return this.isRequired ? this.propType.isRequired : this.propType;
     }

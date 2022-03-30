@@ -2,6 +2,10 @@ import StringValidator from './StringValidator';
 
 const emailRegexp = /.+@.+/;
 
+/**
+ * A very simple email validator.
+ * @extends StringValidator
+ */
 class EmailValidator extends StringValidator {
     defaultInputType = 'email';
 
