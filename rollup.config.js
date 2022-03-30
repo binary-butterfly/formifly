@@ -12,7 +12,7 @@ const config = {
     output: {
         file: 'dist/formifly.js',
         format: 'umd',
-        sourcemap: env !== 'production',
+        sourcemap: true,
         globals: {
             'react': 'React',
             'react-dom': 'ReactDOM',
@@ -48,7 +48,7 @@ if (env === 'production') {
         {
             file: 'dist/umd/formifly.js',
             format: 'umd',
-            sourcemap: false,
+            sourcemap: true,
             globals: {
                 'react': 'React',
                 'react-dom': 'ReactDOM',
@@ -61,7 +61,7 @@ if (env === 'production') {
         {
             file: 'dist/esm/index.js',
             format: 'esm',
-            sourcemap: false,
+            sourcemap: true,
             globals: {
                 'react': 'React',
                 'react-dom': 'ReactDOM',
