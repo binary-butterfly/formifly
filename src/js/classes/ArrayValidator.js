@@ -3,6 +3,10 @@ import {ensureValueIsNumeric} from '../helpers/developerInputValidators';
 import BaseValidator from './BaseValidator';
 import ObjectValidator from './ObjectValidator';
 
+/**
+ * A validator that allows you to validate array fields.
+ * @extends BaseValidator
+ */
 class ArrayValidator extends BaseValidator {
     of;
     minChildCount = 0;

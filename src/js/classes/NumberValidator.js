@@ -9,6 +9,10 @@ const delocalize = (value) => {
     return parseFloat(String(value).replace(',', '.'));
 };
 
+/**
+ * A validator that allows you to validate numbers.
+ * @extends BaseValidator
+ */
 class NumberValidator extends BaseValidator {
     defaultInputType = 'number';
     propType = PropTypes.number;

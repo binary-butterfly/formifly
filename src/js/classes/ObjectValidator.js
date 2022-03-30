@@ -2,6 +2,10 @@ import PropTypes from 'prop-types';
 import ArrayValidator from './ArrayValidator';
 import BaseValidator from './BaseValidator';
 
+/**
+ * A validator that allows you to validate object fields. It is also used as the base for any validation shape.
+ * @extends BaseValidator
+ */
 class ObjectValidator extends BaseValidator {
     fields = {};
     dropEmpty;

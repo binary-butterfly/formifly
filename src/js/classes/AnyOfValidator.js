@@ -1,5 +1,9 @@
 import BaseValidator from './BaseValidator';
 
+/**
+ * A "meta" validator that allows you to check if a value can be successfully validated by any of a given list of validators.
+ * @extends BaseValidator
+ */
 class AnyOfValidator extends BaseValidator {
     validatorOptions;
 
