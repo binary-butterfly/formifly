@@ -306,15 +306,11 @@ describe('FormiflyContext', () => {
 
         render(<Form/>);
 
-        const warnMock = jest.fn();
-        global.console.warn = warnMock;
-
         expect(screen.queryByText('Submission has failed')).toBeNull();
         fireEvent.click(screen.getByText('Submit'));
 
         return screen.findByText('Submission has failed')
             .then((result) => {
-                expect(warnMock).toHaveBeenCalledTimes(1);
                 return expect(result).not.toBeNull();
             });
     });
