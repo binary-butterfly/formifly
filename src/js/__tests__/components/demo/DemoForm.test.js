@@ -213,12 +213,8 @@ describe('DemoForm', () => {
     it('renders a form that can not be submitted while values are missing', () => {
         const submitButton = screen.getByText('Submit Form');
 
-        const warnMock = jest.fn();
-        global.console.warn = warnMock;
-
         fireEvent.click(submitButton);
         return findAllAlertsWithContent().then(result => {
-            expect(warnMock).toHaveBeenCalledTimes(1);
             expect(result).not.toStrictEqual([]);
         });
     });
