@@ -5,6 +5,8 @@ import BaseValidator from './BaseValidator';
 /**
  * A validator that allows you to validate object fields. It is also used as the base for any validation shape.
  * @extends BaseValidator
+ *
+ * @property {BaseValidator|AnyOfValidator|ArrayValidator|BooleanValidator|EmailValidator|NumberValidator|ObjectValidator|PhoneNumberValidator|StringValidator} fields  - The fields of the object
  */
 class ObjectValidator extends BaseValidator {
     fields = {};

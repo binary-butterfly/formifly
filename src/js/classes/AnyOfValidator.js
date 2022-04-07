@@ -3,6 +3,8 @@ import BaseValidator from './BaseValidator';
 /**
  * A "meta" validator that allows you to check if a value can be successfully validated by any of a given list of validators.
  * @extends BaseValidator
+ *
+ * @property {Array<BaseValidator|AnyOfValidator|ArrayValidator|BooleanValidator|EmailValidator|NumberValidator|ObjectValidator|PhoneNumberValidator|StringValidator>} validatorOptions - The validators that the value is checked against
  */
 class AnyOfValidator extends BaseValidator {
     validatorOptions;

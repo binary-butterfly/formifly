@@ -32,7 +32,7 @@ describe('FormiflyContext', () => {
     it('throws an error when trying to get field props for an object validator', () => {
         const failingFunc = () => {
             const shape = new ObjectValidator({foo: new ObjectValidator({bar: new StringValidator()})});
-            render(<FormiflyForm shape={shape} onSubmit={() => null}>
+            render(<FormiflyForm shape={shape} onSubmit={() => Promise.resolve()}>
                 <ObjectComponent/>
             </FormiflyForm>);
         };
@@ -107,7 +107,7 @@ describe('FormiflyContext', () => {
             array: [{'foo': 'banana'}, {'foo': 'cucumber'}],
         };
 
-        render(<FormiflyForm shape={shape} onSubmit={() => null} defaultValues={defaultValues}>
+        render(<FormiflyForm shape={shape} onSubmit={() => Promise.resolve()} defaultValues={defaultValues}>
             <AutomagicFormiflyField label="Foo" name="array.0.foo"/>
             <AutomagicFormiflyField label="Sub Array Text" name="array.0.subArray.0"/>
             <AutomagicFormiflyField label="Foo2" name="array.1.foo"/>
@@ -164,7 +164,7 @@ describe('FormiflyContext', () => {
             foo: new StringValidator().required(),
         });
 
-        render(<FormiflyForm disableNativeRequired={true} shape={shape} onSubmit={() => null}>
+        render(<FormiflyForm disableNativeRequired={true} shape={shape} onSubmit={() => Promise.resolve()}>
             <AutomagicFormiflyField label="Foo" name="foo"/>
         </FormiflyForm>);
 
@@ -178,7 +178,7 @@ describe('FormiflyContext', () => {
             foo: new NumberValidator().min(0).max(1),
         });
 
-        render(<FormiflyForm shape={shape} onSubmit={() => null} disableNativeMinMax={true}>
+        render(<FormiflyForm shape={shape} onSubmit={() => Promise.resolve()} disableNativeMinMax={true}>
             <AutomagicFormiflyField label="Foo" name="foo"/>
         </FormiflyForm>);
 
@@ -205,7 +205,7 @@ describe('FormiflyContext', () => {
                 <p>Valid2: {String(valid2)}</p>
                 <AutomagicFormiflyField label="foo" name="foo"/>
                 <AutomagicFormiflyField label="bar" name="bar"/>
-                <button onClick={handleTestButtonClick}>Click</button>
+                <button type="button" onClick={handleTestButtonClick}>Click</button>
             </>;
         });
 
@@ -214,7 +214,7 @@ describe('FormiflyContext', () => {
             bar: new StringValidator().required(),
         });
 
-        render(<FormiflyForm shape={shape} onSubmit={() => null}>
+        render(<FormiflyForm shape={shape} onSubmit={() => Promise.resolve()}>
             <CheckForm/>
         </FormiflyForm>);
 
@@ -248,7 +248,7 @@ describe('FormiflyContext', () => {
             foo: new StringValidator(),
         });
 
-        render(<FormiflyForm shape={shape} onSubmit={() => null}>
+        render(<FormiflyForm shape={shape} onSubmit={() => Promise.resolve()}>
             <FormThatMakesNoSense/>
         </FormiflyForm>);
 
@@ -281,7 +281,7 @@ describe('FormiflyContext', () => {
             bar: new StringValidator(),
         });
 
-        render(<FormiflyForm shape={shape} onSubmit={() => null}>
+        render(<FormiflyForm shape={shape} onSubmit={() => Promise.resolve()}>
             <AwesomeForm/>
         </FormiflyForm>);
 
@@ -298,7 +298,7 @@ describe('FormiflyContext', () => {
                 foo: new StringValidator().required(),
             });
 
-            return <FormiflyForm shape={shape} onSubmit={() => null} onSubmitValidationError={() => setSubmitError(true)}>
+            return <FormiflyForm shape={shape} onSubmit={() => Promise.resolve()} onSubmitValidationError={() => setSubmitError(true)}>
                 {submitError && <p>Submission has failed</p>}
                 <button type="submit">Submit</button>
             </FormiflyForm>;
@@ -306,11 +306,17 @@ describe('FormiflyContext', () => {
 
         render(<Form/>);
 
+        const warnMock = jest.fn();
+        global.console.warn = warnMock;
+
         expect(screen.queryByText('Submission has failed')).toBeNull();
         fireEvent.click(screen.getByText('Submit'));
 
         return screen.findByText('Submission has failed')
-            .then((result) => expect(result).not.toBeNull());
+            .then((result) => {
+                expect(warnMock).toHaveBeenCalledTimes(1);
+                return expect(result).not.toBeNull();
+            });
     });
 
     it('can get the field value if it is not passed to validateField', () => {
@@ -334,7 +340,7 @@ describe('FormiflyContext', () => {
             foo: new StringValidator().required(),
         });
 
-        render(<FormiflyForm shape={shape} onSubmit={() => null} defaultValues={{foo: 'bar'}}>
+        render(<FormiflyForm shape={shape} onSubmit={() => Promise.resolve()} defaultValues={{foo: 'bar'}}>
             <Form/>
         </FormiflyForm>);
 
@@ -368,7 +374,7 @@ describe('FormiflyContext', () => {
             bar: new StringValidator().required('this would have been required'),
         });
 
-        render(<FormiflyForm shape={shape} onSubmit={() => null}>
+        render(<FormiflyForm shape={shape} onSubmit={() => Promise.resolve()}>
             <NotReallyAForm/>
         </FormiflyForm>);
 

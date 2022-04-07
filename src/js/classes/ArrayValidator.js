@@ -6,6 +6,8 @@ import ObjectValidator from './ObjectValidator';
 /**
  * A validator that allows you to validate array fields.
  * @extends BaseValidator
+ *
+ * @property {BaseValidator|AnyOfValidator|ArrayValidator|BooleanValidator|EmailValidator|NumberValidator|ObjectValidator|PhoneNumberValidator|StringValidator} of  - The validator of what this is an array of
  */
 class ArrayValidator extends BaseValidator {
     of;
