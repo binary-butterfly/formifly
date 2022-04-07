@@ -255,6 +255,7 @@ export const FormiflyProvider = (props) => {
                 setSubmitSuccess(true);
             }).catch(reason => setSubmitFailureReason(reason));
         }).catch((reason) => {
+            console.warn('Pre submit validation errors:', reason)
             let newErrors = {};
             Object.entries(reason).map(([key, value]) => {
                 newErrors = setFieldValueFromKeyString(key, value, newErrors);
