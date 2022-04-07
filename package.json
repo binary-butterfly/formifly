@@ -5,9 +5,14 @@
   "main": "dist/umd/formifly.js",
   "module": "dist/esm/index.js",
   "files": [
+    "src/js/classes/*",
+    "src/js/helpers/*",
+    "src/js/components/*",
+    "src/js/main.js",
     "dist/esm/*",
     "dist/umd/*"
   ],
+  "jsnext:main": "src/js/main.js",
   "scripts": {
     "test": "jest --config jest.config.js ",
     "coverage": "jest --config jest.config.js --collectCoverage",
