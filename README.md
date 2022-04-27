@@ -164,7 +164,7 @@ const ItemsSubForm = withFormifly((props) => {
 
     const handleRemoveClick = (which) => {
         const newItems = values.items.filter((item, index) => index !== which);
-        setFieldValue(items, newItems);
+        setFieldValue('items', newItems);
     }
 
     return <>
