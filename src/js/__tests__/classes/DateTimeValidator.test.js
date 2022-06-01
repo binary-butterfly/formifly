@@ -6,6 +6,16 @@ test('Test DateTimeValidator returns false on malformed dates', () => {
 });
 
 describe.each([
+    ['2020-01-01T00:00:00', 'when omitted'],
+    ['2020-01-01T00:00:00Z', 'when given'],
+])('Test DateTimeValidator handles trailing Z', (input, name) => {
+    test(name, () => {
+        const validator = new DateTimeValidator();
+        expect(validator.validate(input)).toStrictEqual([true, new Date(input)]);
+    });
+});
+
+describe.each([
     ['2020-01-01T00:00', new Date('2019-01-01'), undefined, [true, new Date('2020-01-01T00:00')], 'returns true on later date'],
     ['2020-01-01T00:00', new Date('2021-01-01'), undefined, [false, 'This date must be at least ' + new Date('2021-01-01').toLocaleString()], 'returns false on earlier date'],
     ['2020-01-01T00:00', new Date('2021-01-01'), 'banana {{date}}', [false, 'banana ' + new Date('2021-01-01').toLocaleString()], 'uses correct error msg'],
