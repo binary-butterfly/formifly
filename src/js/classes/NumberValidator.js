@@ -141,30 +141,7 @@ class NumberValidator extends BaseValidator {
     decimalPlaces(count) {
         ensureValueIsNumeric(count, 'decimalPlaces', 'NumberValidator', 'count');
         this.validateFuncs.push([
-            value => {
-                const str = value.toString();
-                const splits = str.split('.');
-
-                if (count > 0) {
-                    let pastDecimal = splits[1];
-                    if (pastDecimal === undefined) {
-                        pastDecimal = '';
-                        for (let c = 0; c < count; c++) {
-                            pastDecimal += '0' + '';
-                        }
-                    } else {
-                        if (pastDecimal.length > count) {
-                            pastDecimal = pastDecimal.substr(0, count);
-                        } else if (pastDecimal.length < count) {
-                            for (let c = pastDecimal.length; c < count; c++) {
-                                pastDecimal += '0' + '';
-                            }
-                        }
-                    }
-                    return splits[0] + '.' + pastDecimal;
-                }
-                return splits[0];
-            },
+            value => value.toFixed(count),
             'This is not a validator and should not return false.',
         ]);
         return this;
