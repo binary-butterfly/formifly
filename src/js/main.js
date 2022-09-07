@@ -9,12 +9,13 @@ import AnyOfValidator from './classes/AnyOfValidator';
 import BaseValidator from './classes/BaseValidator';
 import StringValidator from './classes/StringValidator';
 import ArrayValidator from './classes/ArrayValidator';
+import ArrayOrSpecificStringValidator from './classes/ArrayOrSpecificStringValidator';
 import ObjectValidator from './classes/ObjectValidator';
 import BooleanValidator from './classes/BooleanValidator';
 import NumberValidator from './classes/NumberValidator';
 import DateTimeValidator from './classes/DateTimeValidator';
 import EmailValidator from './classes/EmailValidator';
-import PhoneNumberValidator from './classes/PhoneNumberValidator'
+import PhoneNumberValidator from './classes/PhoneNumberValidator';
 import {findFieldValidatorFromName, unpackErrors} from './helpers/validationHelpers';
 import {convertDateObjectToInputString, getFieldValueFromKeyString, setFieldValueFromKeyString} from './helpers/generalHelpers';
 import {ensureValueIsDateObject, ensureValueIsNumeric, ensureValueIsRegexp} from './helpers/developerInputValidators';
@@ -38,6 +39,7 @@ export {
     BaseValidator,
     StringValidator,
     ArrayValidator,
+    ArrayOrSpecificStringValidator,
     ObjectValidator,
     BooleanValidator,
     NumberValidator,
