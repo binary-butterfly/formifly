@@ -45,6 +45,7 @@ REST backends.
     - [BooleanValidator](#booleanvalidator)
     - [ObjectValidator](#objectvalidator)
     - [ArrayValidator](#arrayvalidator)
+    - [ArrayOrSpecificStringValidator](#arrayorspecificstringvalidator)
     - [AnyOfValidator](#anyofvalidator)
     - [EmailValidator](#emailvalidator)
     - [PhoneNumberValidator](#phonenumbervalidator)
