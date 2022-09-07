@@ -23,7 +23,7 @@ class ArrayValidator extends BaseValidator {
      * @param {Function} [onError]
      * @param {Array} [dependent]
      */
-    constructor(of, defaultMessage, mutationFunc, onError, dependent) {
+    constructor(of, defaultMessage = 'This field has to be an array', mutationFunc, onError, dependent) {
         super(undefined, defaultMessage, mutationFunc, onError, dependent);
         this.of = of;
         this.propType = PropTypes.arrayOf(of.getPropType());
@@ -126,6 +126,10 @@ class ArrayValidator extends BaseValidator {
         const preValidate = super.validate(values, otherValues, siblings);
         if (preValidate[0] === false) {
             return preValidate;
+        }
+
+        if (Array.isArray(values) === false) {
+            return [false, this.defaultErrorMsg];
         }
 
         // Then, if the amount is correct, we validate the specific entries
