@@ -928,6 +928,18 @@ new ArrayValidator(new StringValidator().required()).minLength(2);
 
 This will validate any child fields of the Array as Strings while also making sure there are at least two children.
 
+### ArrayOrSpecificStringValidator
+
+This validator is exactly the same as the ArrayValidator but it also allows a specific string to be the value instead of an array.
+This is useful when using Formifly validators in combination with another library that may do "weird" things with array field
+values such as [butterflyDataFilters](https://github.com/binary-butterfly/butterflyDataFilters).
+
+Example:
+
+```js
+new ArrayOrSpecifcStringValidator(new StringValidator(), undefined, undefined, undefined, undefined, '_any');
+```
+
 ### AnyOfValidator
 
 This validator tries to validate the field value against an array of other validators and validates successfully if any of those match.
