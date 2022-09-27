@@ -101,7 +101,7 @@ class ArrayValidator extends BaseValidator {
      */
     getDefaultValue() {
         const fieldDefault = this.of.getDefaultValue();
-        let ret = [];
+        const ret = [];
         for (let c = 0; c < this.minChildCount; c++) {
             ret.push(fieldDefault);
         }

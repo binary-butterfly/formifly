@@ -18,7 +18,14 @@ class AnyOfValidator extends BaseValidator {
      * @param {Function} [onError]
      * @param {Array|Boolean} [dependent]
      */
-    constructor(validatorOptions, defaultValue, defaultErrorMsg = 'None of the available validators match', mutationFunc, onError, dependent) {
+    constructor(
+        validatorOptions,
+        defaultValue,
+        defaultErrorMsg = 'None of the available validators match',
+        mutationFunc,
+        onError,
+        dependent,
+    ) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
         this.validatorOptions = validatorOptions;
     }

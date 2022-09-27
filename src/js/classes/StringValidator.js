@@ -18,7 +18,7 @@ class StringValidator extends BaseValidator {
      */
     regex(expr, msg = 'This value is malformed') {
         ensureValueIsRegexp(expr, 'regex', 'StringValidator', 'expr');
-        this.validateFuncs.push([(value) => expr.test(value), msg]);
+        this.validateFuncs.push([value => expr.test(value), msg]);
         return this;
     }
 

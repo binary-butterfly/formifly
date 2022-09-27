@@ -1,5 +1,5 @@
-import React from 'react';
 import {fireEvent, render, screen, waitFor} from '@testing-library/react';
+import React from 'react';
 import ArrayValidator from '../../../classes/ArrayValidator';
 import BooleanValidator from '../../../classes/BooleanValidator';
 import NumberValidator from '../../../classes/NumberValidator';
@@ -48,14 +48,19 @@ describe('FormiflyContext', () => {
         };
         const error = jest.fn();
         global.console.error = error;
-        expect(failingFunc).toThrowError('Attempted to use formifly context outside of a provider. Only call useFormiflyContext from a component within a FormiflyForm.');
+        expect(failingFunc)
+            .toThrowError(
+                'Attempted to use formifly context outside of a provider. '
+                + 'Only call useFormiflyContext from a component within a FormiflyForm.',
+            );
         expect(error).toHaveBeenCalledTimes(2);
     });
 
     it('sets failure reason when onSubmit promise is rejected', () => {
         const shape = new ObjectValidator({foo: new StringValidator()});
 
-        render(<FormiflyForm shape={shape} onSubmit={() => new Promise(
+        render(
+            <FormiflyForm shape={shape} onSubmit={() => new Promise(
                 (resolve, reject) => reject({status: 400}),
             )}>
                 <SubmitErrorDisplay/>
@@ -67,9 +72,10 @@ describe('FormiflyContext', () => {
         fireEvent.click(screen.getByText('Submit'));
         return screen.findByText('{"status":400}').then(() => {
             expect(screen.getByText('Submission did not succeed')).not.toBeNull();
-        }).catch((reason) => {
-            expect(reason).toBeNull();
-        });
+        })
+            .catch((reason) => {
+                expect(reason).toBeNull();
+            });
     });
 
     it('completes default values', () => {
@@ -96,10 +102,9 @@ describe('FormiflyContext', () => {
         const shape = new ObjectValidator({
             array: new ArrayValidator(
                 new ObjectValidator({
-                        foo: new StringValidator(),
-                        subArray: new ArrayValidator(new StringValidator('apple')).minLength(1),
-                    },
-                ),
+                    foo: new StringValidator(),
+                    subArray: new ArrayValidator(new StringValidator('apple')).minLength(1),
+                }),
             ),
         });
 
@@ -114,16 +119,17 @@ describe('FormiflyContext', () => {
             <AutomagicFormiflyField label="Sub Array Text2" name="array.1.subArray.0"/>
         </FormiflyForm>);
 
-        expect(screen.getByLabelText('Foo').value).toStrictEqual('banana')
+        expect(screen.getByLabelText('Foo').value).toStrictEqual('banana');
         expect(screen.getByLabelText('Sub Array Text').value).toStrictEqual('apple');
-        expect(screen.getByLabelText('Foo2').value).toStrictEqual('cucumber')
+        expect(screen.getByLabelText('Foo2').value).toStrictEqual('cucumber');
         expect(screen.getByLabelText('Sub Array Text2').value).toStrictEqual('apple');
     });
 
     it('can check if objects have errors or touched fields within them', async () => {
         const shape = new ObjectValidator({
             stepOne: new ObjectValidator({
-                field: new NumberValidator().positive().required(),
+                field: new NumberValidator().positive()
+                    .required(),
             }),
             stepTwo: new ObjectValidator({
                 field: new StringValidator(),
@@ -175,7 +181,8 @@ describe('FormiflyContext', () => {
 
     it('can disable the native min and max props', () => {
         const shape = new ObjectValidator({
-            foo: new NumberValidator().min(0).max(1),
+            foo: new NumberValidator().min(0)
+                .max(1),
         });
 
         render(<FormiflyForm shape={shape} onSubmit={() => Promise.resolve()} disableNativeMinMax={true}>
@@ -195,8 +202,8 @@ describe('FormiflyContext', () => {
 
             const handleTestButtonClick = () => validateField('foo', '').then((valid) => {
                 setValid1(valid);
-                validateField('bar', '').then(valid2 => {
-                    setValid2(valid2);
+                validateField('bar', '').then((newValid2) => {
+                    setValid2(newValid2);
                 });
             });
 
@@ -253,7 +260,7 @@ describe('FormiflyContext', () => {
         </FormiflyForm>);
 
         fireEvent.click(screen.getByText('Cool button m8'));
-        expect(screen.findByText('foo')).not.toBeNull();
+        expect(await screen.findByText('foo')).not.toBeNull();
         await (waitFor(() => expect(screen.getByLabelText('fooField').value).toBe('foo')));
     });
 
@@ -286,7 +293,7 @@ describe('FormiflyContext', () => {
         </FormiflyForm>);
 
         fireEvent.click(screen.getByText('Button'));
-        expect(screen.findByText('Foo: foo')).not.toBeNull();
+        expect(await screen.findByText('Foo: foo')).not.toBeNull();
         await (waitFor(() => expect(screen.getByLabelText('barField').value).toBe('bar')));
     });
 
@@ -343,9 +350,7 @@ describe('FormiflyContext', () => {
         expect(screen.queryByText('That field is valid!')).toBeNull();
         fireEvent.click(screen.getByText('Validate that field!'));
 
-        return screen.findByText('That field is valid!').then((found) =>
-            expect(found).not.toBeNull(),
-        );
+        return screen.findByText('That field is valid!').then(found => expect(found).not.toBeNull());
     });
 
     it('can validate multiple fields at once', () => {
@@ -354,7 +359,7 @@ describe('FormiflyContext', () => {
             const [allPassed, setAllPassed] = React.useState(true);
 
             const handleClick = () => {
-                validateMultipleFields([['foo', ''], ['bar']]).then((allPassed) => setAllPassed(allPassed));
+                validateMultipleFields([['foo', ''], ['bar']]).then(newAllPassed => setAllPassed(newAllPassed));
             };
 
             return <>

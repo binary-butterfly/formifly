@@ -42,7 +42,14 @@ describe.each([
     ['a', 1, 3, undefined, [true, 'a'], 'returns true for a string that is as long as minLength'],
     ['a', 1, 1, undefined, [true, 'a'], 'returns true for a string that is as long as min and maxLength'],
     ['a', 2, 3, 'foo {{min}} {{max}}', [false, 'foo 2 3'], 'returns false for a string that is too short'],
-    ['abc', 1, 2, undefined, [false, 'This string must be between 1 and 2 characters long'], 'returns false for a string that is too short'],
+    [
+        'abc',
+        1,
+        2,
+        undefined,
+        [false, 'This string must be between 1 and 2 characters long'],
+        'returns false for a string that is too short',
+    ],
 ])('Test StringValidator lengthRange', (value, minLength, maxLength, msg, expected, name) => {
     test(name, () => {
         const validator = new StringValidator().lengthRange(minLength, maxLength, msg);
@@ -51,6 +58,11 @@ describe.each([
 });
 
 test('Test StringValidator validators can be chained', () => {
-    const validator = new StringValidator().required().minLength(1).maxLength(2).lengthRange(1, 2).regex(/[a-z]/);
+    const validator = new StringValidator()
+        .required()
+        .minLength(1)
+        .maxLength(2)
+        .lengthRange(1, 2)
+        .regex(/[a-z]/);
     expect(validator.validate('a')).toStrictEqual([true, 'a']);
 });

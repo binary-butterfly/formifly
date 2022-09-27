@@ -67,7 +67,10 @@ test('Test findFieldValidatorFromName throws error on non existent field', () =>
 
 test('Test findFieldValidatorFromName throws error on non existent array field', () => {
     function find() {
-        findFieldValidatorFromName('apple.banana', new ObjectValidator({'apple': new ArrayValidator(new ObjectValidator({foo: new BooleanValidator()}))}));
+        findFieldValidatorFromName(
+            'apple.banana',
+            new ObjectValidator({'apple': new ArrayValidator(new ObjectValidator({foo: new BooleanValidator()}))}),
+        );
     }
 
     expect(find).toThrowError('Could not find validator for apple.banana');

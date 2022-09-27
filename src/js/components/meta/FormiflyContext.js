@@ -1,12 +1,13 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import ArrayValidator from '../../classes/ArrayValidator';
 import BooleanValidator from '../../classes/BooleanValidator';
 import DateTimeValidator from '../../classes/DateTimeValidator';
 import NumberValidator from '../../classes/NumberValidator';
 import ObjectValidator from '../../classes/ObjectValidator';
 import {
-    completeDefaultValues, containsValuesThatAreNotFalse,
+    completeDefaultValues,
+    containsValuesThatAreNotFalse,
     convertDateObjectToInputString,
     getFieldValueFromKeyString,
     setFieldValueFromKeyString,
@@ -96,7 +97,10 @@ export const FormiflyProvider = (props) => {
 
     const handleBlur = (event) => {
         const name = event.target.name;
-        return validateField(name, event.target.type === 'radio' || event.target.type === 'checkbox' ? event.target.checked : event.target.value);
+        return validateField(
+            name,
+            event.target.type === 'radio' || event.target.type === 'checkbox' ? event.target.checked : event.target.value,
+        );
     };
 
     const validateField = (name, value) => {
@@ -163,7 +167,7 @@ export const FormiflyProvider = (props) => {
         const fieldValue = getFieldValueFromKeyString(name, values);
 
         const guessedType = fieldValidator.defaultInputType;
-        let additionalProps = {};
+        const additionalProps = {};
 
         if (type === 'radio') {
             additionalProps.onChange = handleRadioChange;
@@ -188,7 +192,7 @@ export const FormiflyProvider = (props) => {
             additionalProps.onChange = handleCheckChange;
         } else if (fieldValidator instanceof ArrayValidator) {
             additionalProps.onChange = handleMultiSelectChange;
-            additionalProps.value = fieldValue.filter((value) => value !== '');
+            additionalProps.value = fieldValue.filter(thisValue => thisValue !== '');
             additionalProps.multiple = true;
         } else if (fieldValidator instanceof ObjectValidator) {
             throw new Error('Object validators must not be used for input fields directly.');
@@ -213,15 +217,15 @@ export const FormiflyProvider = (props) => {
             additionalProps['aria-describedby'] += ' ' + additionalDescribedBy;
         }
 
-        const errors = hasErrors(name);
-        additionalProps['aria-invalid'] = Boolean(hasBeenTouched(name) && errors);
+        const iCanHazErrors = hasErrors(name);
+        additionalProps['aria-invalid'] = Boolean(hasBeenTouched(name) && iCanHazErrors);
 
         return {
             name: name,
             type: type ?? guessedType,
             value: fieldValue,
             id: id,
-            errors: errors,
+            errors: iCanHazErrors,
             onChange: handleChange,
             onBlur: handleBlur,
             onFocus: handleFocus,
@@ -249,24 +253,28 @@ export const FormiflyProvider = (props) => {
         setSubmitting(true);
         setSubmitSuccess(false);
         setSubmitFailureReason(null);
-        validateAll().then((changedValues) => {
-            return onSubmit(changedValues, setErrors).then(() => {
+        validateAll()
+            .then((changedValues) => {
+                return onSubmit(changedValues, setErrors)
+                    .then(() => {
+                        setSubmitting(false);
+                        setSubmitSuccess(true);
+                    })
+                    .catch(reason => setSubmitFailureReason(reason));
+            })
+            .catch((reason) => {
+                let newErrors = {};
+                Object.entries(reason).map(([key, value]) => {
+                    newErrors = setFieldValueFromKeyString(key, value, newErrors);
+                });
+                setErrors(newErrors);
+                setSubmitSuccess(false);
                 setSubmitting(false);
-                setSubmitSuccess(true);
-            }).catch(reason => setSubmitFailureReason(reason));
-        }).catch((reason) => {
-            let newErrors = {};
-            Object.entries(reason).map(([key, value]) => {
-                newErrors = setFieldValueFromKeyString(key, value, newErrors);
-            });
-            setErrors(newErrors);
-            setSubmitSuccess(false);
-            setSubmitting(false);
 
-            if (typeof onSubmitValidationError === 'function') {
-                onSubmitValidationError(newErrors, reason);
-            }
-        });
+                if (typeof onSubmitValidationError === 'function') {
+                    onSubmitValidationError(newErrors, reason);
+                }
+            });
     };
 
     const FormiflyContext = {
@@ -306,7 +314,9 @@ FormiflyProvider.propTypes = {
 export const useFormiflyContext = () => {
     const context = React.useContext(Context);
     if (!context || Object.keys(context).length === 0) {
-        throw new Error('Attempted to use formifly context outside of a provider. Only call useFormiflyContext from a component within a FormiflyForm.');
+        throw new Error(
+            'Attempted to use formifly context outside of a provider. Only call useFormiflyContext from a component within a FormiflyForm.',
+        );
     }
     return context;
 };

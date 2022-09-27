@@ -3,8 +3,8 @@
  * Since it is encouraged to only write integration tests for react components, these tests should cover almost all of the react components.
  * It also serves as the place where the classes are integration tested in addition to their unit tests.
  */
-import React from 'react';
 import {cleanup, fireEvent, render, screen} from '@testing-library/react';
+import React from 'react';
 import DemoForm from '../../../components/demo/DemoForm';
 import {convertDateObjectToInputString} from '../../../helpers/generalHelpers';
 
@@ -57,7 +57,7 @@ describe('DemoForm', () => {
         expect(screen.queryByText('This field must be a number')).toBeNull();
 
         changeInputValue(numberInput, 1);
-        expect(screen.queryByText('This value must be at least 2')).not.toBeNull();
+        expect(screen.getByText('This value must be at least 2')).not.toBeNull();
     });
 
     it('renders a number input that only allows whole numbers with a max value of 5', () => {
@@ -127,7 +127,11 @@ describe('DemoForm', () => {
         expect(firstOption.checked).toEqual(false);
         expect(secondOption.checked).toEqual(true);
 
-        expect(screen.queryByText('This radio group uses the FormiflyRadioGroup component, which creates an accessible field set to hold the options.')).not.toBeNull();
+        expect(
+            screen.getByText(
+                'This radio group uses the FormiflyRadioGroup component, which creates an accessible field set to hold the options.',
+            ),
+        ).not.toBeNull();
     });
 
     it('renders a horizontal radio group', () => {
@@ -141,7 +145,7 @@ describe('DemoForm', () => {
         expect(firstOption.checked).toEqual(false);
         expect(secondOption.checked).toEqual(true);
 
-        expect(screen.queryByText('Also select one of these horizontal fields please')).not.toBeNull();
+        expect(screen.getByText('Also select one of these horizontal fields please')).not.toBeNull();
     });
 
     it('renders a functional multi select', () => {
@@ -150,30 +154,30 @@ describe('DemoForm', () => {
 
         const selectAllOption = screen.getByLabelText('Select all');
         fireEvent.click(selectAllOption);
-        expect(screen.queryByText('All selected')).not.toBeNull();
+        expect(screen.getByText('All selected')).not.toBeNull();
 
         fireEvent.click(selectAllOption);
-        expect(screen.queryByText('Nothing selected')).not.toBeNull();
+        expect(screen.getByText('Nothing selected')).not.toBeNull();
 
         fireEvent.click(screen.getByLabelText('Select me'));
         expect(screen.queryAllByText('Select me').length).toBe(2);
 
         fireEvent.click(screen.getByLabelText('Select me too'));
-        expect(screen.queryByText('Select me, Select me too')).not.toBeNull();
+        expect(screen.getByText('Select me, Select me too')).not.toBeNull();
 
         fireEvent.click(screen.getByLabelText('So many options'));
-        expect(screen.queryByText('Select me, Select me too, So many options')).not.toBeNull();
+        expect(screen.getByText('Select me, Select me too, So many options')).not.toBeNull();
 
         const trySelectingAll = screen.getByLabelText('Try selecting all of them');
         fireEvent.click(trySelectingAll);
-        expect(screen.queryByText('4 selected')).not.toBeNull();
+        expect(screen.getByText('4 selected')).not.toBeNull();
 
         fireEvent.click(trySelectingAll);
-        expect(screen.queryByText('Select me, Select me too, So many options')).not.toBeNull();
+        expect(screen.getByText('Select me, Select me too, So many options')).not.toBeNull();
 
         fireEvent.click(trySelectingAll);
         fireEvent.click(screen.getByLabelText('Or try selecting all but one'));
-        expect(screen.queryByText('All selected')).not.toBeNull();
+        expect(screen.getByText('All selected')).not.toBeNull();
     });
 
     it('allows adding and removing fruit', () => {
@@ -214,7 +218,7 @@ describe('DemoForm', () => {
         const submitButton = screen.getByText('Submit Form');
 
         fireEvent.click(submitButton);
-        return findAllAlertsWithContent().then(result => {
+        return findAllAlertsWithContent().then((result) => {
             expect(result).not.toStrictEqual([]);
         });
     });

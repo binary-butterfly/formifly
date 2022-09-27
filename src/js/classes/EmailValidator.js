@@ -13,7 +13,7 @@ class EmailValidator extends StringValidator {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
 
         this.validateFuncs.push([
-            value => {
+            (value) => {
                 return emailRegexp.test(value);
             },
             defaultErrorMsg,
