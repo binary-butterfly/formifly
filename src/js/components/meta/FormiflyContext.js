@@ -225,7 +225,7 @@ export const FormiflyProvider = (props) => {
             type: type ?? guessedType,
             value: fieldValue,
             id: id,
-            errors: errors,
+            errors: iCanHazErrors,
             onChange: handleChange,
             onBlur: handleBlur,
             onFocus: handleFocus,
@@ -253,13 +253,15 @@ export const FormiflyProvider = (props) => {
         setSubmitting(true);
         setSubmitSuccess(false);
         setSubmitFailureReason(null);
-        validateAll().then((changedValues) => {
-            return onSubmit(changedValues, setErrors).then(() => {
-                setSubmitting(false);
-                setSubmitSuccess(true);
+        validateAll()
+            .then((changedValues) => {
+                return onSubmit(changedValues, setErrors)
+                    .then(() => {
+                        setSubmitting(false);
+                        setSubmitSuccess(true);
+                    })
+                    .catch(reason => setSubmitFailureReason(reason));
             })
-                .catch(reason => setSubmitFailureReason(reason));
-        })
             .catch((reason) => {
                 let newErrors = {};
                 Object.entries(reason).map(([key, value]) => {
