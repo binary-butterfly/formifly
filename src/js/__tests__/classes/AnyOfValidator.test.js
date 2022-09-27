@@ -39,6 +39,6 @@ describe('AnyOfValidator', () => {
 
     it('works with alwaysFalse', () => {
         const validator = new AnyOfValidator([new StringValidator()]).alwaysFalse('Test!');
-        expect(validator.validate('foo')).toStrictEqual([false, 'Test!'])
+        expect(validator.validate('foo')).toStrictEqual([false, 'Test!']);
     });
 });

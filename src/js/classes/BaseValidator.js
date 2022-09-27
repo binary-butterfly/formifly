@@ -449,7 +449,7 @@ class BaseValidator {
 
     /**
      * Returns the validator's PropTypes representation
-     * @return {Validator<NonNullable<any>>|Requireable<any>}
+     * @return {Object}
      */
     getPropType() {
         return this.isRequired ? this.propType.isRequired : this.propType;

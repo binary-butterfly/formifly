@@ -120,14 +120,14 @@ const FormiflyMultiSelectField = (props) => {
 
     const handleOptionChange = (optionValue) => {
         if (value.includes(optionValue)) {
-            onChange(name, value.filter((val) => val !== optionValue));
+            onChange(name, value.filter(val => val !== optionValue));
         } else {
             onChange(name, [...value, optionValue]);
         }
     };
 
     const getSelectedLabels = () => {
-        let labels = [];
+        const labels = [];
         options.forEach((option) => {
             if (value.includes(option.value)) {
                 labels.push(option.label);
@@ -150,7 +150,7 @@ const FormiflyMultiSelectField = (props) => {
                     : value.length > selectionDisplayCutoff
                         ? numSelectedText.replace('{{num}}', String(value.length))
                         : getSelectedLabels().join(', ')}</SelectedDisplay>
-        <MenuComponent className={'formifly-multi-select-menu ' + (menuClassName ?? '')} aria-required={props["aria-required"]}>
+        <MenuComponent className={'formifly-multi-select-menu ' + (menuClassName ?? '')} aria-required={props['aria-required']}>
             <OptionComponent className={'formifly-multi-select-option formifly-multi-select-all-option ' + (optionClassName ?? '')}
                              label={selectAllText}
                              onChange={handleSelectAllClick}

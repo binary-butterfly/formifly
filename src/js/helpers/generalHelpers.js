@@ -13,7 +13,7 @@ export const getFieldValueFromKeyString = (keyString, values) => {
 };
 
 const setDeepValue = (value, fieldNames, currentIndex, oldValue) => {
-    let ret = Array.isArray(oldValue) ? [...oldValue] : {...oldValue};
+    const ret = Array.isArray(oldValue) ? [...oldValue] : {...oldValue};
     if (currentIndex === fieldNames.length - 1) {
         ret[fieldNames[currentIndex]] = value;
     } else if (oldValue[fieldNames[currentIndex]] === undefined) {

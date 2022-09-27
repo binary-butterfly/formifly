@@ -1,5 +1,5 @@
-import React from 'react';
 import {render} from '@testing-library/react';
+import React from 'react';
 import ObjectValidator from '../../../classes/ObjectValidator';
 import StringValidator from '../../../classes/StringValidator';
 import FormiflyForm from '../../../components/meta/FormiflyForm';
@@ -14,7 +14,7 @@ describe('FormiflyForm', () => {
         render(<FormiflyForm shape={new ObjectValidator({foo: new StringValidator()})} onSubmit={() => null}>
             <b>Test</b>
         </FormiflyForm>);
-        
+
         expect(matchFn).toHaveBeenCalled();
     });
 });

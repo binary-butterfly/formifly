@@ -49,7 +49,7 @@ class ObjectValidator extends BaseValidator {
      * @return {{}}
      */
     getDefaultValue() {
-        let ret = {};
+        const ret = {};
         for (const fieldName in this.fields) {
             ret[fieldName] = this.fields[fieldName].getDefaultValue();
         }
@@ -74,9 +74,9 @@ class ObjectValidator extends BaseValidator {
         }
 
         // Unpack the test value to avoid mutating the original object
-        let testValue = {...value};
+        const testValue = {...value};
         let allOk = true;
-        let tests = {};
+        const tests = {};
         for (const fieldName in this.fields) {
             if (!recursion) {
                 if (this.fields[fieldName] instanceof ArrayValidator || this.fields[fieldName] instanceof ObjectValidator) {
@@ -91,7 +91,7 @@ class ObjectValidator extends BaseValidator {
             } else if (allOk) {
                 if (this.dropEmpty) {
                     if (Array.isArray(test[1])) {
-                        const filtered = test[1].filter((val) => val !== '');
+                        const filtered = test[1].filter(val => val !== '');
                         if (filtered.length > 0) {
                             testValue[fieldName] = filtered;
                             continue;

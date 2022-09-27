@@ -1,5 +1,5 @@
+import {render} from '@testing-library/react';
 import React from 'react';
-import {cleanup, fireEvent, render, screen} from '@testing-library/react';
 import ObjectValidator from '../../../classes/ObjectValidator';
 import StringValidator from '../../../classes/StringValidator';
 import FormiflyForm from '../../../components/meta/FormiflyForm';

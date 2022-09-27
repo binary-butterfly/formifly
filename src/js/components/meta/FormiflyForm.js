@@ -5,7 +5,8 @@ import {FormiflyProvider, useFormiflyContext} from './FormiflyContext';
 
 const Form = (props) => {
     const {handleSubmit} = useFormiflyContext();
-    return <form onSubmit={(e) => handleSubmit(props.onSubmit, props.onSubmitValidationError, e)} className={'formifly-form ' + (props.className ?? '')}>
+    return <form onSubmit={e =>
+        handleSubmit(props.onSubmit, props.onSubmitValidationError, e)} className={'formifly-form ' + (props.className ?? '')}>
         {props.children}
     </form>;
 };
@@ -29,7 +30,8 @@ const FormiflyForm = (props) => {
         inputTextColor: 'black',
         inputBorderColor: 'black',
         highlightColor: 'lightblue',
-        reduceMotion: theme?.reducedMotion ?? (typeof window.matchMedia === 'function' && window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true),
+        reduceMotion: theme?.reducedMotion ??
+            (typeof window.matchMedia === 'function' && window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true),
 
         ...theme,
     };

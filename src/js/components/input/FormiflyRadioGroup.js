@@ -52,7 +52,8 @@ const FormiflyRadioGroup = (props) => {
         {!!label && <LegendComponent className={'formifly-fieldset-legend ' + (legendClassName ?? '')}>{label}</LegendComponent>}
         <div>
             {options.map((option, index) => <LabelComponent key={'radio-group-option-' + index}
-                                                            className={'formifly-field-label formifly-radio-field-label ' + (labelClassName ?? '')}>
+                                                            className={'formifly-field-label formifly-radio-field-label '
+                                                                + (labelClassName ?? '')}>
                 <InputComponent name={name}
                                 type="radio"
                                 checked={value === option.value}
@@ -74,9 +75,9 @@ const FormiflyRadioGroup = (props) => {
             </ErrorComponent>
         </div>
         {!!help &&
-        <HelpComponent id={id + '-help'} className={'formifly-field-help formifly-radio-field-help ' + (helpClassName ?? '')}>
-            {help}
-        </HelpComponent>}
+            <HelpComponent id={id + '-help'} className={'formifly-field-help formifly-radio-field-help ' + (helpClassName ?? '')}>
+                {help}
+            </HelpComponent>}
     </ContainerComponent>;
 };
 

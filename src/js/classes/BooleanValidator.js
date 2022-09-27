@@ -19,9 +19,20 @@ class BooleanValidator extends BaseValidator {
      * @param {Array} [dependent]
      * @param {Boolean} [realBool]
      */
-    constructor(defaultValue = false, defaultErrorMsg = 'This field has to be a boolean', mutationFunc, onError, dependent, realBool = false) {
+    constructor(
+        defaultValue = false,
+        defaultErrorMsg = 'This field has to be a boolean',
+        mutationFunc,
+        onError,
+        dependent,
+        realBool = false,
+    ) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
-        this.validateFuncs.push([value => (value === true || value === false || value === 'true' || value === 'false') ? String(value) : false, this.defaultErrorMsg]);
+        this.validateFuncs
+            .push([value =>
+                (value === true || value === false || value === 'true' || value === 'false')
+                    ? String(value)
+                    : false, this.defaultErrorMsg]);
         this.realBool = realBool;
     }
 

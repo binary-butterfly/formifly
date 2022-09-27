@@ -140,7 +140,8 @@ describe.each([
                 baz: [''],
             },
         ],
-        'does not drop empty fields when set false'],
+        'does not drop empty fields when set false',
+    ],
 ])('Test dropEmpty', (fields, value, dropEmtpy, expected, name) => {
     test(name, () => {
         const validator = new ObjectValidator(fields, undefined, undefined, undefined, undefined, dropEmtpy);

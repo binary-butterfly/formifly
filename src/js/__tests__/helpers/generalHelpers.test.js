@@ -97,7 +97,9 @@ describe.each([
         {
             fruit:
                 [
-                    {name: '', tasty: false}], foo: 'bar',
+                    {name: '', tasty: false},
+                ],
+            foo: 'bar',
         },
         {
             fruit:
@@ -114,7 +116,8 @@ describe.each([
                 ],
             foo: 'bar',
         },
-        'does its job'],
+        'does its job',
+    ],
     [
         {
             fruit: [],
@@ -130,7 +133,8 @@ describe.each([
                 {name: 'banana', tasty: true},
             ],
         },
-        'works with empty arrays from validatorDefaults'],
+        'works with empty arrays from validatorDefaults',
+    ],
     [{}, {fruit: [{name: 'banana'}]}, {fruit: [{name: 'banana'}]}, 'works with empty validatorDefaults'],
     [{fruit: []}, {fruit: null}, {fruit: []}, 'skips null values'],
 ])('Test completeDefaultValues', (validatorDefaults, userDefaults, expected, name) => {

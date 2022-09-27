@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import {fieldPropTypes} from './FormiflyField';
-import {FieldContainer, ErrorSpan, HelpSpan} from './withLabelErrorsAndHelp';
+import {ErrorSpan, FieldContainer, HelpSpan} from './withLabelErrorsAndHelp';
 
 export const CheckLabel = styled.label`
   cursor: pointer;

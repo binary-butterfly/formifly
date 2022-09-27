@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import BaseValidator from '../../classes/BaseValidator';
-import StringValidator from '../../classes/StringValidator';
 import NumberValidator from '../../classes/NumberValidator';
+import StringValidator from '../../classes/StringValidator';
 
 describe.each([
     ['abc', true, 'returns true for random value'],
@@ -40,7 +40,7 @@ describe.each([
     test(name, () => {
         const validator = new BaseValidator(undefined, undefined, undefined, undefined, [
             'banana',
-            value => value === 'apple',
+            thisValue => thisValue === 'apple',
             new BaseValidator().required(),
         ]);
         expect(validator.validate(value, otherValues)).toStrictEqual(expected);
@@ -180,7 +180,13 @@ describe.each([
 
 describe.each([
     ['foo', ['foo', 'bar', 'blub'], undefined, [true, 'foo'], 'returns true for included value'],
-    ['foo', ['banana', 'apple'], undefined, [false, 'This value must be one of these: banana, apple'], 'returns false for non included value'],
+    [
+        'foo',
+        ['banana', 'apple'],
+        undefined,
+        [false, 'This value must be one of these: banana, apple'],
+        'returns false for non included value',
+    ],
     ['foo', ['fo', 'fooo'], 'banana', [false, 'banana'], 'uses correct error message'],
 ])('Test oneOf', (value, values, msg, expected, name) => {
     test(name, () => {
@@ -290,7 +296,7 @@ describe('Test oneOfArraySiblingFieldValues', () => {
         expect(validator.validate('banana', {array: ['foo', 'bar']}, {array: ['foo', 'bar']})).toStrictEqual([false, 'err']);
     });
 
-        it('Works with custom check functions and can return true', () => {
+    it('Works with custom check functions and can return true', () => {
         const validator = new BaseValidator().oneOfArraySiblingFieldValues('array', (compare, value) => {
             for (const val of compare) {
                 if (val.id === value) {
@@ -300,7 +306,8 @@ describe('Test oneOfArraySiblingFieldValues', () => {
             return false;
         });
 
-        expect(validator.validate('abc', {array: [{id: 'abc'}, {id: 'def'}]}, {array: [{id: 'abc'}, {id: 'def'}]})).toStrictEqual([true, 'abc']);
+        expect(validator.validate('abc', {array: [{id: 'abc'}, {id: 'def'}]}, {array: [{id: 'abc'}, {id: 'def'}]}))
+            .toStrictEqual([true, 'abc']);
     });
 
     it('Works with custom check functions and can return false', () => {
@@ -313,15 +320,20 @@ describe('Test oneOfArraySiblingFieldValues', () => {
             return false;
         });
 
-        expect(validator.validate('banana', {array: [{id: 'abc'}, {id: 'def'}]}, {array: [{id: 'abc'}, {id: 'def'}]})).toStrictEqual([false, 'This value is not allowed.']);
+        expect(
+            validator.validate('banana', {array: [{id: 'abc'}, {id: 'def'}]}, {array: [{id: 'abc'}, {id: 'def'}]}),
+        )
+            .toStrictEqual([false, 'This value is not allowed.']);
     });
 
     it('Warns the user if the field that is compared against is not an array field', () => {
         const warn = jest.fn();
         global.console.warn = warn;
         const validator = new BaseValidator().oneOfArraySiblingFieldValues('notAnArray');
-        expect(validator.validate('foo', {notAnArray: 'banana'}, {notAnArray: 'banana'})).toStrictEqual([false, 'This value is not allowed.']);
-        expect(warn).toHaveBeenCalledWith('Attempted to use oneOfArraySiblingFieldValues validator on a non array field. This is not possible.');
+        expect(validator.validate('foo', {notAnArray: 'banana'}, {notAnArray: 'banana'}))
+            .toStrictEqual([false, 'This value is not allowed.']);
+        expect(warn)
+            .toHaveBeenCalledWith('Attempted to use oneOfArraySiblingFieldValues validator on a non array field. This is not possible.');
         warn.mockRestore();
     });
 });

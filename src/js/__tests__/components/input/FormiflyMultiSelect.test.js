@@ -1,5 +1,5 @@
+import {render} from '@testing-library/react';
 import React from 'react';
-import {render, screen} from '@testing-library/react';
 import ArrayValidator from '../../../classes/ArrayValidator';
 import ObjectValidator from '../../../classes/ObjectValidator';
 import StringValidator from '../../../classes/StringValidator';
@@ -19,7 +19,7 @@ describe.each([
         const options = document.getElementsByClassName('formifly-multi-select-option');
         const style = window.getComputedStyle(options[0]);
 
-        expect(style.transition).toStrictEqual(expectedStyle)
+        expect(style.transition).toStrictEqual(expectedStyle);
 
-    })
+    });
 });

@@ -38,7 +38,7 @@ const FruitError = styled.p`
 
 const DemoFormContent = (props) => {
     const {shape} = props;
-    const {values, setFieldValue, errors, validateField, getFieldProps} = useFormiflyContext();
+    const {values, setFieldValue, errors, validateField} = useFormiflyContext();
 
     const handleRemoveFruitClick = (index) => {
         const newFruitValue = [...values.fruit.filter((value, fIndex) => fIndex !== index)];
@@ -131,7 +131,7 @@ const DemoFormContent = (props) => {
 class NotTrueValidator extends BooleanValidator {
     constructor(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
-        this.validateFuncs.push([(value) => value !== 'true' && value !== true, defaultErrorMsg]);
+        this.validateFuncs.push([value => value !== 'true' && value !== true, defaultErrorMsg]);
     }
 }
 
@@ -140,9 +140,14 @@ const DemoForm = () => {
     const [successText, setSuccessText] = React.useState('');
 
     const shape = new ObjectValidator({
-        number: new NumberValidator().min(2).required().decimalPlaces(2),
+        number: new NumberValidator()
+            .min(2)
+            .required()
+            .decimalPlaces(2),
         wholeNumber: new NumberValidator(true).max(5),
-        string: new StringValidator().required().regex(/^[a-z]+$/),
+        string: new StringValidator()
+            .required()
+            .regex(/^[a-z]+$/),
         foo: new StringValidator(),
         date: new DateTimeValidator().minDate(new Date()),
         select: new StringValidator().required(),
@@ -155,7 +160,8 @@ const DemoForm = () => {
             name: new StringValidator().required(),
             tasty: new BooleanValidator(true),
             expired: new NotTrueValidator(undefined, 'You cannot add expired food.'),
-        })).minLength(1, 'You must create at least one fruit.').maxLength(5, 'There can not be more than 5 fruit.'),
+        })).minLength(1, 'You must create at least one fruit.')
+            .maxLength(5, 'There can not be more than 5 fruit.'),
     });
 
     const onSubmit = (values) => {

@@ -45,7 +45,7 @@ class NumberValidator extends BaseValidator {
         }
 
         this.validateFuncs.push([
-            value => {
+            (value) => {
                 return regexpInUse.test(value) ? delocalize(value) : false;
             },
             defaultErrorMsg,

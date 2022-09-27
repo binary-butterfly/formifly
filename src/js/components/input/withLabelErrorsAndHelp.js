@@ -38,7 +38,7 @@ export const HelpSpan = styled.span`
 `;
 
 const withLabelErrorsAndHelp = (WrappedComponent) => {
-    return (props) => {
+    return function LabelErrorsAndHelpInner(props) {
         const {
             label,
             help,
@@ -74,9 +74,10 @@ const withLabelErrorsAndHelp = (WrappedComponent) => {
                 </ErrorComponent>
             </div>
             {!!help &&
-            <HelpComponent id={id + '-help'} className={'formifly-field-help formifly-' + type + '-field-help ' + (helpClassName ?? '')}>
-                {help}
-            </HelpComponent>}
+                <HelpComponent id={id + '-help'}
+                               className={'formifly-field-help formifly-' + type + '-field-help ' + (helpClassName ?? '')}>
+                    {help}
+                </HelpComponent>}
         </ContainerComponent>;
     };
 };
