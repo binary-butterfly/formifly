@@ -1,6 +1,6 @@
 {
   "name": "formifly",
-  "version": "1.13.2",
+  "version": "1.14.0",
   "description": "React form handling as light as a butterfly",
   "main": "dist/umd/formifly.js",
   "module": "dist/esm/index.js",
@@ -41,7 +41,7 @@
     "@babel/plugin-transform-runtime": "^7.16.4",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-react": "^7.16.0",
-    "@binary-butterfly/eslint-config": "^0.0.4",
+    "@binary-butterfly/eslint-config": "^0.0.5",
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-node-resolve": "^13.1.1",

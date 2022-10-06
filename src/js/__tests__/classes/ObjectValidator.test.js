@@ -260,3 +260,28 @@ test('Test ObjectValidator validateWithoutRecursion', () => {
 
     expect(validator.validateWithoutRecursion(values)).toStrictEqual([true, values]);
 });
+
+test('Test ObjectValidator can validate empty objects successfully explicitly when not required', () => {
+    const validator = new ObjectValidator({banana: new StringValidator().required()}).notRequired();
+    expect(validator.validate({})).toStrictEqual([true, {}]);
+});
+
+test('Test ObjectValidator rejects empty objects if it is required', () => {
+    const validator = new ObjectValidator({banana: new StringValidator()}).required('This has to be set.');
+    expect(validator.validate({})).toStrictEqual([false, 'This has to be set.']);
+});
+
+test('Test ObjectValidator rejects empty objects if it has not been set to really not be required and a child field is required', () => {
+    const validator = new ObjectValidator({banana: new StringValidator().required('Bla')});
+    expect(validator.validate({})).toStrictEqual([false, {banana: [false, 'Bla']}]);
+});
+
+test('Test ObjectValidator rejects non set required child fields', () => {
+    const validator = new ObjectValidator({banana: new StringValidator().required('This has to be set.'), apple: new StringValidator()});
+    expect(validator.validate({apple: 'foo'})).toStrictEqual([false, {apple: [true, 'foo'], banana: [false, 'This has to be set.']}]);
+});
+
+test('Test ObjectValidator can handle undefined if explicitly not required', () => {
+    const validator = new ObjectValidator({foo: new StringValidator()}).notRequired();
+    expect(validator.validate(undefined)).toStrictEqual([true, undefined]);
+});

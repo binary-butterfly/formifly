@@ -155,11 +155,11 @@ export const FormiflyProvider = (props) => {
      * Returns all properties needed to render a Formifly field.
      * Use this function if the AutomagicFormiflyField does not work for your specific use case.
      * @param {String} name - The field name. If it is a child field of an object write like this: objectName.key, if it is a child of an array write like this arrayName.index
-     * @param {String} [help] - Help text to display next to the field
-     * @param {String} [type] - The field's type. This will usually be filled in automatically, however with radio fields you need to pass it.
-     * @param {String} [value] - The field value. **Only used for radio fields**. This does not contain the value of the field within your data but instead the value of this specific radio option.
-     * @param {String} [id] - The field's id. Usually IDs will be automatically generated like this: formifly-input-field-$name (or formifly-input-field-$name-radio-$value for radio buttons). Only pass an id if you want to override this.
-     * @param {String} [additionalDescribedBy] - Use this to add additional ids to aria-describedby. (By default help and error displays are already connected.) This is especially useful when building a radio group without using the FormiflyRadioGroup component to add a title to the radio options.
+     * @param {String=} help - Help text to display next to the field
+     * @param {String=} type - The field's type. This will usually be filled in automatically, however with radio fields you need to pass it.
+     * @param {String=} value - The field value. **Only used for radio fields**. This does not contain the value of the field within your data but instead the value of this specific radio option.
+     * @param {String=} id - The field's id. Usually IDs will be automatically generated like this: formifly-input-field-$name (or formifly-input-field-$name-radio-$value for radio buttons). Only pass an id if you want to override this.
+     * @param {String=} additionalDescribedBy - Use this to add additional ids to aria-describedby. (By default help and error displays are already connected.) This is especially useful when building a radio group without using the FormiflyRadioGroup component to add a title to the radio options.
      * @return {{onBlur: (function(*): Promise<unknown>), onChange: handleChange, name, id: string, type: string, value, errors: (*|boolean), onFocus: handleFocus}}
      */
     const getFieldProps = (name, help, type, value, id, additionalDescribedBy) => {
