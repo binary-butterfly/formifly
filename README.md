@@ -868,7 +868,7 @@ This example will validate to true for `true`, `false`, `"true"` and `"false"` a
 This validator is used when your data model is not flat and has objects with keys in it.  
 When the validation fails, it will return a dictionary with all the test results for its children in it.
 
-The object validator does not have any special methods.  
+The object validator does only has a single special method, which you are unlikely to need. (See below)
 However, it has to be constructed with the field's children as the first param.  
 It also accepts an additional param `dropEmpty`, which defaults to `true`.  
 This value can also be set after constructing using the `setDropEmpty` function on the validator.  
@@ -889,6 +889,9 @@ In addition to the regular `validate` function, the ObjectValidator also has a `
 This function allows you to validate all child fields that are neither Array nor ObjectValidators.  
 This can be useful if you only need to validate a subset of a form that is split in multiple steps, with those steps being sub fields of
 each other.
+
+Note that a non required ObjectValidator field will be treated as required if it has any children that are required.  
+To avoid this behaviour and allow empty objects, you may use the `notRequired` method.
 
 Example:
 

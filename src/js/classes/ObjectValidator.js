@@ -12,6 +12,7 @@ class ObjectValidator extends BaseValidator {
     fields = {};
     dropEmpty;
     dropNotInShape;
+    reallyNotRequired;
 
     /**
      * @param {Object} fields
@@ -27,6 +28,16 @@ class ObjectValidator extends BaseValidator {
         this.fields = fields;
         this.dropEmpty = dropEmpty;
         this.dropNotInShape = dropNotInShape;
+    }
+
+    /**
+     * Sets the object validator as non required
+     * @returns {ObjectValidator}
+     */
+    notRequired() {
+        this.isRequired = false;
+        this.reallyNotRequired = true;
+        return this;
     }
 
     /**
@@ -56,6 +67,14 @@ class ObjectValidator extends BaseValidator {
         return ret;
     }
 
+    validateRequired(value) {
+        if (typeof value === 'object') {
+            return Object.keys(value).length > 0;
+        } else {
+            return super.validateRequired(value);
+        }
+    }
+
     /**
      * This function allows you to validate the ObjectValidator's child fields without validating any sub objects or array children.
      * @param {Object} value
@@ -68,6 +87,10 @@ class ObjectValidator extends BaseValidator {
     }
 
     validate(value, otherValues, siblings, recursion = true) {
+        if (this.reallyNotRequired && !this.validateRequired(value)) {
+            return [true, value];
+        }
+
         const preValidate = super.validate(value, otherValues, siblings);
         if (!preValidate[0]) {
             return preValidate;
