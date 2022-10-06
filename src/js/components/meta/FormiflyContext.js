@@ -255,12 +255,24 @@ export const FormiflyProvider = (props) => {
         setSubmitFailureReason(null);
         validateAll()
             .then((changedValues) => {
-                return onSubmit(changedValues, setErrors)
-                    .then(() => {
+                try {
+                    const submitResult = onSubmit(changedValues, setErrors);
+                    if (submitResult instanceof Promise) {
+                        return submitResult
+                            .then(() => {
+                                setSubmitting(false);
+                                setSubmitSuccess(true);
+                            })
+                            .catch((reason) => {
+                                setSubmitFailureReason(reason);
+                            });
+                    } else {
                         setSubmitting(false);
                         setSubmitSuccess(true);
-                    })
-                    .catch(reason => setSubmitFailureReason(reason));
+                    }
+                } catch (err) {
+                    setSubmitFailureReason(err);
+                }
             })
             .catch((reason) => {
                 let newErrors = {};

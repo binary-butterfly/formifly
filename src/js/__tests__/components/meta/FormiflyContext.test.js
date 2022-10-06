@@ -389,4 +389,83 @@ describe('FormiflyContext', () => {
             expect(document.getElementById('bar-input').getAttribute('aria-invalid')).toBe('true');
         });
     });
+
+    it('Does not call on onSubmitValidationError if a user supplied synchronous onSubmit function throws an error', () => {
+        const onSubmitValidationError = jest.fn();
+        const handleSubmit = jest.fn().mockImplementation(() => {
+            throw 'Test error';
+        });
+
+        const TestComponent = withFormifly((props) => {
+            const {submitFailureReason} = props;
+            return <>
+                <p>{JSON.stringify(submitFailureReason)}</p>
+                <button type="submit">Submit Form!</button>
+            </>;
+        });
+
+        render(<FormiflyForm onSubmit={handleSubmit} onSubmitValidationError={onSubmitValidationError}
+                             shape={new ObjectValidator({foo: new StringValidator()})}>
+            <TestComponent/>
+        </FormiflyForm>);
+
+        fireEvent.click(screen.getByText('Submit Form!'));
+
+        return screen.findByText('"Test error"', undefined, {timeout: 4000}).then(() => {
+            expect(handleSubmit).toHaveBeenCalledTimes(1);
+            return expect(onSubmitValidationError).toHaveBeenCalledTimes(0);
+        });
+    });
+
+    it('Does not call on onSubmitValidationError if a user supplied async onSubmit function throws an error', () => {
+        const onSubmitValidationError = jest.fn();
+        const handleSubmit = jest.fn().mockImplementation(() => {
+            return new Promise((resolve, reject) => {
+                reject('Test error');
+            });
+        });
+
+        const TestComponent = withFormifly((props) => {
+            const {submitFailureReason} = props;
+            return <>
+                <p>{submitFailureReason}</p>
+                <button type="submit">Submit Form!</button>
+            </>;
+        });
+
+        render(<FormiflyForm onSubmit={handleSubmit} onSubmitValidationError={onSubmitValidationError}
+                             shape={new ObjectValidator({foo: new StringValidator()})}>
+            <TestComponent/>
+        </FormiflyForm>);
+
+        fireEvent.click(screen.getByText('Submit Form!'));
+
+        return screen.findByText('Test error', undefined, {timeout: 4000}).then(() => {
+            expect(handleSubmit).toHaveBeenCalledTimes(1);
+            return expect(onSubmitValidationError).toHaveBeenCalledTimes(0);
+        });
+    });
+
+    it('Sets submitting to false if onSubmit function is synchronous', () => {
+        const handleSubmit = jest.fn().mockImplementation(() => true);
+
+        const NotARealForm = withFormifly((props) => {
+            const {submitSuccess} = props;
+            return <>
+                {submitSuccess && <p>Submission successful!</p>}
+                <button type="submit">Submit!</button>
+            </>;
+        });
+
+        render(<FormiflyForm onSubmit={handleSubmit} shape={new ObjectValidator({foo: new StringValidator()})}>
+            <NotARealForm/>
+        </FormiflyForm>);
+
+        fireEvent.click(screen.getByText('Submit!'));
+
+        return screen.findByText('Submission successful!')
+            .then(() => {
+                return expect(handleSubmit).toHaveBeenCalledTimes(1);
+            });
+    });
 });
