@@ -12,7 +12,7 @@ import {
     getFieldValueFromKeyString,
     setFieldValueFromKeyString,
 } from '../../helpers/generalHelpers';
-import {findFieldValidatorFromName, unpackErrors} from '../../helpers/validationHelpers';
+import {findFieldValidatorAndSiblingsFromName, findFieldValidatorFromName, unpackErrors} from '../../helpers/validationHelpers';
 
 export const Context = React.createContext({});
 Context.displayName = 'FormiflyContext';
@@ -111,8 +111,8 @@ export const FormiflyProvider = (props) => {
         return new Promise((resolve) => {
             setTouched(setFieldValueFromKeyString(name, true, touched));
 
-            const fieldValidator = findFieldValidatorFromName(name, shape);
-            const validated = fieldValidator.validate(value, values);
+            const [fieldValidator, siblings] = findFieldValidatorAndSiblingsFromName(name, shape, values);
+            const validated = fieldValidator.validate(value, values, siblings);
             if (validated[0]) {
                 setErrors(setFieldValueFromKeyString(name, false, errors));
                 return resolve(true);
@@ -131,8 +131,8 @@ export const FormiflyProvider = (props) => {
             for (const pair of pairs) {
                 const name = pair[0];
                 const value = pair[1] ?? getFieldValueFromKeyString(name, values);
-                const fieldValidator = findFieldValidatorFromName(name, shape);
-                const validated = fieldValidator.validate(value, values);
+                const [fieldValidator, siblings] = findFieldValidatorAndSiblingsFromName(name, shape, values);
+                const validated = fieldValidator.validate(value, values, siblings);
                 if (validated[0]) {
                     newErrors = setFieldValueFromKeyString(name, false, newErrors);
                 } else {

@@ -1,9 +1,9 @@
-import StringValidator from '../../classes/StringValidator';
-import NumberValidator from '../../classes/NumberValidator';
-import ObjectValidator from '../../classes/ObjectValidator';
 import ArrayValidator from '../../classes/ArrayValidator';
 import BooleanValidator from '../../classes/BooleanValidator';
-import {findFieldValidatorFromName, unpackErrors} from '../../helpers/validationHelpers';
+import NumberValidator from '../../classes/NumberValidator';
+import ObjectValidator from '../../classes/ObjectValidator';
+import StringValidator from '../../classes/StringValidator';
+import {findFieldValidatorAndSiblingsFromName, findFieldValidatorFromName, unpackErrors} from '../../helpers/validationHelpers';
 
 describe.each([
     [
@@ -125,4 +125,42 @@ describe.each([
     test(name, () => {
         expect(unpackErrors(errors)).toStrictEqual(expected);
     });
+});
+
+describe('Test findFieldValidatorAndSiblingsFromName', () => {
+    it('can unpack a very complicated object', () => {
+        const shape = new ObjectValidator({
+            foo: new ObjectValidator({
+                bar: new ArrayValidator(new ObjectValidator({
+                    baz: new StringValidator(),
+                })),
+            }),
+        });
+
+        const values = {foo: {bar: [{baz: 'bla', bla: 'blub'}, {baz: 'foo', bla: 'banana'}]}};
+
+        const [validator, siblings] = findFieldValidatorAndSiblingsFromName('foo.bar.0.baz', shape, values);
+        expect(validator).toBeInstanceOf(StringValidator);
+        expect(siblings).toStrictEqual({baz: 'bla', bla: 'blub'});
+    });
+
+    it('works with flat objects', () => {
+        const shape = new ObjectValidator({foo: new StringValidator(), bar: new StringValidator()});
+        const values = {foo: 'bla', bar: 'blub'};
+        const [validator, siblings] = findFieldValidatorAndSiblingsFromName('foo', shape, values);
+        expect(validator).toBeInstanceOf(StringValidator);
+        expect(siblings).toStrictEqual({foo: 'bla', bar: 'blub'});
+    });
+
+    it('throws on non existing fields', () => {
+        const shape = new ObjectValidator({foo: new StringValidator()});
+        const values = {foo: 'bla'};
+
+        function find() {
+            findFieldValidatorAndSiblingsFromName('bar', shape, values);
+        }
+
+        expect(find).toThrowError('Could not find validator for bar');
+    });
+
 });
