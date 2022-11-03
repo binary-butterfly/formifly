@@ -3,7 +3,7 @@
  * Since it is encouraged to only write integration tests for react components, these tests should cover almost all of the react components.
  * It also serves as the place where the classes are integration tested in addition to their unit tests.
  */
-import {cleanup, fireEvent, render, screen} from '@testing-library/react';
+import {cleanup, fireEvent, render, screen, waitForElementToBeRemoved} from '@testing-library/react';
 import React from 'react';
 import DemoForm from '../../../components/demo/DemoForm';
 import {convertDateObjectToInputString} from '../../../helpers/generalHelpers';
@@ -92,6 +92,17 @@ describe('DemoForm', () => {
         expect(queryAllAlertsWithContent()).not.toStrictEqual([]);
         changeInputValue(dateInput, convertDateObjectToInputString(new Date(currentTime + 60000)));
         expect(queryAllAlertsWithContent()).toStrictEqual([]);
+    });
+
+    it('renders a second date input which must be later than the first', () => {
+        const firstDateInput = screen.getByLabelText('Select a date/time');
+        const secondDateInput = screen.getByLabelText('Select a later date/time');
+        const currentTime = new Date().getTime();
+        changeInputValue(firstDateInput, convertDateObjectToInputString(new Date(currentTime + 60000)));
+        changeInputValue(secondDateInput, convertDateObjectToInputString(new Date(currentTime)));
+        expect(screen.getByText('This value must be greater than the value of its sibling date')).not.toBeNull();
+        changeInputValue(secondDateInput, convertDateObjectToInputString(new Date(currentTime + 70000)));
+        expect(screen.queryByText('This value must be greater than the value of its sibling date')).toBeNull();
     });
 
     it('renders a required select field', () => {
