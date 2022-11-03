@@ -32,7 +32,8 @@ const config = {
             exclude: 'src/**',
         }),
         babel({
-            'babelHelpers': 'runtime',
+            babelHelpers: 'runtime',
+            exclude: 'node_modules/**',
         }),
         globals(),
         replace({
