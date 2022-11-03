@@ -89,3 +89,12 @@ export const containsValuesThatAreNotFalse = (obj) => {
     }
     return obj !== false;
 };
+
+/**
+ * Checks if a date Object is invalid
+ * @param {Date} date
+ * @returns {boolean}
+ */
+export const isInvalidDate = (date) => {
+    return isNaN(date);
+};

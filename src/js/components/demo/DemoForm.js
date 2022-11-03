@@ -61,6 +61,7 @@ const DemoFormContent = (props) => {
         <AutomagicFormiflyField name="string" label="Enter a string" help="Only lowercase characters are allowed here."/>
         <AutomagicFormiflyField label="This input does not have the fancy label effect" labelNoMove={true} name="foo"/>
         <AutomagicFormiflyField name="date" help="Only dates in the future are allowed here." label="Select a date/time"/>
+        <AutomagicFormiflyField name="laterDate" label="Select a later date/time"/>
         <AutomagicFormiflyField label="Select something" name="select" options={[
             {label: 'Option 1', value: 'option1'},
             {label: 'Option 2', value: 'option2'},
@@ -150,6 +151,7 @@ const DemoForm = () => {
             .regex(/^[a-z]+$/),
         foo: new StringValidator(),
         date: new DateTimeValidator().minDate(new Date()),
+        laterDate: new DateTimeValidator().greaterThanSibling('date'),
         select: new StringValidator().required(),
         selectTwo: new StringValidator(),
         radioGroupOne: new StringValidator(),

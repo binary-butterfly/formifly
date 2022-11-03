@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import {ensureValueIsDateObject} from '../helpers/developerInputValidators';
+import {getFieldValueFromKeyString, isInvalidDate} from '../helpers/generalHelpers';
 import BaseValidator from './BaseValidator';
 
 const dateRegex = /^\d{4}-((0[1-9])|(1[0-2]))-(([0-2][0-9])|(3[0-1]))T(([0-1][0-9])|(2[0-3]))(:[0-5][0-9]){1,2}(.\d{3})?[Z]?$/s;
@@ -83,6 +84,182 @@ class DateTimeValidator extends BaseValidator {
         }
 
         this.validateFuncs.push([value => value >= minDate && value <= maxDate, msg]);
+        return this;
+    }
+
+    /**
+     * Check if the fields value is greater than another value
+     * @param {String} name
+     * @param {String} [msg]
+     * @return {this}
+     */
+    greaterThan(name, msg) {
+        if (msg === undefined) {
+            msg = 'This value must be greater than the value of ' + name;
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues) => {
+                const otherVal = new Date(getFieldValueFromKeyString(name, otherValues));
+                return isInvalidDate(otherVal) || value > otherVal;
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is less than another value
+     * @param {String} name
+     * @param {String} [msg]
+     * @return {this}
+     */
+    lessThan(name, msg) {
+        if (msg === undefined) {
+            msg = 'This value must be less than the value of ' + name;
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues) => {
+                const otherVal = new Date(getFieldValueFromKeyString(name, otherValues));
+                return isInvalidDate(otherVal) || value < otherVal;
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is greater than or equal to another value
+     * @param {String} name
+     * @param {String} [msg]
+     * @return {this}
+     */
+    greaterOrEqualTo(name, msg) {
+        if (msg === undefined) {
+            msg = 'This value must be greater than or equal to the value of ' + name;
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues) => {
+                const otherVal = new Date(getFieldValueFromKeyString(name, otherValues));
+                return isInvalidDate(otherVal) || value >= otherVal;
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is less than or equal to another value
+     * @param {String} name
+     * @param {String} [msg]
+     * @return {this}
+     */
+    lessOrEqualTo(name, msg) {
+        if (msg === undefined) {
+            msg = 'This value must be less than or equal to the value of ' + name;
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues) => {
+                const otherVal = new Date(getFieldValueFromKeyString(name, otherValues));
+                return isInvalidDate(otherVal) || value <= otherVal;
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is greater than the value of one of its siblings
+     * @param {String|Number} key
+     * @param {String} [msg]
+     * @return {this}
+     */
+    greaterThanSibling(key, msg) {
+        if (msg === undefined) {
+            msg = 'This value must be greater than the value of its sibling ' + key;
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues, siblings) => {
+                const otherVal = new Date(getFieldValueFromKeyString(key, siblings));
+                return isInvalidDate(otherVal) || value > otherVal;
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is less than the value of one of its siblings
+     * @param {String|Number} key
+     * @param {String} [msg]
+     * @return {this}
+     */
+    lessThanSibling(key, msg) {
+        if (msg === undefined) {
+            msg = 'This value must be less than the value of its sibling ' + key;
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues, siblings) => {
+                const otherVal = new Date(getFieldValueFromKeyString(key, siblings));
+                return isInvalidDate(otherVal) || value < otherVal;
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is greater or equal to the value of one of its siblings
+     * @param {String|Number} key
+     * @param {String} [msg]
+     * @return {this}
+     */
+    greaterOrEqualToSibling(key, msg) {
+        if (msg === undefined) {
+            msg = 'This value must be greater than or equal to the value of its sibling ' + key;
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues, siblings) => {
+                const otherVal = new Date(getFieldValueFromKeyString(key, siblings));
+                return isInvalidDate(otherVal) || value >= otherVal;
+            },
+            msg,
+        ]);
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is less than or equal to the value of one of its siblings
+     * @param {String|Number} key
+     * @param {String} [msg]
+     * @return {this}
+     */
+    lessOrEqualToSibling(key, msg) {
+        if (msg === undefined) {
+            msg = 'This value must be less than or equal to the value of its sibling ' + key;
+        }
+
+        this.validateFuncs.push([
+            (value, otherValues, siblings) => {
+                const otherVal = new Date(getFieldValueFromKeyString(key, siblings));
+                return isInvalidDate(otherVal) || value <= otherVal;
+            },
+            msg,
+        ]);
+
         return this;
     }
 }
