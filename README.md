@@ -68,7 +68,7 @@ To install Formifly, simply run `npm install --save formifly` within your projec
 
 ### tl;dr
 
-Head over to the [code of the demo form](src/js/components/demo/DemoForm.js); it contains at least one example for every kind of input
+Head over to the [code of the demo form](src/js/components/demo/DemoForm.tsx); it contains at least one example for every kind of input
 field this library ships.
 
 ### Basic forms

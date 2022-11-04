@@ -8,7 +8,7 @@ import babel from '@rollup/plugin-babel';
 const env = process.env.NODE_ENV;
 
 const config = {
-    input: 'src/js/components/demo/DemoPage.js',
+    input: 'src/js/components/demo/DemoPage.tsx',
     output: {
         file: 'dist/formifly.js',
         format: 'umd',
@@ -32,6 +32,7 @@ const config = {
             exclude: 'src/**',
         }),
         babel({
+            extensions: ['.js', '.ts', '.jsx', '.tsx'],
             babelHelpers: 'runtime',
             exclude: 'node_modules/**',
         }),

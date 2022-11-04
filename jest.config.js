@@ -7,7 +7,7 @@ module.exports = {
     coveragePathIgnorePatterns: [
         '/node_modules/',
         '/src/js/main.js',
-        '/src/js/components/demo/DemoPage.js',
+        '/src/js/components/demo/DemoPage.tsx',
     ],
     transform: {
         '^.+\\.(js)$': 'babel-jest',

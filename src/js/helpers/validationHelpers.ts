@@ -25,7 +25,7 @@ export const findFieldValidatorFromName = (name, shape) => {
     return dependentValue;
 };
 
-export const findFieldValidatorAndSiblingsFromName = (name, shape, values) => {
+export const findFieldValidatorAndSiblingsFromName = (name: string, shape, values) => {
     const fieldNames = name.split('.');
     let validator = shape;
     let siblings = values;
