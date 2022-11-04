@@ -16,6 +16,8 @@
   "scripts": {
     "test": "jest --config jest.config.js ",
     "test:watch": "jest --config jest.config.js --watch",
+    "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch",
     "coverage": "jest --config jest.config.js --collectCoverage",
     "watch": "rollup -c rollup.config.js -w",
     "build:dev": "rollup -c rollup.config.js",
