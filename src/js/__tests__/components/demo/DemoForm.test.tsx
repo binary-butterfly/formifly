@@ -3,7 +3,7 @@
  * Since it is encouraged to only write integration tests for react components, these tests should cover almost all of the react components.
  * It also serves as the place where the classes are integration tested in addition to their unit tests.
  */
-import {cleanup, fireEvent, render, screen, waitForElementToBeRemoved} from '@testing-library/react';
+import {cleanup, fireEvent, render, screen} from '@testing-library/react';
 import React from 'react';
 import DemoForm from '../../../components/demo/DemoForm';
 import {convertDateObjectToInputString} from '../../../helpers/generalHelpers';
@@ -116,8 +116,8 @@ describe('DemoForm', () => {
     });
 
     it('renders a radio group outside a fieldset', () => {
-        const firstOption = screen.getByLabelText('This is a radio option');
-        const secondOption = screen.getByLabelText('This is another radio option');
+        const firstOption = screen.getByLabelText('This is a radio option') as HTMLInputElement;
+        const secondOption = screen.getByLabelText('This is another radio option') as HTMLInputElement;
 
         fireEvent.click(firstOption);
         expect(firstOption.checked).toEqual(true);
@@ -128,8 +128,8 @@ describe('DemoForm', () => {
     });
 
     it('renders a vertical radio group', () => {
-        const firstOption = screen.getByLabelText('First option');
-        const secondOption = screen.getByLabelText('Second option');
+        const firstOption = screen.getByLabelText('First option') as HTMLInputElement;
+        const secondOption = screen.getByLabelText('Second option') as HTMLInputElement;
 
         fireEvent.click(firstOption);
         expect(firstOption.checked).toEqual(true);
@@ -146,8 +146,8 @@ describe('DemoForm', () => {
     });
 
     it('renders a horizontal radio group', () => {
-        const firstOption = screen.getByLabelText('Cool option');
-        const secondOption = screen.getByLabelText('Cooler option');
+        const firstOption = screen.getByLabelText('Cool option') as HTMLInputElement;
+        const secondOption = screen.getByLabelText('Cooler option') as HTMLInputElement;
 
         fireEvent.click(firstOption);
         expect(firstOption.checked).toEqual(true);
@@ -192,8 +192,8 @@ describe('DemoForm', () => {
     });
 
     it('allows adding and removing fruit', () => {
-        const removeButton = screen.getByText('Remove this fruit');
-        const addButton = screen.getByText('Add another fruit');
+        const removeButton = screen.getByText('Remove this fruit') as HTMLInputElement;
+        const addButton = screen.getByText('Add another fruit') as HTMLInputElement;
 
         expect(addButton.disabled).toBe(false);
 
@@ -218,7 +218,7 @@ describe('DemoForm', () => {
     });
 
     it('renders a checkbox that can be interacted with', () => {
-        const tastyCheck = screen.getByLabelText('Tasty');
+        const tastyCheck = screen.getByLabelText('Tasty') as HTMLInputElement;
 
         expect(tastyCheck.checked).toBe(true);
         fireEvent.click(tastyCheck);

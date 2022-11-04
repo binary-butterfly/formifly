@@ -1,8 +1,8 @@
 module.exports = {
     testEnvironment: 'jest-environment-jsdom',
     collectCoverageFrom: [
-        'src/js/*.js',
-        'src/js/**/*.js',
+        'src/js/*.(js|ts|jsx|tsx)',
+        'src/js/**/*.(js|ts|jsx|tsx)',
     ],
     coveragePathIgnorePatterns: [
         '/node_modules/',
@@ -10,7 +10,7 @@ module.exports = {
         '/src/js/components/demo/DemoPage.tsx',
     ],
     transform: {
-        '^.+\\.(js)$': 'babel-jest',
+        '^.+\\.(js|ts|jsx|tsx)$': 'babel-jest',
     },
     reporters: ['default'],
     transformIgnorePatterns: [],

@@ -51,7 +51,7 @@ export const completeDefaultValues = (validatorDefaults, userDefaults, shape, ke
         const thisKeyText = keyText === undefined ? key : keyText + '.' + key;
         if (value !== null) {
             if (Array.isArray(value)) {
-                if (validatorDefaults[key] === undefined || (validatorDefaults[key].length === 0 && value !== [])) {
+                if (validatorDefaults[key] === undefined || (validatorDefaults[key].length === 0)) {
                     try {
                         const fieldValidator = findFieldValidatorFromName(thisKeyText, shape);
                         validatorDefaults[key] = [];
