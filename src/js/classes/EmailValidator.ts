@@ -1,4 +1,5 @@
 import StringValidator from './StringValidator';
+import {Dependent, ErrorFunction, InputType, MutationFunction, ValueType} from './BaseValidator';
 
 const emailRegexp = /.+@.+/;
 
@@ -7,13 +8,13 @@ const emailRegexp = /.+@.+/;
  * @extends StringValidator
  */
 class EmailValidator extends StringValidator {
-    defaultInputType = 'email';
+    protected defaultInputType: InputType = 'email';
 
-    constructor(defaultValue, defaultErrorMsg = 'This must be a valid email address', mutationFunc, onError, dependent) {
+    constructor(defaultValue?: ValueType, defaultErrorMsg = 'This must be a valid email address', mutationFunc?: MutationFunction, onError?: ErrorFunction, dependent?: Dependent) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
 
         this.validateFuncs.push([
-            (value) => {
+            (value: string) => {
                 return emailRegexp.test(value);
             },
             defaultErrorMsg,

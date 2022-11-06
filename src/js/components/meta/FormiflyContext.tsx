@@ -12,9 +12,40 @@ import {
     getFieldValueFromKeyString,
     setFieldValueFromKeyString,
 } from '../../helpers/generalHelpers';
-import {findFieldValidatorAndSiblingsFromName, findFieldValidatorFromName, unpackErrors} from '../../helpers/validationHelpers';
+import {
+    findFieldValidatorAndSiblingsFromName,
+    findFieldValidatorFromName,
+    unpackErrors,
+} from '../../helpers/validationHelpers';
 
-export const Context = React.createContext({});
+// todo: improve type once the methods are typed
+export type FormiflyContextType = {
+    setSubmitting: (value: (((prevState: boolean) => boolean) | boolean)) => void;
+    handleBlur: (event) => Promise<unknown>;
+    submitting: boolean;
+    getFieldProps: (name, help?, type?, value?, id?, additionalDescribedBy?) => any;
+    validateMultipleFields: (pairs) => Promise<unknown>;
+    hasErrors: (fieldName) => (boolean | any);
+    shape: any;
+    setFieldValue: (field, value, oldValues?: any) => Promise<unknown>;
+    values: any;
+    handleRadioChange: (event) => Promise<unknown>;
+    handleMultiSelectChange: (name, newVal) => Promise<unknown>;
+    hasBeenTouched: (fieldName) => (any | boolean);
+    submitSuccess: boolean;
+    validateField: (name, value) => Promise<unknown>;
+    handleSubmit: (onSubmit, onSubmitValidationError, e) => void;
+    handleFocus: (event) => void;
+    validateAll: () => Promise<unknown>;
+    handleChange: (event) => void;
+    submitFailureReason: any;
+    setMultipleFieldValues: (pairs, oldValues?: any) => Promise<unknown>;
+    handleCheckChange: (event) => Promise<unknown>;
+    errors: any;
+};
+
+// todo: remove need for any cast
+export const Context = React.createContext<FormiflyContextType>({} as any);
 Context.displayName = 'FormiflyContext';
 
 export const FormiflyProvider = (props) => {
@@ -70,7 +101,7 @@ export const FormiflyProvider = (props) => {
 
     const hasBeenTouched = (fieldName) => {
         try {
-            return submitSuccess === true ? true : getFieldValueFromKeyString(fieldName, touched);
+            return submitSuccess ? true : getFieldValueFromKeyString(fieldName, touched);
         } catch {
             return false;
         }
@@ -167,7 +198,8 @@ export const FormiflyProvider = (props) => {
         const fieldValue = getFieldValueFromKeyString(name, values);
 
         const guessedType = fieldValidator.defaultInputType;
-        const additionalProps = {};
+        // todo: remove any
+        const additionalProps: any = {};
 
         if (type === 'radio') {
             additionalProps.onChange = handleRadioChange;
@@ -289,7 +321,7 @@ export const FormiflyProvider = (props) => {
             });
     };
 
-    const FormiflyContext = {
+    const FormiflyContext: FormiflyContextType = {
         shape,
         values,
         errors,
@@ -321,10 +353,13 @@ FormiflyProvider.propTypes = {
     initialValues: PropTypes.object,
     disableNativeMinMax: PropTypes.bool,
     disableNativeRequired: PropTypes.bool,
+
+    // todo: added the following to make ts happy; is it okay to just add this?
+    children: PropTypes.any,
 };
 
-export const useFormiflyContext = () => {
-    const context = React.useContext(Context);
+export const useFormiflyContext = (): FormiflyContextType => {
+    const context = React.useContext<FormiflyContextType>(Context);
     if (!context || Object.keys(context).length === 0) {
         throw new Error(
             'Attempted to use formifly context outside of a provider. Only call useFormiflyContext from a component within a FormiflyForm.',

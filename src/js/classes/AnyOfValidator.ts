@@ -1,4 +1,4 @@
-import BaseValidator from './BaseValidator';
+import BaseValidator, {Dependent, ErrorFunction, MutationFunction, ValidationResult} from './BaseValidator';
 
 /**
  * A "meta" validator that allows you to check if a value can be successfully validated by any of a given list of validators.
@@ -7,7 +7,7 @@ import BaseValidator from './BaseValidator';
  * @property {Array<BaseValidator|AnyOfValidator|ArrayValidator|BooleanValidator|EmailValidator|NumberValidator|ObjectValidator|PhoneNumberValidator|StringValidator>} validatorOptions - The validators that the value is checked against
  */
 class AnyOfValidator extends BaseValidator {
-    validatorOptions;
+    private readonly validatorOptions: Array<BaseValidator>;
 
     /**
      * Validates something against an array of different validators and returns true if any of them match.
@@ -19,18 +19,18 @@ class AnyOfValidator extends BaseValidator {
      * @param {Array|Boolean} [dependent]
      */
     constructor(
-        validatorOptions,
-        defaultValue,
+        validatorOptions: Array<BaseValidator>,
+        defaultValue?: string,
         defaultErrorMsg = 'None of the available validators match',
-        mutationFunc,
-        onError,
-        dependent,
+        mutationFunc?: MutationFunction,
+        onError?: ErrorFunction,
+        dependent?: Dependent,
     ) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
         this.validatorOptions = validatorOptions;
     }
 
-    validate(value, otherValues = {}, siblings = {}) {
+    public validate(value, otherValues = {}, siblings = {}): ValidationResult {
         if (!this.isRequired && !this.validateRequired(value)) {
             return [true, value];
         }

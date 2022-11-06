@@ -64,6 +64,9 @@ FormiflyForm.propTypes = {
         highlightColor: PropTypes.string,
         reducedMotion: PropTypes.bool,
     }),
+
+    // todo: added the following to make ts happy; is it okay to just add this?
+    children: PropTypes.any,
 };
 
 export default FormiflyForm;

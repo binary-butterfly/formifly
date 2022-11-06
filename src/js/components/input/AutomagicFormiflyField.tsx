@@ -62,6 +62,10 @@ AutomagicFormiflyField.propTypes = {
     'nothingSelectedText': PropTypes.string,
     'numSelectedText': PropTypes.string,
     'allSelectedText': PropTypes.string,
+
+    // added the following to make ts happy - is it okay to add these?
+    'horizontal': PropTypes.bool,
+    'value': PropTypes.string,
 };
 
 export default AutomagicFormiflyField;

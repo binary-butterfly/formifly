@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import {ensureValueIsDateObject} from '../helpers/developerInputValidators';
 import {getFieldValueFromKeyString, isInvalidDate} from '../helpers/generalHelpers';
-import BaseValidator from './BaseValidator';
+import BaseValidator, {Dependent, ErrorFunction, InputType, MutationFunction} from './BaseValidator';
 
 const dateRegex = /^\d{4}-((0[1-9])|(1[0-2]))-(([0-2][0-9])|(3[0-1]))T(([0-1][0-9])|(2[0-3]))(:[0-5][0-9]){1,2}(.\d{3})?[Z]?$/s;
 
@@ -10,8 +10,8 @@ const dateRegex = /^\d{4}-((0[1-9])|(1[0-2]))-(([0-2][0-9])|(3[0-1]))T(([0-1][0-
  * @extends BaseValidator
  */
 class DateTimeValidator extends BaseValidator {
-    defaultInputType = 'datetime-local';
-    propType = PropTypes.object;
+    protected defaultInputType: InputType = 'datetime-local';
+    protected propType: PropTypes.Requireable<any> = PropTypes.object;
 
     /**
      * Validate a datetime input
@@ -21,10 +21,10 @@ class DateTimeValidator extends BaseValidator {
      * @param {Function} [onError]
      * @param {Array} [dependent]
      */
-    constructor(defaultValue = '', defaultMsg = 'This field must contain a date/time', mutationFunc, onError, dependent) {
+    constructor(defaultValue = '', defaultMsg = 'This field must contain a date/time', mutationFunc?: MutationFunction, onError?: ErrorFunction, dependent?: Dependent) {
         super(defaultValue, defaultMsg, mutationFunc, onError, dependent);
 
-        this.validateFuncs.push([(value) => {
+        this.validateFuncs.push([(value: string|Date) => {
             return value instanceof Date ? value : dateRegex.test(value) ? new Date(value) : false;
         }, defaultMsg]);
     }
@@ -35,7 +35,7 @@ class DateTimeValidator extends BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    minDate(date, msg) {
+    public minDate(date: Date, msg?: string): this {
         ensureValueIsDateObject(date, 'minDate', 'DateTimeValidator', 'date');
         if (msg === undefined) {
             msg = 'This date must be at least ' + date.toLocaleString();
@@ -53,7 +53,7 @@ class DateTimeValidator extends BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    maxDate(date, msg) {
+    public maxDate(date: Date, msg?: string): this {
         ensureValueIsDateObject(date, 'maxDate', 'DateTimeValidator', 'date');
         if (msg === undefined) {
             msg = 'This date must be ' + date.toLocaleString() + ' at the latest';
@@ -72,7 +72,7 @@ class DateTimeValidator extends BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    dateRange(minDate, maxDate, msg) {
+    public dateRange(minDate: Date, maxDate: Date, msg?: string): this {
         ensureValueIsDateObject(minDate, 'dateRange', 'DateTimeValidator', 'minDate');
         ensureValueIsDateObject(maxDate, 'dateRange', 'DateTimeValidator', 'maxDate');
 
@@ -93,7 +93,7 @@ class DateTimeValidator extends BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    greaterThan(name, msg) {
+    public greaterThan(name: string, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be greater than the value of ' + name;
         }
@@ -115,7 +115,7 @@ class DateTimeValidator extends BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    lessThan(name, msg) {
+    public lessThan(name: string, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be less than the value of ' + name;
         }
@@ -137,7 +137,7 @@ class DateTimeValidator extends BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    greaterOrEqualTo(name, msg) {
+    public greaterOrEqualTo(name: string, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be greater than or equal to the value of ' + name;
         }
@@ -159,7 +159,7 @@ class DateTimeValidator extends BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    lessOrEqualTo(name, msg) {
+    public lessOrEqualTo(name: string, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be less than or equal to the value of ' + name;
         }
@@ -181,7 +181,7 @@ class DateTimeValidator extends BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    greaterThanSibling(key, msg) {
+    public greaterThanSibling(key: string | number, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be greater than the value of its sibling ' + key;
         }
@@ -203,7 +203,7 @@ class DateTimeValidator extends BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    lessThanSibling(key, msg) {
+    public lessThanSibling(key: string | number, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be less than the value of its sibling ' + key;
         }
@@ -225,7 +225,7 @@ class DateTimeValidator extends BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    greaterOrEqualToSibling(key, msg) {
+    public greaterOrEqualToSibling(key: string | number, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be greater than or equal to the value of its sibling ' + key;
         }
@@ -247,7 +247,7 @@ class DateTimeValidator extends BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    lessOrEqualToSibling(key, msg) {
+    public lessOrEqualToSibling(key: string | number, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be less than or equal to the value of its sibling ' + key;
         }

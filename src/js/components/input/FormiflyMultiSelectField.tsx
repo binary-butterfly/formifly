@@ -127,7 +127,7 @@ const FormiflyMultiSelectField = (props) => {
     };
 
     const getSelectedLabels = () => {
-        const labels = [];
+        const labels: any[] = [];
         options.forEach((option) => {
             if (value.includes(option.value)) {
                 labels.push(option.label);
@@ -157,7 +157,7 @@ const FormiflyMultiSelectField = (props) => {
                              checked={allSelected}/>
             {options.map((option, key) => <Option key={'multiSelectOption' + key}
                                                   onChange={() => handleOptionChange(option.value)}
-                                                  className={'formifly-multi-select-option ' + (optionClassName ?? '')} Q
+                                                  className={'formifly-multi-select-option ' + (optionClassName ?? '')}
                                                   checked={value.includes(option.value)}
                                                   label={option.label}/>)}
         </MenuComponent>

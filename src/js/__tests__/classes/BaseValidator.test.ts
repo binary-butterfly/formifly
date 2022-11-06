@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import BaseValidator from '../../classes/BaseValidator';
+import BaseValidator, {Dependent} from '../../classes/BaseValidator';
 import NumberValidator from '../../classes/NumberValidator';
 import StringValidator from '../../classes/StringValidator';
 
@@ -22,7 +22,8 @@ describe.each([
     [undefined, [false, 'banana'], 'banana', 'returns false for undefined'],
 ])('Test BaseValidator required', (value, expected, msg, name) => {
     test(name, () => {
-        const validator = new BaseValidator().required(msg);
+        // todo: why doesn't ts allow null here?
+        const validator = new BaseValidator().required(msg as any);
         expect(validator.validate(value)).toStrictEqual(expected);
     });
 });
@@ -87,7 +88,7 @@ describe.each([
 ])('Test dependent validator with multiple dependents', (value, otherValues, dependent, expected, name) => {
     test(name, () => {
         const validator = new BaseValidator();
-        validator.setDependent(dependent);
+        validator.setDependent(dependent as Dependent);
         expect(validator.validate(value, otherValues)).toStrictEqual(expected);
     });
 });
@@ -198,13 +199,13 @@ describe.each([
 test('Test set default input type', () => {
     const validator = new BaseValidator();
     validator.setDefaultInputType('number');
-    expect(validator.defaultInputType).toStrictEqual('number');
+    expect(validator['defaultInputType']).toStrictEqual('number');
 });
 
 test('Test set default value', () => {
     const validator = new BaseValidator();
     validator.setDefaultValue('banana');
-    expect(validator.defaultValue).toStrictEqual('banana');
+    expect(validator['defaultValue']).toStrictEqual('banana');
 });
 
 test('Test set onError', () => {
@@ -212,20 +213,20 @@ test('Test set onError', () => {
     const validator = new BaseValidator();
     validator.setOnError(handler);
 
-    validator.onError();
+    validator['onError']!('', {});
     expect(handler).toHaveBeenCalledTimes(1);
 });
 
 test('Test set dependent', () => {
     const validator = new BaseValidator();
     validator.setDependent([]);
-    expect(validator.dependent).toStrictEqual([]);
+    expect(validator['dependent']).toStrictEqual([]);
 });
 
 test('Test setDefaultErrorMsg', () => {
     const validator = new BaseValidator();
     validator.setDefaultErrorMsg('banana');
-    expect(validator.defaultErrorMsg).toStrictEqual('banana');
+    expect(validator['defaultErrorMsg']).toStrictEqual('banana');
 });
 
 test('Test setMutationFunc', () => {
@@ -233,7 +234,7 @@ test('Test setMutationFunc', () => {
     const validator = new BaseValidator();
 
     validator.setMutationFunc(mutationFunc);
-    validator.mutationFunc();
+    validator['mutationFunc']!('');
 
     expect(mutationFunc).toHaveBeenCalledTimes(1);
 });

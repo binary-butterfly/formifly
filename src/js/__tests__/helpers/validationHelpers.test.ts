@@ -3,7 +3,11 @@ import BooleanValidator from '../../classes/BooleanValidator';
 import NumberValidator from '../../classes/NumberValidator';
 import ObjectValidator from '../../classes/ObjectValidator';
 import StringValidator from '../../classes/StringValidator';
-import {findFieldValidatorAndSiblingsFromName, findFieldValidatorFromName, unpackErrors} from '../../helpers/validationHelpers';
+import {
+    findFieldValidatorAndSiblingsFromName,
+    findFieldValidatorFromName,
+    unpackErrors,
+} from '../../helpers/validationHelpers';
 
 describe.each([
     [

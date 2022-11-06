@@ -6,7 +6,7 @@ module.exports = {
     ],
     coveragePathIgnorePatterns: [
         '/node_modules/',
-        '/src/js/main.js',
+        '/src/js/main.ts',
         '/src/js/components/demo/DemoPage.tsx',
     ],
     transform: {

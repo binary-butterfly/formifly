@@ -45,7 +45,7 @@ const config = {
 };
 
 if (env === 'production') {
-    config.input = 'src/js/main.js';
+    config.input = 'src/js/main.ts';
     config.output = [
         {
             file: 'dist/umd/formifly.js',

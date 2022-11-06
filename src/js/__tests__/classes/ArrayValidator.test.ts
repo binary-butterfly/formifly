@@ -124,5 +124,5 @@ test('Test ArrayValidator validateWithoutRecursion works with array child fields
 test('Test ArrayValidator does not allow values that are not arrays', () => {
     const validator = new ArrayValidator(new StringValidator(), 'That is not an array :o');
 
-    expect(validator.validate('string')).toStrictEqual([false, 'That is not an array :o']);
+    expect(validator.validate('string' as any)).toStrictEqual([false, 'That is not an array :o']);
 });

@@ -1,21 +1,62 @@
 import PropTypes from 'prop-types';
 import {getFieldValueFromKeyString} from '../helpers/generalHelpers';
 
+// todo: consider moving types to a separate types file
+export type MutationFunction = (value: ValueType, values?: ShapeValues, siblings?: ShapeValues) => ValueType;
+export type ValidateFunction = (value: ValueType, values: ShapeValues, siblings: ShapeValues) => boolean | string | Date | number;
+export type ErrorFunction = (value: ValueType, otherValues: ShapeValues) => void;
+export type CheckFunction = (_: Array<ValueType>, __: ValueType) => boolean;
+
+
+export type InputType = 'text' | 'number' | 'radio' | 'radio-group' | 'checkbox' | 'select' | 'datetime-local' | 'tel' | 'email';
+// todo: kinda unhappy with this type, check if it can be simplified
+export type Dependent = boolean | ValidatorStep | Array<Array<ValidatorStep>>
+// @ts-expect-error recursive type
+export type ValueType = string | boolean | number | Array<ValueType> | Record<string, ValueType>;
+
+export type ShapeValues = ValueType | Record<string, ValueType>;
+
+
+export type ValidationResult = |
+    [true, ValueType] |
+    [true, ValueType[]] |
+    [false, string] |
+    [false, Record<string, ValidationResult>] |
+    [false, ValidationResult[]];
+
+export type DependentValidationResult = [false] | [true, ValidationResult];
+
+// @ts-expect-error recursive type
+export type PropType = PropTypes.Validator<any> | Record<string, PropType>;
+
+// todo: consider making this an object. That'd be a breaking change tho...
+export type ValidatorStep = [string, (dependentValue: ValueType, value: ValueType) => boolean, BaseValidator];
+
+
+export function isValidatorStepArrayArray(dependent: Dependent): dependent is Array<Array<ValidatorStep>> {
+    return Array.isArray(dependent) && Array.isArray(dependent[0]);
+}
+
+export function isValidatorStep(dependent: boolean | ValidatorStep): dependent is ValidatorStep {
+    return Array.isArray(dependent);
+}
+
 /**
  * The validator that all validators extend.
  * Probably should not be used on its own
  */
 class BaseValidator {
-    defaultInputType = 'text';
-    requiredError;
-    validateFuncs = [];
-    isRequired = false;
-    defaultErrorMsg = '';
-    dependent = false;
-    defaultValue = '';
-    propType = PropTypes.any;
-    onError;
-    mutationFunc;
+    protected defaultInputType: InputType = 'text';
+    private requiredError?: string;
+    protected validateFuncs: Array<[ValidateFunction, string]> = [];
+    protected isRequired: boolean = false;
+    protected defaultErrorMsg: string;
+    private dependent: Dependent;
+    // todo: can we remove this any? if so, update setter and constructor, too
+    private defaultValue: ValueType;
+    protected propType: PropTypes.Requireable<any> = PropTypes.any;
+    protected onError?: ErrorFunction;
+    protected mutationFunc?: MutationFunction;
 
     /**
      * @param [defaultValue]
@@ -24,7 +65,11 @@ class BaseValidator {
      * @param {Function} [onError]
      * @param {Array|Boolean} [dependent]
      */
-    constructor(defaultValue = '', defaultErrorMsg = null, mutationFunc, onError, dependent = false) {
+    constructor(defaultValue: ValueType = '',
+                defaultErrorMsg?: string,
+                mutationFunc?: MutationFunction,
+                onError?: ErrorFunction,
+                dependent: Dependent = false) {
         this.defaultErrorMsg = defaultErrorMsg ?? 'There is an error within this field';
         this.mutationFunc = mutationFunc;
         this.onError = onError;
@@ -34,9 +79,9 @@ class BaseValidator {
 
     /**
      * Sets the input type that will be passed to fields that this validator validates
-     * @param {String} newDefaultInputType
+     * @param {InputType} newDefaultInputType
      */
-    setDefaultInputType(newDefaultInputType) {
+    public setDefaultInputType(newDefaultInputType: InputType): void {
         this.defaultInputType = newDefaultInputType;
     }
 
@@ -44,7 +89,7 @@ class BaseValidator {
      * Sets the default value for this validator
      * @param {any} newDefaultValue
      */
-    setDefaultValue(newDefaultValue) {
+    public setDefaultValue(newDefaultValue: ValueType): void {
         this.defaultValue = newDefaultValue;
     }
 
@@ -52,23 +97,23 @@ class BaseValidator {
      * Sets the default error message for this validator
      * @param {String} newDefaultErrorMsg
      */
-    setDefaultErrorMsg(newDefaultErrorMsg) {
+    public setDefaultErrorMsg(newDefaultErrorMsg: string): void {
         this.defaultErrorMsg = newDefaultErrorMsg;
     }
 
     /**
      * Set the validators mutation function
-     * @param {function} newMutationFunc
+     * @param {MutationFunction} newMutationFunc
      */
-    setMutationFunc(newMutationFunc) {
+    public setMutationFunc(newMutationFunc: MutationFunction): void {
         this.mutationFunc = newMutationFunc;
     }
 
     /**
      * Set the validators onError handler
-     * @param {function} newOnError
+     * @param {Error} newOnError
      */
-    setOnError(newOnError) {
+    public setOnError(newOnError: ErrorFunction): void {
         this.onError = newOnError;
     }
 
@@ -76,11 +121,11 @@ class BaseValidator {
      * Set the validators dependent field
      * @param {Array|boolean} newDependent
      */
-    setDependent(newDependent) {
+    public setDependent(newDependent: Dependent): void {
         this.dependent = newDependent;
     }
 
-    validateRequired(value) {
+    protected validateRequired(value: ValueType): boolean {
         return (value !== '' && value !== null && value !== undefined && (!(value instanceof Array) || value.length > 0));
     }
 
@@ -89,7 +134,7 @@ class BaseValidator {
      * @param [msg] - The error message that is displayed when the value is invalid
      * @return {this}
      */
-    required(msg = 'This field is required') {
+    public required(msg: string = 'This field is required'): this {
         this.isRequired = true;
         this.requiredError = msg;
         return this;
@@ -101,22 +146,24 @@ class BaseValidator {
      * @param [msg] - The error message that is displayed
      * @return {this}
      */
-    alwaysFalse(msg = 'This validator will never return true') {
+    public alwaysFalse(msg: string = 'This validator will never return true'): this {
         this.validateFuncs.push([() => false, msg]);
         return this;
     }
 
-    validateDependentStep(step, value, otherValues, siblings) {
+    private validateDependentStep(
+        step: ValidatorStep | boolean, value: ValueType, otherValues, siblings
+    ): DependentValidationResult {
         const dependentValue = getFieldValueFromKeyString(step[0], otherValues);
-        if (step[1](dependentValue, value)) {
+        if (isValidatorStep(step) && step[1](dependentValue, value)) {
             return [true, step[2].validate(value, otherValues, siblings)];
         } else {
             return [false];
         }
     }
 
-    validateDependent(value, otherValues, siblings) {
-        if (Array.isArray(this.dependent[0])) {
+    private validateDependent(value: ValueType, otherValues, siblings): ValidationResult {
+        if (isValidatorStepArrayArray(this.dependent)) {
             for (const step of this.dependent[0]) {
                 const validated = this.validateDependentStep(step, value, otherValues, siblings);
                 if (validated[0]) {
@@ -133,7 +180,7 @@ class BaseValidator {
         return this.validateIndependent(value, otherValues, siblings);
     }
 
-    validateIndependent(value, otherValues, siblings) {
+    private validateIndependent(value: ValueType, otherValues, siblings): ValidationResult {
         if (!this.validateRequired(value)) {
             if (this.isRequired) {
                 return [false, this.requiredError ?? this.defaultErrorMsg];
@@ -160,7 +207,7 @@ class BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    greaterThan(name, msg) {
+    public greaterThan(name: string, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be greater than the value of ' + name;
         }
@@ -182,7 +229,7 @@ class BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    lessThan(name, msg) {
+    public lessThan(name: string, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be less than the value of ' + name;
         }
@@ -204,7 +251,7 @@ class BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    greaterOrEqualTo(name, msg) {
+    public greaterOrEqualTo(name: string, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be greater than or equal to the value of ' + name;
         }
@@ -226,7 +273,7 @@ class BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    lessOrEqualTo(name, msg) {
+    public lessOrEqualTo(name: string, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be less than or equal to the value of ' + name;
         }
@@ -248,7 +295,7 @@ class BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    greaterThanSibling(key, msg) {
+    public greaterThanSibling(key: string | number, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be greater than the value of its sibling ' + key;
         }
@@ -270,7 +317,7 @@ class BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    lessThanSibling(key, msg) {
+    public lessThanSibling(key: string | number, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be less than the value of its sibling ' + key;
         }
@@ -292,7 +339,7 @@ class BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    greaterOrEqualToSibling(key, msg) {
+    public greaterOrEqualToSibling(key: string | number, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be greater than or equal to the value of its sibling ' + key;
         }
@@ -314,7 +361,7 @@ class BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    lessOrEqualToSibling(key, msg) {
+    public lessOrEqualToSibling(key: string | number, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be less than or equal to the value of its sibling ' + key;
         }
@@ -337,17 +384,17 @@ class BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    oneOfArrayFieldValues(key, checkFn, msg) {
+    public oneOfArrayFieldValues(key: string, checkFn?: CheckFunction, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value is not allowed.';
         }
 
-        if (checkFn === undefined) {
-            checkFn = (compare, value) => compare.includes(value);
-        }
-
         this.validateFuncs.push([
             (value, otherValues) => {
+                if (!checkFn) {
+                    checkFn = (compare, value) => compare.includes(value);
+                }
+
                 const compare = getFieldValueFromKeyString(key, otherValues);
                 if (Array.isArray(compare)) {
                     return checkFn(compare, value);
@@ -369,17 +416,17 @@ class BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    oneOfArraySiblingFieldValues(key, checkFn, msg) {
+    public oneOfArraySiblingFieldValues(key: string, checkFn?: CheckFunction, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value is not allowed.';
         }
 
-        if (checkFn === undefined) {
-            checkFn = (compare, value) => compare.includes(value);
-        }
-
         this.validateFuncs.push([
             (value, otherValues, siblings) => {
+                if (!checkFn) {
+                    checkFn = (compare, value) => compare.includes(value);
+                }
+
                 const compare = getFieldValueFromKeyString(key, siblings);
                 if (Array.isArray(compare)) {
                     return checkFn(compare, value);
@@ -400,7 +447,7 @@ class BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    oneOf(values, msg) {
+    public oneOf(values: Array<ValueType>, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be one of these: ' + values.join(', ');
         }
@@ -422,8 +469,8 @@ class BaseValidator {
      * @param siblings
      * @return {*}
      */
-    validate(value, otherValues = {}, siblings = {}) {
-        let ret;
+    public validate(value: ValueType, otherValues: ShapeValues = {}, siblings: ShapeValues = {}): ValidationResult {
+        let ret: ValidationResult;
         if (this.dependent) {
             ret = this.validateDependent(value, otherValues, siblings);
         } else {
@@ -441,9 +488,9 @@ class BaseValidator {
 
     /**
      * Returns the validator's default value
-     * @return {any}
+     * @return {ValueType}
      */
-    getDefaultValue() {
+    public getDefaultValue(): ValueType {
         return this.defaultValue;
     }
 
@@ -451,7 +498,7 @@ class BaseValidator {
      * Returns the validator's PropTypes representation
      * @return {Object}
      */
-    getPropType() {
+    public getPropType(): PropType {
         return this.isRequired ? this.propType.isRequired : this.propType;
     }
 }

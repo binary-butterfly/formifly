@@ -1,6 +1,9 @@
 import {findFieldValidatorFromName} from './validationHelpers';
+import {ShapeValues} from '../classes/BaseValidator';
 
-export const getFieldValueFromKeyString = (keyString, values) => {
+// todo: keyString needs to be a string, but usage suggests it should be able to be a number as well
+// todo: return value should be of type ValueType, but most callers expect *specific* types. Maybe make generic?
+export const getFieldValueFromKeyString = (keyString, values: ShapeValues): any => {
     const fieldNames = keyString.split('.');
     let dependentValue = values;
     for (const fieldName of fieldNames) {
@@ -46,7 +49,7 @@ export const convertDateObjectToInputString = (date) => {
     }).replace(' ', 'T');
 };
 
-export const completeDefaultValues = (validatorDefaults, userDefaults, shape, keyText) => {
+export const completeDefaultValues = (validatorDefaults, userDefaults, shape?, keyText?) => {
     Object.entries(userDefaults).map(([key, value]) => {
         const thisKeyText = keyText === undefined ? key : keyText + '.' + key;
         if (value !== null) {

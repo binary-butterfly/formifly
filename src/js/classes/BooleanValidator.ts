@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types';
-import BaseValidator from './BaseValidator';
+import BaseValidator, {Dependent, ErrorFunction, InputType, MutationFunction, ValidationResult} from './BaseValidator';
 
 /**
  * A validator that allows you to validate boolean fields.
  * @extends BaseValidator
  */
 class BooleanValidator extends BaseValidator {
-    defaultInputType = 'checkbox';
-    propType = PropTypes.bool;
-    realBool;
+    protected defaultInputType: InputType = 'checkbox';
+    protected propType = PropTypes.bool;
+    private realBool: boolean;
 
     /**
      * Validate a boolean field
@@ -22,9 +22,9 @@ class BooleanValidator extends BaseValidator {
     constructor(
         defaultValue = false,
         defaultErrorMsg = 'This field has to be a boolean',
-        mutationFunc,
-        onError,
-        dependent,
+        mutationFunc?: MutationFunction,
+        onError?: ErrorFunction,
+        dependent?: Dependent,
         realBool = false,
     ) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
@@ -36,11 +36,11 @@ class BooleanValidator extends BaseValidator {
         this.realBool = realBool;
     }
 
-    setRealBool(newRealBool) {
+    public setRealBool(newRealBool: boolean): void {
         this.realBool = newRealBool;
     }
 
-    validate(value, otherValues = {}, siblings = {}) {
+    public validate(value, otherValues = {}, siblings = {}): ValidationResult {
         const result = super.validate(value, otherValues, siblings);
         if (result[0] && this.realBool) {
             return [result[0], result[1] === 'true'];

@@ -1,4 +1,5 @@
 import ArrayValidator from './ArrayValidator';
+import BaseValidator, {Dependent, ErrorFunction, MutationFunction, ValidationResult} from './BaseValidator';
 
 /**
  * A validator that allows you to validate array fields that may also contain a string instead of an array value.
@@ -8,7 +9,7 @@ import ArrayValidator from './ArrayValidator';
  * @property {String} allowedString - The string that is allowed instead of an array value
  */
 class ArrayOrSpecificStringValidator extends ArrayValidator {
-    allowedString;
+    private readonly allowedString: string;
 
     /**
      * Validate an array of fields
@@ -19,12 +20,12 @@ class ArrayOrSpecificStringValidator extends ArrayValidator {
      * @param {Array} [dependent]
      * @param {String} [allowedString
      */
-    constructor(of, defaultMessage, mutationFunc, onError, dependent, allowedString = '_any') {
+    constructor(of: BaseValidator, defaultMessage?: string, mutationFunc?: MutationFunction, onError?: ErrorFunction, dependent?: Dependent, allowedString = '_any') {
         super(of, defaultMessage, mutationFunc, onError, dependent);
         this.allowedString = allowedString;
     }
 
-    validate(values, otherValues = {}, siblings = {}, recursion = true) {
+    public validate(values, otherValues = {}, siblings = {}, recursion = true): ValidationResult {
         if (values === this.allowedString) {
             return [true, values];
         }

@@ -38,8 +38,7 @@ const FruitError = styled.p`
 
 const DemoFormContent = (props) => {
     const {shape} = props;
-    // Todo: remove any type
-    const {values, setFieldValue, errors, validateField} = useFormiflyContext() as any;
+    const {values, setFieldValue, errors, validateField} = useFormiflyContext();
 
     const handleRemoveFruitClick = (index) => {
         const newFruitValue = [...values.fruit.filter((value, fIndex) => fIndex !== index)];
@@ -74,12 +73,8 @@ const DemoFormContent = (props) => {
 
         <p id="radiogroup-1-title">Please select one of these fields</p>
         <AutomagicFormiflyField additionalDescribedBy="radiogroup-1-title" label="This is a radio option" name="radioGroupOne" type="radio"
-            // todo: remove ignore
-            // @ts-ignore
                                 value="radio-option-1"/>
         <AutomagicFormiflyField additionalDescribedBy="radiogroup-1-title" label="This is another radio option" name="radioGroupOne"
-            // todo: remove ignore
-            // @ts-ignore
                                 type="radio" value="radio-option-2"/>
 
         <AutomagicFormiflyField label="Please select one of these fields as well"
@@ -92,8 +87,6 @@ const DemoFormContent = (props) => {
         <AutomagicFormiflyField label="Also select one of these horizontal fields please"
                                 name="radioGroupThree"
                                 type="radio-group"
-            // todo: remove ignore
-            // @ts-ignore
                                 horizontal={true}
                                 options={[
                                     {label: 'Cool option', value: 'cool'}, {label: 'Cooler option', value: 'cooler'},
@@ -137,7 +130,7 @@ const DemoFormContent = (props) => {
 };
 
 class NotTrueValidator extends BooleanValidator {
-    constructor(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent) {
+    constructor(defaultValue?, defaultErrorMsg?, mutationFunc?, onError?, dependent?) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
         this.validateFuncs.push([value => value !== 'true' && value !== true, defaultErrorMsg]);
     }
@@ -168,8 +161,6 @@ const DemoForm = () => {
         fruit: new ArrayValidator(new ObjectValidator({
             name: new StringValidator().required(),
             tasty: new BooleanValidator(true),
-            // todo: remove ignore
-            // @ts-ignore
             expired: new NotTrueValidator(undefined, 'You cannot add expired food.'),
         })).minLength(1, 'You must create at least one fruit.')
             .maxLength(5, 'There can not be more than 5 fruit.'),
@@ -182,8 +173,6 @@ const DemoForm = () => {
         });
     };
 
-    // todo: remove ignore
-    // @ts-ignore
     return <FormiflyForm shape={shape} onSubmit={onSubmit}>
         {successText !== '' && <>
             <p>Submission successful</p>

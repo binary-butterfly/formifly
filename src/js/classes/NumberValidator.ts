@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import {ensureValueIsNumeric} from '../helpers/developerInputValidators';
-import BaseValidator from './BaseValidator';
+import BaseValidator, {Dependent, ErrorFunction, InputType, MutationFunction, ValueType} from './BaseValidator';
 
 const numRegexp = /^-?\d+([.,]\d+)?$/s;
 const wholeNumRegexp = /^-?\d+$/s;
 
-const delocalize = (value) => {
+const delocalize = (value: ValueType): number => {
     return parseFloat(String(value).replace(',', '.'));
 };
 
@@ -14,10 +14,11 @@ const delocalize = (value) => {
  * @extends BaseValidator
  */
 class NumberValidator extends BaseValidator {
-    defaultInputType = 'number';
-    propType = PropTypes.number;
-    minNum;
-    maxNum;
+    protected defaultInputType: InputType = 'number';
+    protected propType: PropTypes.Requireable<any> = PropTypes.number;
+    // todo: only public because formiflyContext needs access - a getter might be the better way to go for that? not sure.
+    public minNum: number;
+    public maxNum: number;
 
     /**
      * Validate a numeric input field
@@ -28,7 +29,7 @@ class NumberValidator extends BaseValidator {
      * @param {Function} [onError]
      * @param {Array|Boolean} [dependent]
      */
-    constructor(wholeNumber = false, defaultValue = '', defaultErrorMsg, mutationFunc, onError, dependent) {
+    constructor(wholeNumber = false, defaultValue: string | number = '', defaultErrorMsg?: string, mutationFunc?: MutationFunction, onError?: ErrorFunction, dependent?: Dependent) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
 
         let regexpInUse;
@@ -58,7 +59,7 @@ class NumberValidator extends BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    min(num, msg) {
+    public min(num: number, msg?: string): this {
         ensureValueIsNumeric(num, 'min', 'NumberValidator', 'num');
         if (msg === undefined) {
             msg = 'This value must be at least ' + num;
@@ -77,7 +78,7 @@ class NumberValidator extends BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    max(num, msg) {
+    public max(num: number, msg?: string): this {
         ensureValueIsNumeric(num, 'max', 'NumberValidator', 'num');
         if (msg === undefined) {
             msg = 'This value must be at most ' + num;
@@ -95,7 +96,7 @@ class NumberValidator extends BaseValidator {
      * @param {String} [msg] - The error message that is displayed when the value is invalid
      * @returns {this}
      */
-    positive(msg = 'This value must be positive') {
+    public positive(msg = 'This value must be positive'): this {
         this.validateFuncs.push([value => value > 0, msg]);
         return this;
     }
@@ -105,7 +106,7 @@ class NumberValidator extends BaseValidator {
      * @param {String} [msg] - The error message that is displayed when the value is invalid
      * @returns {this}
      */
-    negative(msg = 'This value must be negative') {
+    public negative(msg = 'This value must be negative'): this {
         this.validateFuncs.push([value => value < 0, msg]);
         return this;
     }
@@ -117,7 +118,7 @@ class NumberValidator extends BaseValidator {
      * @param {String} [msg] - The error message that is displayed when the value is invalid
      * @returns {this}
      */
-    range(min, max, msg) {
+    public range(min: number, max: number, msg?: string): this {
         if (msg === undefined) {
             msg = 'This value must be between ' + min + ' and ' + max;
         } else {
@@ -138,10 +139,10 @@ class NumberValidator extends BaseValidator {
      * @param {Number} count
      * @returns {this}
      */
-    decimalPlaces(count) {
+    public decimalPlaces(count: number): this {
         ensureValueIsNumeric(count, 'decimalPlaces', 'NumberValidator', 'count');
         this.validateFuncs.push([
-            value => value.toFixed(count),
+            (value: number) => value.toFixed(count),
             'This is not a validator and should not return false.',
         ]);
         return this;

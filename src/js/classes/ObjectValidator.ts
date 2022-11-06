@@ -1,6 +1,14 @@
 import PropTypes from 'prop-types';
 import ArrayValidator from './ArrayValidator';
-import BaseValidator from './BaseValidator';
+import BaseValidator, {
+    Dependent,
+    ErrorFunction,
+    MutationFunction,
+    PropType,
+    ShapeValues,
+    ValidationResult,
+    ValueType,
+} from './BaseValidator';
 
 /**
  * A validator that allows you to validate object fields. It is also used as the base for any validation shape.
@@ -9,10 +17,10 @@ import BaseValidator from './BaseValidator';
  * @property {BaseValidator|AnyOfValidator|ArrayValidator|BooleanValidator|EmailValidator|NumberValidator|ObjectValidator|PhoneNumberValidator|StringValidator} fields  - The fields of the object
  */
 class ObjectValidator extends BaseValidator {
-    fields = {};
-    dropEmpty;
-    dropNotInShape;
-    reallyNotRequired;
+    private readonly fields: Record<string, BaseValidator> = {};
+    private dropEmpty: boolean;
+    private dropNotInShape: boolean;
+    private reallyNotRequired: boolean;
 
     /**
      * @param {Object} fields
@@ -23,7 +31,15 @@ class ObjectValidator extends BaseValidator {
      * @param {Boolean} [dropEmpty]
      * @param {Boolean} [dropNotInShape]
      */
-    constructor(fields, defaultMessage, mutationFunc, onError, dependent, dropEmpty = true, dropNotInShape = false) {
+    constructor(
+        fields: Record<string, BaseValidator>,
+        defaultMessage?: string,
+        mutationFunc?: MutationFunction,
+        onError?: ErrorFunction,
+        dependent?: Dependent,
+        dropEmpty = true,
+        dropNotInShape = false
+    ) {
         super(undefined, defaultMessage, mutationFunc, onError, dependent);
         this.fields = fields;
         this.dropEmpty = dropEmpty;
@@ -34,7 +50,7 @@ class ObjectValidator extends BaseValidator {
      * Sets the object validator as non required
      * @returns {ObjectValidator}
      */
-    notRequired() {
+    public notRequired(): this {
         this.isRequired = false;
         this.reallyNotRequired = true;
         return this;
@@ -44,7 +60,7 @@ class ObjectValidator extends BaseValidator {
      * Make the validator drop empty keys
      * @param {Boolean} newDropEmpty
      */
-    setDropEmpty(newDropEmpty) {
+    public setDropEmpty(newDropEmpty: boolean): void {
         this.dropEmpty = newDropEmpty;
     }
 
@@ -52,14 +68,14 @@ class ObjectValidator extends BaseValidator {
      * Make the validator drop values that are not defined as a child field
      * @param {Boolean} newDropNotInShape
      */
-    setDropNotInShape(newDropNotInShape) {
+    public setDropNotInShape(newDropNotInShape: boolean): void {
         this.dropNotInShape = newDropNotInShape;
     }
 
     /**
      * @return {{}}
      */
-    getDefaultValue() {
+    public getDefaultValue(): ValueType {
         const ret = {};
         for (const fieldName in this.fields) {
             ret[fieldName] = this.fields[fieldName].getDefaultValue();
@@ -67,7 +83,7 @@ class ObjectValidator extends BaseValidator {
         return ret;
     }
 
-    validateRequired(value) {
+    protected validateRequired(value: ValueType): boolean {
         if (typeof value === 'object') {
             return Object.keys(value).length > 0;
         } else {
@@ -82,11 +98,11 @@ class ObjectValidator extends BaseValidator {
      * @param {Object} [siblings]
      * @return {*|[boolean, *]|[boolean, {}]}
      */
-    validateWithoutRecursion(value, otherValues, siblings) {
+    public validateWithoutRecursion(value: object, otherValues?: ShapeValues, siblings?: ShapeValues): ValidationResult {
         return this.validate(value, otherValues, siblings, false);
     }
 
-    validate(value, otherValues, siblings, recursion = true) {
+    public validate(value: object, otherValues?: ShapeValues, siblings?: ShapeValues, recursion = true): ValidationResult {
         if (this.reallyNotRequired && !this.validateRequired(value)) {
             return [true, value];
         }
@@ -97,9 +113,9 @@ class ObjectValidator extends BaseValidator {
         }
 
         // Unpack the test value to avoid mutating the original object
-        const testValue = {...value};
+        const testValue: ValueType = {...value};
         let allOk = true;
-        const tests = {};
+        const tests: Record<string, ValidationResult> = {};
         for (const fieldName in this.fields) {
             if (!recursion) {
                 if (this.fields[fieldName] instanceof ArrayValidator || this.fields[fieldName] instanceof ObjectValidator) {
@@ -148,8 +164,8 @@ class ObjectValidator extends BaseValidator {
      * @param {Boolean} [first]
      * @return {any}
      */
-    getPropType(first = false) {
-        const types = {};
+    public getPropType(first = false): PropType {
+        const types: PropType = {};
         for (const fieldName in this.fields) {
             types[fieldName] = this.fields[fieldName].getPropType();
         }

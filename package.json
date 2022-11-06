@@ -8,7 +8,7 @@
     "src/js/classes/*",
     "src/js/helpers/*",
     "src/js/components/*",
-    "src/js/main.js",
+    "src/js/main.ts",
     "dist/esm/*",
     "dist/umd/*"
   ],

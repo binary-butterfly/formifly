@@ -1,4 +1,4 @@
-import FormiflyField from './components/input/FormiflyField';
+import FormiflyField, {Input} from './components/input/FormiflyField';
 import FormiflySelectField from './components/input/FormiflySelectField';
 import FormiflyCheckField from './components/input/FormiflyCheckField';
 import AutomagicFormiflyField from './components/input/AutomagicFormiflyField';
@@ -17,12 +17,25 @@ import DateTimeValidator from './classes/DateTimeValidator';
 import EmailValidator from './classes/EmailValidator';
 import PhoneNumberValidator from './classes/PhoneNumberValidator';
 import {findFieldValidatorFromName, unpackErrors} from './helpers/validationHelpers';
-import {convertDateObjectToInputString, getFieldValueFromKeyString, setFieldValueFromKeyString} from './helpers/generalHelpers';
+import {
+    convertDateObjectToInputString,
+    getFieldValueFromKeyString,
+    setFieldValueFromKeyString,
+} from './helpers/generalHelpers';
 import {ensureValueIsDateObject, ensureValueIsNumeric, ensureValueIsRegexp} from './helpers/developerInputValidators';
-import withLabelErrorsAndHelp, {FieldContainer, InputLabel, ErrorSpan, HelpSpan} from './components/input/withLabelErrorsAndHelp';
-import {Input} from './components/input/FormiflyField';
+import withLabelErrorsAndHelp, {
+    ErrorSpan,
+    FieldContainer,
+    HelpSpan,
+    InputLabel,
+} from './components/input/withLabelErrorsAndHelp';
 import FormiflyRadioGroup, {RadioGroupContainer} from './components/input/FormiflyRadioGroup';
-import FormiflyMultiSelectField, {Option, OptionsMenu, OptionsAnchor, SelectContainer} from './components/input/FormiflyMultiSelectField';
+import FormiflyMultiSelectField, {
+    Option,
+    OptionsAnchor,
+    OptionsMenu,
+    SelectContainer,
+} from './components/input/FormiflyMultiSelectField';
 
 export {
     FormiflyField,

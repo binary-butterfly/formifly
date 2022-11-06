@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types';
 import {ensureValueIsNumeric, ensureValueIsRegexp} from '../helpers/developerInputValidators';
-import BaseValidator from './BaseValidator';
+import BaseValidator, {InputType} from './BaseValidator';
 
 /**
  * A validator that allows you to validate string fields.
  * @extends BaseValidator
  */
 class StringValidator extends BaseValidator {
-    defaultInputType = 'text';
-    propType = PropTypes.string;
+    protected defaultInputType: InputType = 'text';
+    protected propType = PropTypes.string;
 
     /**
      * Match the string against a regular expression
@@ -16,9 +16,9 @@ class StringValidator extends BaseValidator {
      * @param {String} [msg] - The error message that is displayed when the value is invalid
      * @returns {this}
      */
-    regex(expr, msg = 'This value is malformed') {
+    public regex(expr: RegExp, msg: string = 'This value is malformed') {
         ensureValueIsRegexp(expr, 'regex', 'StringValidator', 'expr');
-        this.validateFuncs.push([value => expr.test(value), msg]);
+        this.validateFuncs.push([(value: string) => expr.test(value), msg]);
         return this;
     }
 
@@ -28,14 +28,14 @@ class StringValidator extends BaseValidator {
      * @param {String} [msg] - The error message that is displayed when the value is invalid
      * @returns {this}
      */
-    minLength(num, msg) {
+    public minLength(num: number, msg?: string): this {
         if (msg === undefined) {
             msg = 'This string must be at least ' + num + ' characters long';
         } else {
             msg = msg.replace('{{num}}', String(num));
         }
         ensureValueIsNumeric(num, 'minLength', 'StringValidator', 'num');
-        this.validateFuncs.push([value => value.length >= num, msg]);
+        this.validateFuncs.push([(value: string) => value.length >= num, msg]);
         return this;
     }
 
@@ -45,14 +45,14 @@ class StringValidator extends BaseValidator {
      * @param {String} [msg] - The error message that is displayed when the value is invalid
      * @returns {this}
      */
-    maxLength(num, msg) {
+    public maxLength(num: number, msg?: string): this {
         if (msg === undefined) {
             msg = 'This string must be no longer than ' + num + ' characters';
         } else {
             msg = msg.replace('{{num}}', String(num));
         }
         ensureValueIsNumeric(num, 'maxLength', 'StringValidator', 'num');
-        this.validateFuncs.push([value => value.length <= num, msg]);
+        this.validateFuncs.push([(value: string) => value.length <= num, msg]);
         return this;
     }
 
@@ -63,7 +63,7 @@ class StringValidator extends BaseValidator {
      * @param {String} [msg] - The error message that is displayed when the value is invalid
      * @returns {this}
      */
-    lengthRange(min, max, msg) {
+    public lengthRange(min: number, max: number, msg?: string): this {
         if (msg === undefined) {
             msg = 'This string must be between ' + min + ' and ' + max + ' characters long';
         } else {
@@ -72,7 +72,7 @@ class StringValidator extends BaseValidator {
         }
         ensureValueIsNumeric(min, 'lengthRange', 'StringValidator', 'min');
         ensureValueIsNumeric(max, 'lengthRange', 'StringValidator', 'max');
-        this.validateFuncs.push([value => value.length >= min && value.length <= max, msg]);
+        this.validateFuncs.push([(value: string) => value.length >= min && value.length <= max, msg]);
         return this;
     }
 }

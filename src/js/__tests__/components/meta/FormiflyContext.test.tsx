@@ -93,9 +93,9 @@ describe('FormiflyContext', () => {
             <AutomagicFormiflyField label="Foo" name="foo"/>
         </FormiflyForm>);
 
-        expect(screen.getByLabelText('Name').value).toStrictEqual('banana');
-        expect(screen.getByLabelText('Tasty').checked).toBe(true);
-        expect(screen.getByLabelText('Foo').value).toStrictEqual('bar');
+        expect((screen.getByLabelText('Name') as HTMLInputElement).value).toStrictEqual('banana');
+        expect((screen.getByLabelText('Tasty') as HTMLInputElement).checked).toBe(true);
+        expect((screen.getByLabelText('Foo') as HTMLInputElement).value).toStrictEqual('bar');
     });
 
     it('completes array default values', () => {
@@ -119,10 +119,10 @@ describe('FormiflyContext', () => {
             <AutomagicFormiflyField label="Sub Array Text2" name="array.1.subArray.0"/>
         </FormiflyForm>);
 
-        expect(screen.getByLabelText('Foo').value).toStrictEqual('banana');
-        expect(screen.getByLabelText('Sub Array Text').value).toStrictEqual('apple');
-        expect(screen.getByLabelText('Foo2').value).toStrictEqual('cucumber');
-        expect(screen.getByLabelText('Sub Array Text2').value).toStrictEqual('apple');
+        expect((screen.getByLabelText('Foo') as HTMLInputElement).value).toStrictEqual('banana');
+        expect((screen.getByLabelText('Sub Array Text') as HTMLInputElement).value).toStrictEqual('apple');
+        expect((screen.getByLabelText('Foo2') as HTMLInputElement).value).toStrictEqual('cucumber');
+        expect((screen.getByLabelText('Sub Array Text2') as HTMLInputElement).value).toStrictEqual('apple');
     });
 
     it('can check if objects have errors or touched fields within them', async () => {
@@ -175,7 +175,7 @@ describe('FormiflyContext', () => {
         </FormiflyForm>);
 
         const input = screen.getByLabelText('Foo');
-        expect(input.required).toBe(false);
+        expect((input as HTMLInputElement).required).toBe(false);
         expect(input.attributes['aria-required']).toBeTruthy();
     });
 
@@ -190,8 +190,23 @@ describe('FormiflyContext', () => {
         </FormiflyForm>);
 
         const input = screen.getByLabelText('Foo');
-        expect(input.attributes.min).toBeUndefined();
-        expect(input.attributes.max).toBeUndefined();
+        expect(input.attributes.getNamedItem('min')).toBeNull();
+        expect(input.attributes.getNamedItem('max')).toBeNull();
+    });
+
+    it('can enable the native min and max props', () => {
+        const shape = new ObjectValidator({
+            foo: new NumberValidator().min(0)
+                .max(1),
+        });
+
+        render(<FormiflyForm shape={shape} onSubmit={() => Promise.resolve()} disableNativeMinMax={false}>
+            <AutomagicFormiflyField label="Foo" name="foo"/>
+        </FormiflyForm>);
+
+        const input = screen.getByLabelText('Foo');
+        expect(input.attributes.getNamedItem('min')).not.toBeNull();
+        expect(input.attributes.getNamedItem('max')).not.toBeNull();
     });
 
     it('can trigger field validation', () => {
@@ -261,7 +276,7 @@ describe('FormiflyContext', () => {
 
         fireEvent.click(screen.getByText('Cool button m8'));
         expect(await screen.findByText('foo')).not.toBeNull();
-        await (waitFor(() => expect(screen.getByLabelText('fooField').value).toBe('foo')));
+        await (waitFor(() => expect((screen.getByLabelText('fooField') as HTMLInputElement).value).toBe('foo')));
     });
 
     it('can set multiple field values at once', async () => {
@@ -294,7 +309,7 @@ describe('FormiflyContext', () => {
 
         fireEvent.click(screen.getByText('Button'));
         expect(await screen.findByText('Foo: foo')).not.toBeNull();
-        await (waitFor(() => expect(screen.getByLabelText('barField').value).toBe('bar')));
+        await (waitFor(() => expect((screen.getByLabelText('barField') as HTMLInputElement).value).toBe('bar')));
     });
 
     it('runs onSubmitValidationError handler', () => {
@@ -385,8 +400,8 @@ describe('FormiflyContext', () => {
         return screen.findByText('this would have been required').then((found) => {
             expect(found).not.toBeNull();
             expect(screen.getByText('Not all fields have passed validation')).not.toBeNull();
-            expect(document.getElementById('foo-input').getAttribute('aria-invalid')).toBe('false');
-            expect(document.getElementById('bar-input').getAttribute('aria-invalid')).toBe('true');
+            expect(document.getElementById('foo-input')?.getAttribute('aria-invalid')).toBe('false');
+            expect(document.getElementById('bar-input')?.getAttribute('aria-invalid')).toBe('true');
         });
     });
 

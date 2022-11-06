@@ -57,7 +57,8 @@ export const unpackErrors = (currentResult) => {
                 }
             });
         } else if (currentResult[1] instanceof Object) {
-            Object.entries(currentResult[1]).map(([name, result]) => {
+            // todo: remove any
+            Object.entries(currentResult[1]).map(([name, result]: [string, any]) => {
                 if (result[0] === false) {
                     ret[name] = unpackErrors(result);
                 }

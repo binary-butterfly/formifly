@@ -1,4 +1,8 @@
-import {ensureValueIsDateObject, ensureValueIsNumeric, ensureValueIsRegexp} from '../../helpers/developerInputValidators';
+import {
+    ensureValueIsDateObject,
+    ensureValueIsNumeric,
+    ensureValueIsRegexp,
+} from '../../helpers/developerInputValidators';
 
 test('Test ensureValueIsNumeric throws error on non number value', () => {
     function ensure() {

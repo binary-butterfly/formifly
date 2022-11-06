@@ -23,6 +23,6 @@ describe('EmailValidator', () => {
 
     it('sets the correct default input type', () => {
         const validator = new EmailValidator();
-        expect(validator.defaultInputType).toStrictEqual('email');
+        expect(validator['defaultInputType']).toStrictEqual('email');
     });
 });
