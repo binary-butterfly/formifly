@@ -25,7 +25,7 @@ class DateTimeValidator extends BaseValidator {
         super(defaultValue, defaultMsg, mutationFunc, onError, dependent);
 
         this.validateFuncs.push([(value) => {
-            return dateRegex.test(value) ? new Date(value) : false;
+            return value instanceof Date ? value : dateRegex.test(value) ? new Date(value) : false;
         }, defaultMsg]);
     }
 

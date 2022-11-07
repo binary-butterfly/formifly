@@ -400,3 +400,9 @@ describe('Test DateTimeValidator lessOrEqualTo', () => {
         }]);
     });
 });
+
+test('Test DateTimeValidator allows date objects as input', () => {
+    const validator = new DateTimeValidator();
+    const date = new Date();
+    expect(validator.validate(date)).toStrictEqual([true, date]);
+});
