@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+
+  "compilerOptions": {
+    "emitDeclarationOnly": true
+  },
+
+  "exclude": [
+    "./src/js/components/demo/*",
+    "./src/js/__tests__/components/demo/*"
+  ]
+}
