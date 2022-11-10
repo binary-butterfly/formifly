@@ -83,7 +83,7 @@ const withLabelErrorsAndHelp = (WrappedComponent: React.ComponentType<any>) => {
     };
 };
 
-type LabelErrorsAndHelpInnerProps = Pick<FormiflyFieldProps,
+export type LabelErrorsAndHelpInnerProps = Pick<FormiflyFieldProps,
     'label' |
     'help' |
     'type' |

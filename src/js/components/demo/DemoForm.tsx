@@ -9,7 +9,7 @@ import StringValidator from '../../classes/StringValidator';
 import AutomagicFormiflyField from '../input/AutomagicFormiflyField';
 import {useFormiflyContext} from '../meta/FormiflyContext';
 import FormiflyForm from '../meta/FormiflyForm';
-import {Dependent, ErrorFunction, MutationFunction, ValueType} from '../../classes/BaseValidator';
+import {Dependent, ErrorFunction, MutationFunction, ValueType} from '../../types';
 
 const Button = styled.button`
   background-color: transparent;

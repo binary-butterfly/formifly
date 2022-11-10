@@ -1,5 +1,6 @@
 import ArrayValidator from './ArrayValidator';
-import BaseValidator, {Dependent, ErrorFunction, MutationFunction, ValidationResult, ValueType,} from './BaseValidator';
+import BaseValidator from './BaseValidator';
+import {Dependent, ErrorFunction, MutationFunction, ValidationResult, ValueType} from '../types';
 
 /**
  * A validator that allows you to validate array fields that may also contain a string instead of an array value.

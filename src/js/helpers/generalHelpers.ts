@@ -1,7 +1,7 @@
-import {findFieldValidatorFromName, UnpackedErrors} from './validationHelpers';
-import {ObjectValue, ValueType} from '../classes/BaseValidator';
+import {findFieldValidatorFromName} from './validationHelpers';
 import ArrayValidator from '../classes/ArrayValidator';
 import ObjectValidator from '../classes/ObjectValidator';
+import {ObjectValue, UnpackedErrors, ValueType} from '../types';
 
 export const getFieldValueFromKeyString = (
     keyString: string|number, values: ValueType|UnpackedErrors

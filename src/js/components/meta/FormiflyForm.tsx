@@ -1,8 +1,8 @@
 import React from 'react';
 import {ThemeProvider} from 'styled-components';
-import {FormiflyProvider, SubmitFunction, SubmitValidationErrorFunction, useFormiflyContext} from './FormiflyContext';
+import {FormiflyProvider, useFormiflyContext} from './FormiflyContext';
 import ObjectValidator from '../../classes/ObjectValidator';
-import {ValueType} from '../../classes/BaseValidator';
+import {SubmitFunction, SubmitValidationErrorFunction, ValueType} from '../../types';
 
 const Form = (props: FormProps) => {
     const {handleSubmit} = useFormiflyContext();
@@ -49,11 +49,11 @@ const FormiflyForm = (props: FormiflyFormProps) => {
     </ThemeProvider>;
 };
 
-type FormProps = {
+export type FormProps = {
     onSubmit: SubmitFunction;
     onSubmitValidationError?: SubmitValidationErrorFunction;
     className?: string;
-    children: (JSX.Element|false)[] | JSX.Element | false;
+    children: (JSX.Element | false)[] | JSX.Element | false;
 }
 
 export type FormiflyFormProps = FormProps & {

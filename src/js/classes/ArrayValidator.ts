@@ -1,14 +1,8 @@
 import PropTypes from 'prop-types';
 import {ensureValueIsNumeric} from '../helpers/developerInputValidators';
-import BaseValidator, {
-    Dependent,
-    ErrorFunction,
-    InputType,
-    MutationFunction,
-    ValidationResult,
-    ValueType,
-} from './BaseValidator';
+import BaseValidator from './BaseValidator';
 import ObjectValidator from './ObjectValidator';
+import {Dependent, ErrorFunction, InputType, MutationFunction, ValidationResult, ValueType} from '../types';
 
 /**
  * A validator that allows you to validate array fields.

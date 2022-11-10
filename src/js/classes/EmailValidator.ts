@@ -1,5 +1,5 @@
 import StringValidator from './StringValidator';
-import {Dependent, ErrorFunction, InputType, MutationFunction} from './BaseValidator';
+import {Dependent, ErrorFunction, InputType, MutationFunction} from '../types';
 
 const emailRegexp = /.+@.+/;
 

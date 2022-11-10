@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
-import BaseValidator, {Dependent} from '../../classes/BaseValidator';
+import BaseValidator from '../../classes/BaseValidator';
 import NumberValidator from '../../classes/NumberValidator';
 import StringValidator from '../../classes/StringValidator';
+import {Dependent} from '../../types';
 
 describe.each([
     ['abc', true, 'returns true for random value'],

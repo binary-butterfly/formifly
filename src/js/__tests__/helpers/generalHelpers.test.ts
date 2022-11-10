@@ -5,7 +5,7 @@ import {
     getFieldValueFromKeyString,
     setFieldValueFromKeyString,
 } from '../../helpers/generalHelpers';
-import {ValueType} from '../../classes/BaseValidator';
+import {ValueType} from '../../types';
 
 describe.each([
     ['banana', {banana: 'apple'}, 'apple', 'works with shallow objects'],

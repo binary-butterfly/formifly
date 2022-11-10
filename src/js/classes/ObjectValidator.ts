@@ -1,13 +1,7 @@
 import PropTypes from 'prop-types';
 import ArrayValidator from './ArrayValidator';
-import BaseValidator, {
-    Dependent,
-    ErrorFunction,
-    MutationFunction,
-    ObjectValue,
-    ValidationResult,
-    ValueType,
-} from './BaseValidator';
+import BaseValidator from './BaseValidator';
+import {Dependent, ErrorFunction, MutationFunction, ObjectValue, ValidationResult, ValueType} from '../types';
 
 
 /**
@@ -16,7 +10,7 @@ import BaseValidator, {
  *
  * @property {BaseValidator|AnyOfValidator|ArrayValidator|BooleanValidator|EmailValidator|NumberValidator|ObjectValidator|PhoneNumberValidator|StringValidator} fields  - The fields of the object
  */
-class ObjectValidator extends BaseValidator<ObjectValue|string> {
+class ObjectValidator extends BaseValidator<ObjectValue | string> {
     public readonly fields: Record<string, BaseValidator<any>> = {};
     private dropEmpty: boolean;
     private dropNotInShape: boolean;

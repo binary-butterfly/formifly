@@ -1,50 +1,20 @@
 import PropTypes from 'prop-types';
 import {getFieldValueFromKeyString} from '../helpers/generalHelpers';
-import {ErrorType} from '../components/meta/FormiflyContext';
+import {
+    CheckFunction,
+    Dependent,
+    DependentValidationResult,
+    ErrorFunction,
+    InputType,
+    isValidatorStep,
+    isValidatorStepArrayArray,
+    MutationFunction,
+    ValidateFunction,
+    ValidationResult,
+    ValidatorStep,
+    ValueType,
+} from '../types';
 
-// todo: consider moving types to a separate types file
-export type MutationFunction<T extends ValueType> = (value?: T, values?: ValueType, siblings?: ValueType) => T;
-export type ValidateFunction<T extends ValueType> =
-    (value: T|undefined, values: ValueType, siblings: ValueType) => IndividualValidationResult<T>;
-export type ErrorFunction = (value: ValueType|undefined, otherValues: ValueType) => void;
-export type CheckFunction<T extends ValueType> = (_: Array<T>, __?: T) => boolean;
-
-export type IndividualValidationResult<T extends ValueType> = {
-    success: boolean;
-    errorMsg: string;
-    changedValue?: T;
-}
-
-// todo: there is a link between input types and ValueTypes, would be great to have it explicitly modeled
-export type InputType = 'text' | 'number' | 'radio' | 'radio-group' | 'checkbox' | 'select' | 'datetime-local' | 'tel' | 'email';
-// todo: kinda unhappy with this type, check if it can be simplified
-export type Dependent = boolean | ValidatorStep | Array<Array<ValidatorStep>>
-
-type ValueTypeInternal = string | boolean | number | Date;
-
-export type ObjectValue = {[key: string]: ValueType};
-export type ArrayValue = ValueType[];
-export type ValueType = ValueTypeInternal | ObjectValue | ArrayValue;
-
-export type ValidationResult<T extends ValueType | ErrorType> = |
-    [true, T?] |
-    [false, string] |
-    [false, Record<string, ValidationResult<ValueType | ErrorType>>] |
-    [false, ValidationResult<ValueType | ErrorType>[]];
-
-export type DependentValidationResult<T extends ValueType> = [false] | [true, ValidationResult<T>];
-
-// todo: consider making this an object. That'd be a breaking change tho...
-export type ValidatorStep = [string, (dependentValue: ValueType, value?: ValueType) => boolean, BaseValidator<any>];
-
-
-export function isValidatorStepArrayArray(dependent: Dependent): dependent is Array<Array<ValidatorStep>> {
-    return Array.isArray(dependent) && Array.isArray(dependent[0]);
-}
-
-export function isValidatorStep(dependent: boolean | ValidatorStep): dependent is ValidatorStep {
-    return Array.isArray(dependent);
-}
 
 /**
  * The validator that all validators extend.

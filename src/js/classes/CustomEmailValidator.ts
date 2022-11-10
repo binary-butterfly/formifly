@@ -1,5 +1,5 @@
 import EmailValidator from './EmailValidator';
-import {InputType} from './BaseValidator';
+import {InputType} from '../types';
 
 /**
  * This validator is only provided as an example for the documentation and should probably not be used in production.

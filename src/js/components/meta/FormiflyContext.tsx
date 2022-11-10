@@ -14,14 +14,11 @@ import {
 import {
     findFieldValidatorAndSiblingsFromName,
     findFieldValidatorFromName,
-    UnpackedErrors,
     unpackErrors,
 } from '../../helpers/validationHelpers';
-import BaseValidator, {ObjectValue, ValidationResult, ValueType} from '../../classes/BaseValidator';
+import BaseValidator from '../../classes/BaseValidator';
 import {FormiflyFieldProps} from '../input/FormiflyField';
-
-export type SubmitFunction = (_: ValueType|undefined, __: (___: any) => void) => Promise<void> | void;
-export type SubmitValidationErrorFunction = undefined | ((errors: ValueType, reason: UnpackedErrors) => void);
+import {ObjectValue, SubmitFunction, SubmitValidationErrorFunction, UnpackedErrors, ValueType} from '../../types';
 
 export type FormiflyContextType = {
     setSubmitting: (value: (((prevState: boolean) => boolean) | boolean)) => void;
@@ -36,7 +33,7 @@ export type FormiflyContextType = {
         additionalDescribedBy?: string
     ) => FormiflyFieldProps;
     validateMultipleFields: (pairs: [string, ValueType?][]) => Promise<boolean>;
-    hasErrors: (fieldName: string) => false|string;
+    hasErrors: (fieldName: string) => false | string;
     shape: ObjectValidator;
     setFieldValue: <T extends ValueType>(
         field: string, value: T, oldValues?: ObjectValue
@@ -53,7 +50,7 @@ export type FormiflyContextType = {
         e: React.FormEvent<HTMLFormElement>
     ) => void;
     handleFocus: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    validateAll: () => Promise<string|ObjectValue|undefined>;
+    validateAll: () => Promise<string | ObjectValue | undefined>;
     handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     submitFailureReason: any;
     setMultipleFieldValues: <T extends ValueType>(
@@ -62,8 +59,6 @@ export type FormiflyContextType = {
     handleCheckChange: (event: React.ChangeEvent<HTMLInputElement>) => Promise<boolean>;
     errors: UnpackedErrors;
 };
-
-export type ErrorType = string|false|{[key: string]: ValidationResult<ErrorType>}|ValidationResult<ErrorType>[];
 
 // see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/24509#issuecomment-382213106 for why we need to cast here
 export const Context = React.createContext<FormiflyContextType>(undefined as any);
@@ -110,9 +105,9 @@ export const FormiflyProvider = (props: FormiflyProviderProps) => {
         });
     };
 
-    const hasErrors = (fieldName: string): string|false => {
+    const hasErrors = (fieldName: string): string | false => {
         try {
-            const errorsRes = getFieldValueFromKeyString(fieldName, errors) as false|string;
+            const errorsRes = getFieldValueFromKeyString(fieldName, errors) as false | string;
             if (Array.isArray(errorsRes) || (typeof errorsRes === 'object' && errorsRes !== null)) {
                 if (!containsValuesThatAreNotFalse(errorsRes)) {
                     return false;
@@ -237,7 +232,7 @@ export const FormiflyProvider = (props: FormiflyProviderProps) => {
             additionalProps.onChange = handleRadioChange;
         } else if (fieldValidator instanceof DateTimeValidator) {
             if (fieldValue !== '') {
-                additionalProps.value = convertDateObjectToInputString(new Date(fieldValue as string|Date));
+                additionalProps.value = convertDateObjectToInputString(new Date(fieldValue as string | Date));
             }
         } else if (fieldValidator instanceof NumberValidator) {
             if (!disableNativeMinMax && fieldValidator.minNum !== undefined) {

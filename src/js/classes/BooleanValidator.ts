@@ -1,18 +1,12 @@
 import PropTypes from 'prop-types';
-import BaseValidator, {
-    Dependent,
-    ErrorFunction,
-    InputType,
-    MutationFunction,
-    ValidationResult,
-    ValueType,
-} from './BaseValidator';
+import BaseValidator from './BaseValidator';
+import {Dependent, ErrorFunction, InputType, MutationFunction, ValidationResult, ValueType} from '../types';
 
 /**
  * A validator that allows you to validate boolean fields.
  * @extends BaseValidator
  */
-class BooleanValidator extends BaseValidator<boolean|string> {
+class BooleanValidator extends BaseValidator<boolean | string> {
     public defaultInputType: InputType = 'checkbox';
     protected propType = PropTypes.bool;
     private realBool: boolean;

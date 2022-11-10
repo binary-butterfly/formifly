@@ -1,5 +1,5 @@
 import StringValidator from './StringValidator';
-import {InputType} from './BaseValidator';
+import {InputType} from '../types';
 
 /**
  * A validator that sets the default input type to "tel" and does nothing else.

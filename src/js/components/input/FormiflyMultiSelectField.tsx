@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import styled, {StyledComponent} from 'styled-components';
 import {CheckLabel} from './FormiflyCheckField';
 import withLabelErrorsAndHelp from './withLabelErrorsAndHelp';
@@ -74,13 +73,6 @@ export const Option = (props: OptionProps) => {
     return <li className={className}>
         <CheckLabel><input onChange={onChange} type="checkbox" checked={checked}/>{label}</CheckLabel>
     </li>;
-};
-
-Option.propTypes = {
-    checked: PropTypes.bool.isRequired,
-    label: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
-    className: PropTypes.string,
 };
 
 type OptionProps = {

@@ -1,4 +1,5 @@
-import BaseValidator, {Dependent, ErrorFunction, MutationFunction, ValidationResult, ValueType,} from './BaseValidator';
+import BaseValidator from './BaseValidator';
+import {Dependent, ErrorFunction, MutationFunction, ValidationResult, ValueType} from '../types';
 
 /**
  * A "meta" validator that allows you to check if a value can be successfully validated by any of a given list of validators.

@@ -1,6 +1,7 @@
-import BaseValidator, {ValidationResult, ValueType} from '../classes/BaseValidator';
+import BaseValidator from '../classes/BaseValidator';
 import ArrayValidator from '../classes/ArrayValidator';
 import ObjectValidator from '../classes/ObjectValidator';
+import {UnpackedErrors, ValidationResult, ValueType} from '../types';
 
 
 export const findFieldValidatorFromName = (
@@ -60,8 +61,6 @@ export const findFieldValidatorAndSiblingsFromName = (
     }
     return [validator, lastSiblings];
 };
-
-export type UnpackedErrors = string | false | {[key: string]: UnpackedErrors} | UnpackedErrors[];
 
 export const unpackErrors = (currentResult: ValidationResult<any>): UnpackedErrors => {
     let ret: UnpackedErrors = {};

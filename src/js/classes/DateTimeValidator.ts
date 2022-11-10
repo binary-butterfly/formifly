@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import {ensureValueIsDateObject} from '../helpers/developerInputValidators';
 import {getFieldValueFromKeyString, isInvalidDate} from '../helpers/generalHelpers';
-import BaseValidator, {Dependent, ErrorFunction, InputType, MutationFunction} from './BaseValidator';
+import BaseValidator from './BaseValidator';
+import {Dependent, ErrorFunction, InputType, MutationFunction} from '../types';
 
 const dateRegex = /^\d{4}-((0[1-9])|(1[0-2]))-(([0-2][0-9])|(3[0-1]))T(([0-1][0-9])|(2[0-3]))(:[0-5][0-9]){1,2}(.\d{3})?[Z]?$/s;
 
@@ -9,7 +10,7 @@ const dateRegex = /^\d{4}-((0[1-9])|(1[0-2]))-(([0-2][0-9])|(3[0-1]))T(([0-1][0-
  * A validator that allows you to validate datetime-local fields.
  * @extends BaseValidator
  */
-class DateTimeValidator extends BaseValidator<Date|string> {
+class DateTimeValidator extends BaseValidator<Date | string> {
     public defaultInputType: InputType = 'datetime-local';
     protected propType: PropTypes.Requireable<any> = PropTypes.object;
 

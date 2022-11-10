@@ -9,7 +9,7 @@ import AutomagicFormiflyField from '../../../components/input/AutomagicFormiflyF
 import {useFormiflyContext} from '../../../components/meta/FormiflyContext';
 import FormiflyForm from '../../../components/meta/FormiflyForm';
 import withFormifly from '../../../components/meta/withFormifly';
-import {ValueType} from '../../../classes/BaseValidator';
+import {ValueType} from '../../../types';
 
 const ObjectComponent = withFormifly((props) => {
     const {getFieldProps} = props;

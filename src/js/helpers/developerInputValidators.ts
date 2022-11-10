@@ -1,5 +1,3 @@
-// todo: these are essentially typeguards, maybe we want to make them actual typeguards?
-
 export const ensureValueIsNumeric = (value: any, validatorName: string, className: string, paramName: string) => {
     if (isNaN(value)) {
         throw new Error('Cannot add ' + validatorName + ' to ' + className + ': ' + paramName + ' has to be a number.');

@@ -8,7 +8,7 @@ import {
     findFieldValidatorFromName,
     unpackErrors,
 } from '../../helpers/validationHelpers';
-import {ValidationResult} from '../../classes/BaseValidator';
+import {ValidationResult} from '../../types';
 
 describe.each([
     [

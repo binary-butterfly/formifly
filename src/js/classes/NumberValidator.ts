@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import {ensureValueIsNumeric} from '../helpers/developerInputValidators';
-import BaseValidator, {Dependent, ErrorFunction, InputType, MutationFunction} from './BaseValidator';
+import BaseValidator from './BaseValidator';
+import {Dependent, ErrorFunction, InputType, MutationFunction} from '../types';
 
 const numRegexp = /^-?\d+([.,]\d+)?$/s;
 const wholeNumRegexp = /^-?\d+$/s;

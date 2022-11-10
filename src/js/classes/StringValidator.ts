@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import {ensureValueIsNumeric, ensureValueIsRegexp} from '../helpers/developerInputValidators';
-import BaseValidator, {InputType} from './BaseValidator';
+import BaseValidator from './BaseValidator';
+import {InputType} from '../types';
 
 /**
  * A validator that allows you to validate string fields.
