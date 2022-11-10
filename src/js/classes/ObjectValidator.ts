@@ -28,7 +28,7 @@ class ObjectValidator extends BaseValidator<ObjectValue | string> {
     constructor(
         fields: Record<string, BaseValidator<any>>,
         defaultMessage?: string,
-        mutationFunc?: MutationFunction<ObjectValue|string>,
+        mutationFunc?: MutationFunction<ObjectValue | string>,
         onError?: ErrorFunction,
         dependent?: Dependent,
         dropEmpty = true,
@@ -171,6 +171,7 @@ class ObjectValidator extends BaseValidator<ObjectValue | string> {
         return this.isRequired ? shape.isRequired : shape;
 
     }
+
     /**
      * Returns the PropTypes representation of the validator.
      *

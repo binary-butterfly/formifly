@@ -7,7 +7,8 @@ import {SubmitFunction, SubmitValidationErrorFunction, ValueType} from '../../ty
 const Form = (props: FormProps) => {
     const {handleSubmit} = useFormiflyContext();
     return <form onSubmit={e =>
-        handleSubmit(props.onSubmit, props.onSubmitValidationError, e)} className={'formifly-form ' + (props.className ?? '')}>
+        handleSubmit(props.onSubmit, props.onSubmitValidationError, e)}
+                 className={'formifly-form ' + (props.className ?? '')}>
         {props.children}
     </form>;
 };

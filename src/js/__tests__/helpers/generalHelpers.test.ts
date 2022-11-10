@@ -34,7 +34,10 @@ describe.each([
 
 describe.each([
     ['banana', 'apple', {banana: 'food'}, {banana: 'apple'}, 'works with flat structures that contain the key value'],
-    ['banana', 'apple', {food: 'nom'}, {food: 'nom', banana: 'apple'}, 'works with flat structures that do not contain the value'],
+    ['banana', 'apple', {food: 'nom'}, {
+        food: 'nom',
+        banana: 'apple',
+    }, 'works with flat structures that do not contain the value'],
     [
         'fruit.banana.tasty',
         true,

@@ -142,7 +142,7 @@ class BaseValidator<T extends ValueType> {
         }
     }
 
-    private validateDependent(value: T|undefined, otherValues: ValueType, siblings: ValueType): ValidationResult<T> {
+    private validateDependent(value: T | undefined, otherValues: ValueType, siblings: ValueType): ValidationResult<T> {
         if (isValidatorStepArrayArray(this.dependent)) {
             for (const step of this.dependent[0]) {
                 const validated = this.validateDependentStep(step, value, otherValues, siblings);
@@ -160,7 +160,7 @@ class BaseValidator<T extends ValueType> {
         return this.validateIndependent(value, otherValues, siblings);
     }
 
-    private validateIndependent(value: T|undefined, otherValues: ValueType, siblings: ValueType): ValidationResult<T> {
+    private validateIndependent(value: T | undefined, otherValues: ValueType, siblings: ValueType): ValidationResult<T> {
         if (!this.validateRequired(value)) {
             if (this._isRequired) {
                 return [false, this.requiredError ?? this.defaultErrorMsg];
@@ -206,7 +206,7 @@ class BaseValidator<T extends ValueType> {
      * @return {this}
      */
     public lessThan(name: string, msg?: string): this {
-            const errorMsg = msg ?? 'This value must be less than the value of ' + name;
+        const errorMsg = msg ?? 'This value must be less than the value of ' + name;
 
         this.validateFuncs.push(
             (value, otherValues) => {
@@ -270,7 +270,7 @@ class BaseValidator<T extends ValueType> {
                 const otherVal = getFieldValueFromKeyString(key, siblings);
                 return {success: value as T > otherVal, errorMsg};
             }
-);
+        );
 
         return this;
     }
@@ -327,7 +327,6 @@ class BaseValidator<T extends ValueType> {
                 const otherVal = getFieldValueFromKeyString(key, siblings);
                 return {success: (value as T) <= otherVal, errorMsg};
             },
-
         );
 
         return this;
@@ -386,7 +385,7 @@ class BaseValidator<T extends ValueType> {
                     return {success: false, errorMsg};
                 }
             }
-);
+        );
 
         return this;
     }
@@ -397,7 +396,7 @@ class BaseValidator<T extends ValueType> {
      * @param {String} [msg]
      * @return {this}
      */
-    public oneOf(values: Array<T|string>, msg?: string): this {
+    public oneOf(values: Array<T | string>, msg?: string): this {
         const errorMsg = msg ?? 'This value must be one of these: ' + values.join(', ');
 
         this.validateFuncs.push(

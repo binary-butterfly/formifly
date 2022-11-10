@@ -24,13 +24,13 @@ class DateTimeValidator extends BaseValidator<Date | string> {
      */
     constructor(defaultValue: Date | string = '',
                 defaultMsg: string = 'This field must contain a date/time',
-                mutationFunc?: MutationFunction<Date|string>,
+                mutationFunc?: MutationFunction<Date | string>,
                 onError?: ErrorFunction,
                 dependent?: Dependent) {
         super(defaultValue, defaultMsg, mutationFunc, onError, dependent);
 
         this.validateFuncs.push((value) => {
-            if(typeof value !== 'string') {
+            if (typeof value !== 'string') {
                 return {success: true, errorMsg: defaultMsg};
             }
             const success = dateRegex.test(value);
@@ -87,7 +87,10 @@ class DateTimeValidator extends BaseValidator<Date | string> {
         errorMsg = errorMsg.replace('{{maxDate}}', maxDate.toLocaleString());
 
 
-        this.validateFuncs.push(value => ({success: value !== undefined && value >= minDate && value <= maxDate, errorMsg}));
+        this.validateFuncs.push(value => ({
+            success: value !== undefined && value >= minDate && value <= maxDate,
+            errorMsg,
+        }));
         return this;
     }
 
@@ -103,7 +106,7 @@ class DateTimeValidator extends BaseValidator<Date | string> {
 
         this.validateFuncs.push(
             (value, otherValues) => {
-                const otherVal = new Date(getFieldValueFromKeyString(name, otherValues) as Date|number);
+                const otherVal = new Date(getFieldValueFromKeyString(name, otherValues) as Date | number);
                 return {success: isInvalidDate(otherVal) || value !== undefined && value > otherVal, errorMsg};
             }
         );
@@ -122,7 +125,7 @@ class DateTimeValidator extends BaseValidator<Date | string> {
 
         this.validateFuncs.push(
             (value, otherValues) => {
-                const otherVal = new Date(getFieldValueFromKeyString(name, otherValues) as Date|number);
+                const otherVal = new Date(getFieldValueFromKeyString(name, otherValues) as Date | number);
                 return {success: isInvalidDate(otherVal) || value !== undefined && value < otherVal, errorMsg};
             }
         );
@@ -141,7 +144,7 @@ class DateTimeValidator extends BaseValidator<Date | string> {
 
         this.validateFuncs.push(
             (value, otherValues) => {
-                const otherVal = new Date(getFieldValueFromKeyString(name, otherValues) as Date|number);
+                const otherVal = new Date(getFieldValueFromKeyString(name, otherValues) as Date | number);
                 return {success: isInvalidDate(otherVal) || value !== undefined && value >= otherVal, errorMsg};
             }
         );
@@ -160,7 +163,7 @@ class DateTimeValidator extends BaseValidator<Date | string> {
 
         this.validateFuncs.push(
             (value, otherValues) => {
-                const otherVal = new Date(getFieldValueFromKeyString(name, otherValues) as Date|number);
+                const otherVal = new Date(getFieldValueFromKeyString(name, otherValues) as Date | number);
                 return {success: isInvalidDate(otherVal) || value !== undefined && value <= otherVal, errorMsg};
             }
         );
@@ -179,7 +182,7 @@ class DateTimeValidator extends BaseValidator<Date | string> {
 
         this.validateFuncs.push(
             (value, otherValues, siblings) => {
-                const otherVal = new Date(getFieldValueFromKeyString(key, siblings) as Date|number);
+                const otherVal = new Date(getFieldValueFromKeyString(key, siblings) as Date | number);
                 return {success: isInvalidDate(otherVal) || value !== undefined && value > otherVal, errorMsg};
             },
         );
@@ -198,7 +201,7 @@ class DateTimeValidator extends BaseValidator<Date | string> {
 
         this.validateFuncs.push(
             (value, otherValues, siblings) => {
-                const otherVal = new Date(getFieldValueFromKeyString(key, siblings) as Date|number);
+                const otherVal = new Date(getFieldValueFromKeyString(key, siblings) as Date | number);
                 return {success: isInvalidDate(otherVal) || value !== undefined && value < otherVal, errorMsg};
             }
         );
@@ -217,7 +220,7 @@ class DateTimeValidator extends BaseValidator<Date | string> {
 
         this.validateFuncs.push(
             (value, otherValues, siblings) => {
-                const otherVal = new Date(getFieldValueFromKeyString(key, siblings) as Date|number);
+                const otherVal = new Date(getFieldValueFromKeyString(key, siblings) as Date | number);
                 return {success: isInvalidDate(otherVal) || value !== undefined && value >= otherVal, errorMsg};
             }
         );
@@ -236,7 +239,7 @@ class DateTimeValidator extends BaseValidator<Date | string> {
 
         this.validateFuncs.push(
             (value, otherValues, siblings) => {
-                const otherVal = new Date(getFieldValueFromKeyString(key, siblings) as Date|number);
+                const otherVal = new Date(getFieldValueFromKeyString(key, siblings) as Date | number);
                 return {success: isInvalidDate(otherVal) || value !== undefined && value <= otherVal, errorMsg};
             }
         );

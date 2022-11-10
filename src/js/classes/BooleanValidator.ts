@@ -23,7 +23,7 @@ class BooleanValidator extends BaseValidator<boolean | string> {
     constructor(
         defaultValue = false,
         defaultErrorMsg = 'This field has to be a boolean',
-        mutationFunc?: MutationFunction<boolean|string>,
+        mutationFunc?: MutationFunction<boolean | string>,
         onError?: ErrorFunction,
         dependent?: Dependent,
         realBool = false,
@@ -31,11 +31,11 @@ class BooleanValidator extends BaseValidator<boolean | string> {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
         this.validateFuncs
             .push(value =>
-            ({
-                success: (value === true || value === false || value === 'true' || value === 'false'),
-                errorMsg: defaultErrorMsg,
-                changedValue: (value === 'true' || value === true),
-            }));
+                ({
+                    success: (value === true || value === false || value === 'true' || value === 'false'),
+                    errorMsg: defaultErrorMsg,
+                    changedValue: (value === 'true' || value === true),
+                }));
         this.realBool = realBool;
     }
 
@@ -44,10 +44,10 @@ class BooleanValidator extends BaseValidator<boolean | string> {
     }
 
     public validate(
-        value: boolean|string,
+        value: boolean | string,
         otherValues: ValueType = {},
         siblings: ValueType = {}
-    ): ValidationResult<boolean|string> {
+    ): ValidationResult<boolean | string> {
         const result = super.validate(value, otherValues, siblings);
         if (result[0] && this.realBool || !result[0]) {
             return result;

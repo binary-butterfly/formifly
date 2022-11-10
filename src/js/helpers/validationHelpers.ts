@@ -19,7 +19,7 @@ export const findFieldValidatorFromName = (
             } else {
                 const of = dependentValue.of as BaseValidator<any> | ObjectValidator;
                 // If the name is non numeric, we check if this may be an array of objects where an object has the given name
-                if (!('fields' in of ) || of.fields[fieldName] === undefined) {
+                if (!('fields' in of) || of.fields[fieldName] === undefined) {
                     throw new Error('Could not find validator for ' + name);
                 }
                 dependentValue = of.fields[fieldName];
@@ -74,7 +74,7 @@ export const unpackErrors = (currentResult: ValidationResult<any>): UnpackedErro
         } else if (currentResult[1] instanceof Object) {
             Object.entries(currentResult[1]).map(([name, result]) => {
                 if (result[0] === false) {
-                    (ret as {[key: string]: UnpackedErrors})[name] = unpackErrors(result);
+                    (ret as { [key: string]: UnpackedErrors })[name] = unpackErrors(result);
                 }
             });
         } else {
