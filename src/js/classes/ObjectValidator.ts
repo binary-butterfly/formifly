@@ -4,11 +4,11 @@ import BaseValidator, {
     Dependent,
     ErrorFunction,
     MutationFunction,
-    PropType,
-    ShapeValues,
+    ObjectValue,
     ValidationResult,
     ValueType,
 } from './BaseValidator';
+
 
 /**
  * A validator that allows you to validate object fields. It is also used as the base for any validation shape.
@@ -16,11 +16,11 @@ import BaseValidator, {
  *
  * @property {BaseValidator|AnyOfValidator|ArrayValidator|BooleanValidator|EmailValidator|NumberValidator|ObjectValidator|PhoneNumberValidator|StringValidator} fields  - The fields of the object
  */
-class ObjectValidator extends BaseValidator {
-    private readonly fields: Record<string, BaseValidator> = {};
+class ObjectValidator extends BaseValidator<ObjectValue|string> {
+    public readonly fields: Record<string, BaseValidator<any>> = {};
     private dropEmpty: boolean;
     private dropNotInShape: boolean;
-    private reallyNotRequired: boolean;
+    private reallyNotRequired: boolean = false;
 
     /**
      * @param {Object} fields
@@ -32,15 +32,15 @@ class ObjectValidator extends BaseValidator {
      * @param {Boolean} [dropNotInShape]
      */
     constructor(
-        fields: Record<string, BaseValidator>,
+        fields: Record<string, BaseValidator<any>>,
         defaultMessage?: string,
-        mutationFunc?: MutationFunction,
+        mutationFunc?: MutationFunction<ObjectValue|string>,
         onError?: ErrorFunction,
         dependent?: Dependent,
         dropEmpty = true,
         dropNotInShape = false
     ) {
-        super(undefined, defaultMessage, mutationFunc, onError, dependent);
+        super({}, defaultMessage, mutationFunc, onError, dependent);
         this.fields = fields;
         this.dropEmpty = dropEmpty;
         this.dropNotInShape = dropNotInShape;
@@ -51,7 +51,7 @@ class ObjectValidator extends BaseValidator {
      * @returns {ObjectValidator}
      */
     public notRequired(): this {
-        this.isRequired = false;
+        this._isRequired = false;
         this.reallyNotRequired = true;
         return this;
     }
@@ -75,15 +75,15 @@ class ObjectValidator extends BaseValidator {
     /**
      * @return {{}}
      */
-    public getDefaultValue(): ValueType {
-        const ret = {};
+    public getDefaultValue(): ObjectValue {
+        const ret: Record<string, ObjectValue> = {};
         for (const fieldName in this.fields) {
             ret[fieldName] = this.fields[fieldName].getDefaultValue();
         }
         return ret;
     }
 
-    protected validateRequired(value: ValueType): boolean {
+    protected validateRequired(value?: ObjectValue): boolean {
         if (typeof value === 'object') {
             return Object.keys(value).length > 0;
         } else {
@@ -98,11 +98,18 @@ class ObjectValidator extends BaseValidator {
      * @param {Object} [siblings]
      * @return {*|[boolean, *]|[boolean, {}]}
      */
-    public validateWithoutRecursion(value: object, otherValues?: ShapeValues, siblings?: ShapeValues): ValidationResult {
+    public validateWithoutRecursion(
+        value: ObjectValue,
+        otherValues?: ValueType,
+        siblings?: ValueType
+    ): ValidationResult<ObjectValue> {
         return this.validate(value, otherValues, siblings, false);
     }
 
-    public validate(value: object, otherValues?: ShapeValues, siblings?: ShapeValues, recursion = true): ValidationResult {
+    public validate(value?: ObjectValue,
+                    otherValues?: ValueType,
+                    siblings?: ValueType,
+                    recursion = true): ValidationResult<ObjectValue> {
         if (this.reallyNotRequired && !this.validateRequired(value)) {
             return [true, value];
         }
@@ -113,9 +120,9 @@ class ObjectValidator extends BaseValidator {
         }
 
         // Unpack the test value to avoid mutating the original object
-        const testValue: ValueType = {...value};
+        const testValue: ObjectValue = {...value};
         let allOk = true;
-        const tests: Record<string, ValidationResult> = {};
+        const tests: Record<string, ValidationResult<ObjectValue>> = {};
         for (const fieldName in this.fields) {
             if (!recursion) {
                 if (this.fields[fieldName] instanceof ArrayValidator || this.fields[fieldName] instanceof ObjectValidator) {
@@ -159,23 +166,30 @@ class ObjectValidator extends BaseValidator {
 
     /**
      * Returns the PropTypes representation of the validator.
-     *
-     * Set first to true to return an object instead of PropTypes.shape. This is useful if you want to assign this validator's PropType to the PropTypes of a component.
-     * @param {Boolean} [first]
      * @return {any}
      */
-    public getPropType(first = false): PropType {
-        const types: PropType = {};
+    public getPropType(): PropTypes.Validator<any> {
+        const types: Record<string, PropTypes.Validator<any>> = {};
+        for (const fieldName in this.fields) {
+            types[fieldName] = this.fields[fieldName].getPropType();
+        }
+        const shape = PropTypes.shape(types);
+        return this.isRequired ? shape.isRequired : shape;
+
+    }
+    /**
+     * Returns the PropTypes representation of the validator.
+     *
+     * Return an object instead of PropTypes.shape. This is useful if you want to assign this validator's PropType to the PropTypes of a component.
+     * @return {any}
+     */
+    public getFirstPropType(): Record<string, PropTypes.Validator<any>> {
+        const types: Record<string, PropTypes.Validator<any>> = {};
         for (const fieldName in this.fields) {
             types[fieldName] = this.fields[fieldName].getPropType();
         }
 
-        if (first) {
-            return types;
-        } else {
-            const shape = PropTypes.shape(types);
-            return this.isRequired ? shape.isRequired : shape;
-        }
+        return types;
     }
 }
 

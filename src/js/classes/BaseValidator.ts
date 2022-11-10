@@ -1,36 +1,41 @@
 import PropTypes from 'prop-types';
 import {getFieldValueFromKeyString} from '../helpers/generalHelpers';
+import {ErrorType} from '../components/meta/FormiflyContext';
 
 // todo: consider moving types to a separate types file
-export type MutationFunction = (value: ValueType, values?: ShapeValues, siblings?: ShapeValues) => ValueType;
-export type ValidateFunction = (value: ValueType, values: ShapeValues, siblings: ShapeValues) => boolean | string | Date | number;
-export type ErrorFunction = (value: ValueType, otherValues: ShapeValues) => void;
-export type CheckFunction = (_: Array<ValueType>, __: ValueType) => boolean;
+export type MutationFunction<T extends ValueType> = (value?: T, values?: ValueType, siblings?: ValueType) => T;
+export type ValidateFunction<T extends ValueType> =
+    (value: T|undefined, values: ValueType, siblings: ValueType) => IndividualValidationResult<T>;
+export type ErrorFunction = (value: ValueType|undefined, otherValues: ValueType) => void;
+export type CheckFunction<T extends ValueType> = (_: Array<T>, __?: T) => boolean;
 
+export type IndividualValidationResult<T extends ValueType> = {
+    success: boolean;
+    errorMsg: string;
+    changedValue?: T;
+}
 
+// todo: there is a link between input types and ValueTypes, would be great to have it explicitly modeled
 export type InputType = 'text' | 'number' | 'radio' | 'radio-group' | 'checkbox' | 'select' | 'datetime-local' | 'tel' | 'email';
 // todo: kinda unhappy with this type, check if it can be simplified
 export type Dependent = boolean | ValidatorStep | Array<Array<ValidatorStep>>
-// @ts-expect-error recursive type
-export type ValueType = string | boolean | number | Array<ValueType> | Record<string, ValueType>;
 
-export type ShapeValues = ValueType | Record<string, ValueType>;
+type ValueTypeInternal = string | boolean | number | Date;
 
+export type ObjectValue = {[key: string]: ValueType};
+export type ArrayValue = ValueType[];
+export type ValueType = ValueTypeInternal | ObjectValue | ArrayValue;
 
-export type ValidationResult = |
-    [true, ValueType] |
-    [true, ValueType[]] |
+export type ValidationResult<T extends ValueType | ErrorType> = |
+    [true, T?] |
     [false, string] |
-    [false, Record<string, ValidationResult>] |
-    [false, ValidationResult[]];
+    [false, Record<string, ValidationResult<ValueType | ErrorType>>] |
+    [false, ValidationResult<ValueType | ErrorType>[]];
 
-export type DependentValidationResult = [false] | [true, ValidationResult];
-
-// @ts-expect-error recursive type
-export type PropType = PropTypes.Validator<any> | Record<string, PropType>;
+export type DependentValidationResult<T extends ValueType> = [false] | [true, ValidationResult<T>];
 
 // todo: consider making this an object. That'd be a breaking change tho...
-export type ValidatorStep = [string, (dependentValue: ValueType, value: ValueType) => boolean, BaseValidator];
+export type ValidatorStep = [string, (dependentValue: ValueType, value?: ValueType) => boolean, BaseValidator<any>];
 
 
 export function isValidatorStepArrayArray(dependent: Dependent): dependent is Array<Array<ValidatorStep>> {
@@ -45,18 +50,18 @@ export function isValidatorStep(dependent: boolean | ValidatorStep): dependent i
  * The validator that all validators extend.
  * Probably should not be used on its own
  */
-class BaseValidator {
-    protected defaultInputType: InputType = 'text';
+class BaseValidator<T extends ValueType> {
+    public defaultInputType: InputType = 'text';
+    protected _isRequired: boolean = false;
+
     private requiredError?: string;
-    protected validateFuncs: Array<[ValidateFunction, string]> = [];
-    protected isRequired: boolean = false;
+    protected validateFuncs: Array<ValidateFunction<T>> = [];
     protected defaultErrorMsg: string;
     private dependent: Dependent;
-    // todo: can we remove this any? if so, update setter and constructor, too
-    private defaultValue: ValueType;
+    private defaultValue: T | string;
     protected propType: PropTypes.Requireable<any> = PropTypes.any;
     protected onError?: ErrorFunction;
-    protected mutationFunc?: MutationFunction;
+    protected mutationFunc?: MutationFunction<T>;
 
     /**
      * @param [defaultValue]
@@ -65,9 +70,9 @@ class BaseValidator {
      * @param {Function} [onError]
      * @param {Array|Boolean} [dependent]
      */
-    constructor(defaultValue: ValueType = '',
+    constructor(defaultValue: T | string = '',
                 defaultErrorMsg?: string,
-                mutationFunc?: MutationFunction,
+                mutationFunc?: MutationFunction<T>,
                 onError?: ErrorFunction,
                 dependent: Dependent = false) {
         this.defaultErrorMsg = defaultErrorMsg ?? 'There is an error within this field';
@@ -80,6 +85,7 @@ class BaseValidator {
     /**
      * Sets the input type that will be passed to fields that this validator validates
      * @param {InputType} newDefaultInputType
+     * @deprecated defaultInputType is a public attribute
      */
     public setDefaultInputType(newDefaultInputType: InputType): void {
         this.defaultInputType = newDefaultInputType;
@@ -89,7 +95,7 @@ class BaseValidator {
      * Sets the default value for this validator
      * @param {any} newDefaultValue
      */
-    public setDefaultValue(newDefaultValue: ValueType): void {
+    public setDefaultValue(newDefaultValue: T | string): void {
         this.defaultValue = newDefaultValue;
     }
 
@@ -105,7 +111,7 @@ class BaseValidator {
      * Set the validators mutation function
      * @param {MutationFunction} newMutationFunc
      */
-    public setMutationFunc(newMutationFunc: MutationFunction): void {
+    public setMutationFunc(newMutationFunc: MutationFunction<T>): void {
         this.mutationFunc = newMutationFunc;
     }
 
@@ -125,7 +131,7 @@ class BaseValidator {
         this.dependent = newDependent;
     }
 
-    protected validateRequired(value: ValueType): boolean {
+    protected validateRequired(value?: T | string): boolean {
         return (value !== '' && value !== null && value !== undefined && (!(value instanceof Array) || value.length > 0));
     }
 
@@ -135,9 +141,13 @@ class BaseValidator {
      * @return {this}
      */
     public required(msg: string = 'This field is required'): this {
-        this.isRequired = true;
+        this._isRequired = true;
         this.requiredError = msg;
         return this;
+    }
+
+    public get isRequired(): boolean {
+        return this._isRequired;
     }
 
     /**
@@ -147,14 +157,14 @@ class BaseValidator {
      * @return {this}
      */
     public alwaysFalse(msg: string = 'This validator will never return true'): this {
-        this.validateFuncs.push([() => false, msg]);
+        this.validateFuncs.push(() => ({success: false, errorMsg: msg}));
         return this;
     }
 
     private validateDependentStep(
-        step: ValidatorStep | boolean, value: ValueType, otherValues, siblings
-    ): DependentValidationResult {
-        const dependentValue = getFieldValueFromKeyString(step[0], otherValues);
+        step: ValidatorStep | boolean, value: T | string | undefined, otherValues: ValueType, siblings: ValueType
+    ): DependentValidationResult<T> {
+        const dependentValue = getFieldValueFromKeyString(Array.isArray(step) ? step[0] : '', otherValues);
         if (isValidatorStep(step) && step[1](dependentValue, value)) {
             return [true, step[2].validate(value, otherValues, siblings)];
         } else {
@@ -162,7 +172,7 @@ class BaseValidator {
         }
     }
 
-    private validateDependent(value: ValueType, otherValues, siblings): ValidationResult {
+    private validateDependent(value: T|undefined, otherValues: ValueType, siblings: ValueType): ValidationResult<T> {
         if (isValidatorStepArrayArray(this.dependent)) {
             for (const step of this.dependent[0]) {
                 const validated = this.validateDependentStep(step, value, otherValues, siblings);
@@ -180,20 +190,19 @@ class BaseValidator {
         return this.validateIndependent(value, otherValues, siblings);
     }
 
-    private validateIndependent(value: ValueType, otherValues, siblings): ValidationResult {
+    private validateIndependent(value: T|undefined, otherValues: ValueType, siblings: ValueType): ValidationResult<T> {
         if (!this.validateRequired(value)) {
-            if (this.isRequired) {
+            if (this._isRequired) {
                 return [false, this.requiredError ?? this.defaultErrorMsg];
             }
         } else {
-            for (const entry of this.validateFuncs) {
-                const func = entry[0];
+            for (const func of this.validateFuncs) {
                 const test = func(value, otherValues, siblings);
-                if (test === false) {
-                    return [false, entry[1]];
-                } else if (test !== true) {
+                if (!test.success) {
+                    return [false, test.errorMsg];
+                } else if (test.changedValue !== undefined) {
                     // Allows validators to modify the value
-                    value = test;
+                    value = test.changedValue;
                 }
             }
         }
@@ -208,17 +217,14 @@ class BaseValidator {
      * @return {this}
      */
     public greaterThan(name: string, msg?: string): this {
-        if (msg === undefined) {
-            msg = 'This value must be greater than the value of ' + name;
-        }
+        const errorMsg = msg ?? 'This value must be greater than the value of ' + name;
 
-        this.validateFuncs.push([
+        this.validateFuncs.push(
             (value, otherValues) => {
                 const otherVal = getFieldValueFromKeyString(name, otherValues);
-                return value > otherVal;
-            },
-            msg,
-        ]);
+                return {success: value as T > otherVal, errorMsg};
+            }
+        );
 
         return this;
     }
@@ -230,17 +236,14 @@ class BaseValidator {
      * @return {this}
      */
     public lessThan(name: string, msg?: string): this {
-        if (msg === undefined) {
-            msg = 'This value must be less than the value of ' + name;
-        }
+            const errorMsg = msg ?? 'This value must be less than the value of ' + name;
 
-        this.validateFuncs.push([
+        this.validateFuncs.push(
             (value, otherValues) => {
                 const otherVal = getFieldValueFromKeyString(name, otherValues);
-                return value < otherVal;
-            },
-            msg,
-        ]);
+                return {success: (value as T) < otherVal, errorMsg};
+            }
+        );
 
         return this;
     }
@@ -252,17 +255,14 @@ class BaseValidator {
      * @return {this}
      */
     public greaterOrEqualTo(name: string, msg?: string): this {
-        if (msg === undefined) {
-            msg = 'This value must be greater than or equal to the value of ' + name;
-        }
+        const errorMsg = msg ?? 'This value must be greater than or equal to the value of ' + name;
 
-        this.validateFuncs.push([
+        this.validateFuncs.push(
             (value, otherValues) => {
                 const otherVal = getFieldValueFromKeyString(name, otherValues);
-                return value >= otherVal;
-            },
-            msg,
-        ]);
+                return {success: value as T >= otherVal, errorMsg};
+            }
+        );
 
         return this;
     }
@@ -274,17 +274,14 @@ class BaseValidator {
      * @return {this}
      */
     public lessOrEqualTo(name: string, msg?: string): this {
-        if (msg === undefined) {
-            msg = 'This value must be less than or equal to the value of ' + name;
-        }
+        const errorMsg = msg ?? 'This value must be less than or equal to the value of ' + name;
 
-        this.validateFuncs.push([
+        this.validateFuncs.push(
             (value, otherValues) => {
                 const otherVal = getFieldValueFromKeyString(name, otherValues);
-                return value <= otherVal;
-            },
-            msg,
-        ]);
+                return {success: (value as T) <= otherVal, errorMsg};
+            }
+        );
 
         return this;
     }
@@ -296,17 +293,14 @@ class BaseValidator {
      * @return {this}
      */
     public greaterThanSibling(key: string | number, msg?: string): this {
-        if (msg === undefined) {
-            msg = 'This value must be greater than the value of its sibling ' + key;
-        }
+        const errorMsg = msg ?? 'This value must be greater than the value of its sibling ' + key;
 
-        this.validateFuncs.push([
+        this.validateFuncs.push(
             (value, otherValues, siblings) => {
                 const otherVal = getFieldValueFromKeyString(key, siblings);
-                return value > otherVal;
-            },
-            msg,
-        ]);
+                return {success: value as T > otherVal, errorMsg};
+            }
+);
 
         return this;
     }
@@ -318,17 +312,14 @@ class BaseValidator {
      * @return {this}
      */
     public lessThanSibling(key: string | number, msg?: string): this {
-        if (msg === undefined) {
-            msg = 'This value must be less than the value of its sibling ' + key;
-        }
+        const errorMsg = msg ?? 'This value must be less than the value of its sibling ' + key;
 
-        this.validateFuncs.push([
+        this.validateFuncs.push(
             (value, otherValues, siblings) => {
                 const otherVal = getFieldValueFromKeyString(key, siblings);
-                return value < otherVal;
-            },
-            msg,
-        ]);
+                return {success: (value as T) < otherVal, errorMsg};
+            }
+        );
 
         return this;
     }
@@ -340,17 +331,14 @@ class BaseValidator {
      * @return {this}
      */
     public greaterOrEqualToSibling(key: string | number, msg?: string): this {
-        if (msg === undefined) {
-            msg = 'This value must be greater than or equal to the value of its sibling ' + key;
-        }
+        const errorMsg = msg ?? 'This value must be greater than or equal to the value of its sibling ' + key;
 
-        this.validateFuncs.push([
+        this.validateFuncs.push(
             (value, otherValues, siblings) => {
                 const otherVal = getFieldValueFromKeyString(key, siblings);
-                return value >= otherVal;
-            },
-            msg,
-        ]);
+                return {success: value as T >= otherVal, errorMsg};
+            }
+        );
 
         return this;
     }
@@ -362,17 +350,15 @@ class BaseValidator {
      * @return {this}
      */
     public lessOrEqualToSibling(key: string | number, msg?: string): this {
-        if (msg === undefined) {
-            msg = 'This value must be less than or equal to the value of its sibling ' + key;
-        }
+        const errorMsg = msg ?? 'This value must be less than or equal to the value of its sibling ' + key;
 
-        this.validateFuncs.push([
+        this.validateFuncs.push(
             (value, otherValues, siblings) => {
                 const otherVal = getFieldValueFromKeyString(key, siblings);
-                return value <= otherVal;
+                return {success: (value as T) <= otherVal, errorMsg};
             },
-            msg,
-        ]);
+
+        );
 
         return this;
     }
@@ -384,27 +370,24 @@ class BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    public oneOfArrayFieldValues(key: string, checkFn?: CheckFunction, msg?: string): this {
-        if (msg === undefined) {
-            msg = 'This value is not allowed.';
-        }
+    public oneOfArrayFieldValues(key: string, checkFn?: CheckFunction<T>, msg?: string): this {
+        const errorMsg = msg ?? 'This value is not allowed.';
 
-        this.validateFuncs.push([
+        this.validateFuncs.push(
             (value, otherValues) => {
                 if (!checkFn) {
-                    checkFn = (compare, value) => compare.includes(value);
+                    checkFn = (compare, value) => compare.includes(value as T);
                 }
 
-                const compare = getFieldValueFromKeyString(key, otherValues);
+                const compare = getFieldValueFromKeyString(key, otherValues) as T[];
                 if (Array.isArray(compare)) {
-                    return checkFn(compare, value);
+                    return {success: checkFn(compare, value), errorMsg};
                 } else {
                     console.warn('Attempted to use oneOfArrayFieldValues validator on a non array field. This is not possible.');
-                    return false;
+                    return {success: false, errorMsg};
                 }
-            },
-            msg,
-        ]);
+            }
+        );
 
         return this;
     }
@@ -416,27 +399,24 @@ class BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    public oneOfArraySiblingFieldValues(key: string, checkFn?: CheckFunction, msg?: string): this {
-        if (msg === undefined) {
-            msg = 'This value is not allowed.';
-        }
+    public oneOfArraySiblingFieldValues(key: string, checkFn?: CheckFunction<T>, msg?: string): this {
+        const errorMsg = msg ?? 'This value is not allowed.';
 
-        this.validateFuncs.push([
+        this.validateFuncs.push(
             (value, otherValues, siblings) => {
                 if (!checkFn) {
-                    checkFn = (compare, value) => compare.includes(value);
+                    checkFn = (compare, value) => compare.includes(value as T);
                 }
 
-                const compare = getFieldValueFromKeyString(key, siblings);
+                const compare = getFieldValueFromKeyString(key, siblings) as T[];
                 if (Array.isArray(compare)) {
-                    return checkFn(compare, value);
+                    return {success: checkFn(compare, value), errorMsg};
                 } else {
                     console.warn('Attempted to use oneOfArraySiblingFieldValues validator on a non array field. This is not possible.');
-                    return false;
+                    return {success: false, errorMsg};
                 }
-            },
-            msg,
-        ]);
+            }
+);
 
         return this;
     }
@@ -447,17 +427,14 @@ class BaseValidator {
      * @param {String} [msg]
      * @return {this}
      */
-    public oneOf(values: Array<ValueType>, msg?: string): this {
-        if (msg === undefined) {
-            msg = 'This value must be one of these: ' + values.join(', ');
-        }
+    public oneOf(values: Array<T|string>, msg?: string): this {
+        const errorMsg = msg ?? 'This value must be one of these: ' + values.join(', ');
 
-        this.validateFuncs.push([
+        this.validateFuncs.push(
             (value) => {
-                return values.includes(value);
-            },
-            msg,
-        ]);
+                return {success: values.includes(value as T), errorMsg};
+            }
+        );
 
         return this;
     }
@@ -469,17 +446,17 @@ class BaseValidator {
      * @param siblings
      * @return {*}
      */
-    public validate(value: ValueType, otherValues: ShapeValues = {}, siblings: ShapeValues = {}): ValidationResult {
-        let ret: ValidationResult;
+    public validate(value?: T, otherValues: ValueType = {}, siblings: ValueType = {}): ValidationResult<T> {
+        let ret: ValidationResult<T>;
         if (this.dependent) {
             ret = this.validateDependent(value, otherValues, siblings);
         } else {
             ret = this.validateIndependent(value, otherValues, siblings);
         }
 
-        if (!ret[0] && typeof this.onError === 'function') {
+        if (!ret[0] && this.onError) {
             this.onError(value, otherValues);
-        } else if (ret[0] && typeof this.mutationFunc === 'function') {
+        } else if (ret[0] && this.mutationFunc) {
             ret[1] = this.mutationFunc(ret[1], otherValues, siblings);
         }
 
@@ -490,7 +467,7 @@ class BaseValidator {
      * Returns the validator's default value
      * @return {ValueType}
      */
-    public getDefaultValue(): ValueType {
+    public getDefaultValue(): T | string {
         return this.defaultValue;
     }
 
@@ -498,8 +475,8 @@ class BaseValidator {
      * Returns the validator's PropTypes representation
      * @return {Object}
      */
-    public getPropType(): PropType {
-        return this.isRequired ? this.propType.isRequired : this.propType;
+    public getPropType(): PropTypes.Validator<any> {
+        return this._isRequired ? this.propType.isRequired : this.propType;
     }
 }
 

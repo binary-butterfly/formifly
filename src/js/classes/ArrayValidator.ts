@@ -5,7 +5,6 @@ import BaseValidator, {
     ErrorFunction,
     InputType,
     MutationFunction,
-    ShapeValues,
     ValidationResult,
     ValueType,
 } from './BaseValidator';
@@ -17,11 +16,11 @@ import ObjectValidator from './ObjectValidator';
  *
  * @property {BaseValidator|AnyOfValidator|ArrayValidator|BooleanValidator|EmailValidator|NumberValidator|ObjectValidator|PhoneNumberValidator|StringValidator} of  - The validator of what this is an array of
  */
-class ArrayValidator extends BaseValidator {
-    private readonly of: BaseValidator;
-    private minChildCount: number = 0;
-    private maxChildCount: number;
-    protected defaultInputType: InputType = 'select';
+class ArrayValidator<T extends ValueType> extends BaseValidator<Array<T>|string> {
+    public readonly of: BaseValidator<any>;
+    protected minChildCount: number = 0;
+    protected maxChildCount?: number;
+    public defaultInputType: InputType = 'select';
 
     /**
      * Validate an array of fields
@@ -31,7 +30,11 @@ class ArrayValidator extends BaseValidator {
      * @param {Function} [onError]
      * @param {Array} [dependent]
      */
-    constructor(of: BaseValidator, defaultMessage = 'This field has to be an array', mutationFunc?: MutationFunction, onError?: ErrorFunction, dependent?: Dependent) {
+    constructor(of: BaseValidator<any>,
+                defaultMessage = 'This field has to be an array',
+                mutationFunc?: MutationFunction<Array<T>|string>,
+                onError?: ErrorFunction,
+                dependent?: Dependent) {
         super(undefined, defaultMessage, mutationFunc, onError, dependent);
         this.of = of;
         this.propType = PropTypes.arrayOf(of.getPropType());
@@ -45,15 +48,12 @@ class ArrayValidator extends BaseValidator {
      */
     public minLength(num: number, msg?: string): this {
         ensureValueIsNumeric(num, 'minLength', 'ArrayValidator', 'num');
-        if (msg === undefined) {
-            msg = 'There must be at least ' + num + ' entries for this';
-        } else {
-            msg = msg.replace('{{num}}', String(num));
-        }
-        this.validateFuncs.push([(values: Array<any>) => values.length >= num, msg]);
+        let errorMsg = msg ?? 'There must be at least ' + num + ' entries for this';
+        errorMsg = errorMsg.replace('{{num}}', String(num));
+        this.validateFuncs.push(values => ({success: values !== undefined && values.length >= num, errorMsg}));
 
         if (num > 0) {
-            this.required(msg);
+            this.required(errorMsg);
         }
         this.minChildCount = num;
         return this;
@@ -67,12 +67,9 @@ class ArrayValidator extends BaseValidator {
      */
     public maxLength(num: number, msg?: string): this {
         ensureValueIsNumeric(num, 'maxLength', 'ArrayValidator', 'num');
-        if (msg === undefined) {
-            msg = 'There must be at most ' + num + ' entries for this';
-        } else {
-            msg = msg.replace('{{num}}', String(num));
-        }
-        this.validateFuncs.push([(values: Array<any>) => values.length <= num, msg]);
+        let errorMsg = msg ?? 'There must be at most ' + num + ' entries for this';
+        errorMsg = errorMsg.replace('{{num}}', String(num));
+        this.validateFuncs.push(values => ({success: values !== undefined && values.length <= num, errorMsg}));
         this.maxChildCount = num;
         return this;
     }
@@ -87,16 +84,13 @@ class ArrayValidator extends BaseValidator {
     public lengthRange(min: number, max: number, msg?: string): this {
         ensureValueIsNumeric(min, 'lengthRange', 'ArrayValidator', 'min');
         ensureValueIsNumeric(max, 'lengthRange', 'ArrayValidator', 'max');
-        if (msg === undefined) {
-            msg = 'There must be between ' + min + ' and ' + max + ' entries for this';
-        } else {
-            msg = msg.replace('{{min}}', String(min));
-            msg = msg.replace('{{max}}', String(max));
-        }
-        this.validateFuncs.push([(values: Array<any>) => values.length >= min && values.length <= max, msg]);
+        let errorMsg = msg ?? 'There must be between ' + min + ' and ' + max + ' entries for this';
+        errorMsg = errorMsg.replace('{{min}}', String(min));
+        errorMsg = errorMsg.replace('{{max}}', String(max));
+        this.validateFuncs.push(values => ({success: values !== undefined && values.length >= min && values.length <= max, errorMsg}));
 
         if (min > 0) {
-            this.required(msg);
+            this.required(errorMsg);
         }
         this.minChildCount = min;
         this.maxChildCount = max;
@@ -107,9 +101,9 @@ class ArrayValidator extends BaseValidator {
      * Get the default value for the array's children
      * @return {*[]}
      */
-    public getDefaultValue(): Array<ValueType> {
+    public getDefaultValue(): Array<T> {
         const fieldDefault = this.of.getDefaultValue();
-        const ret: Array<ValueType> = [];
+        const ret: Array<T> = [];
         for (let c = 0; c < this.minChildCount; c++) {
             ret.push(fieldDefault);
         }
@@ -125,11 +119,20 @@ class ArrayValidator extends BaseValidator {
      * @param {any} [siblings]
      * @return {*|[boolean, *[]]|[boolean, *[]]}
      */
-    public validateWithoutRecursion(values: Array<ValueType>, otherValues?: ShapeValues, siblings?: ShapeValues): ValidationResult {
+    public validateWithoutRecursion(
+        values: Array<T>,
+        otherValues?: ValueType,
+        siblings?: ValueType
+    ): ValidationResult<Array<T>|string> {
         return this.validate(values, otherValues, siblings, false);
     }
 
-    public validate(values: Array<ValueType>, otherValues = {}, siblings = {}, recursion = true): ValidationResult {
+    public validate(
+        values: Array<T>,
+        otherValues = {},
+        siblings = {},
+        recursion = true
+    ): ValidationResult<Array<T>|string> {
         // First we validate the amount of entries as well as dependent filters and requirement filters
         const preValidate = super.validate(values, otherValues, siblings);
         if (preValidate[0] === false) {
@@ -141,7 +144,7 @@ class ArrayValidator extends BaseValidator {
         }
 
         // Then, if the amount is correct, we validate the specific entries
-        const tests: Array<ValidationResult> = [];
+        const tests: Array<ValidationResult<Array<ValueType>>> = [];
 
         let testFunc;
         if (recursion || !(this.of instanceof ObjectValidator || this.of instanceof ArrayValidator)) {

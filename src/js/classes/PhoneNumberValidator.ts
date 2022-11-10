@@ -6,7 +6,7 @@ import {InputType} from './BaseValidator';
  * @extends StringValidator
  */
 class PhoneNumberValidator extends StringValidator {
-    protected defaultInputType: InputType = 'tel';
+    public defaultInputType: InputType = 'tel';
 }
 
 export default PhoneNumberValidator;

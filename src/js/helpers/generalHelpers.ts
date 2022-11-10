@@ -1,33 +1,51 @@
-import {findFieldValidatorFromName} from './validationHelpers';
-import {ShapeValues} from '../classes/BaseValidator';
+import {findFieldValidatorFromName, UnpackedErrors} from './validationHelpers';
+import {ObjectValue, ValueType} from '../classes/BaseValidator';
+import ArrayValidator from '../classes/ArrayValidator';
+import ObjectValidator from '../classes/ObjectValidator';
 
-// todo: keyString needs to be a string, but usage suggests it should be able to be a number as well
-// todo: return value should be of type ValueType, but most callers expect *specific* types. Maybe make generic?
-export const getFieldValueFromKeyString = (keyString, values: ShapeValues): any => {
-    const fieldNames = keyString.split('.');
+export const getFieldValueFromKeyString = (
+    keyString: string|number, values: ValueType|UnpackedErrors
+): ValueType => {
+    const fieldNames = String(keyString).split('.');
     let dependentValue = values;
     for (const fieldName of fieldNames) {
-        if (dependentValue[fieldName] === undefined) {
+        if ((dependentValue as ObjectValue)[fieldName] === undefined) {
             throw new Error('Could not find value for ' + keyString);
         }
-        dependentValue = dependentValue[fieldName];
+        dependentValue = (dependentValue as ObjectValue)[fieldName];
     }
     return dependentValue;
 };
 
-const setDeepValue = (value, fieldNames, currentIndex, oldValue) => {
-    const ret = Array.isArray(oldValue) ? [...oldValue] : {...oldValue};
-    if (currentIndex === fieldNames.length - 1) {
-        ret[fieldNames[currentIndex]] = value;
-    } else if (oldValue[fieldNames[currentIndex]] === undefined) {
-        ret[fieldNames[currentIndex]] = setDeepValue(value, fieldNames, currentIndex + 1, {});
-    } else {
-        ret[fieldNames[currentIndex]] = setDeepValue(value, fieldNames, currentIndex + 1, oldValue[fieldNames[currentIndex]]);
+const setDeepValue = <T extends ValueType>(
+    value: ValueType, fieldNames: string[], currentIndex: number, oldValues: ValueType
+): T => {
+    if (typeof oldValues !== 'object' && !Array.isArray(oldValues)) {
+        if (fieldNames.length !== 0) {
+            throw new Error('Could not find value for ' + fieldNames.join('.'));
+        }
+        return value as T;
     }
-    return ret;
+
+    const ret = Array.isArray(oldValues) ? [...oldValues] : {...oldValues};
+
+    // any casts because we either index a record with a string or an array with a string that is implicitly cast to an int.
+    // this is hard to teach ts
+    if (currentIndex === fieldNames.length - 1) {
+        (ret as any)[fieldNames[currentIndex]] = value;
+    } else if ((oldValues as any)[fieldNames[currentIndex]] === undefined) {
+        (ret as any)[fieldNames[currentIndex]] = setDeepValue(value, fieldNames, currentIndex + 1, {});
+    } else {
+        (ret as any)[fieldNames[currentIndex]] = setDeepValue(
+            value, fieldNames, currentIndex + 1, (oldValues as any)[fieldNames[currentIndex]]
+        );
+    }
+    return ret as T;
 };
 
-export const setFieldValueFromKeyString = (keyString, value, oldValues) => {
+export const setFieldValueFromKeyString = <T extends ValueType>(
+    keyString: string, value: ValueType, oldValues: T
+): T => {
     const fieldNames = keyString.split('.');
 
     return setDeepValue(value, fieldNames, 0, oldValues);
@@ -38,7 +56,7 @@ export const setFieldValueFromKeyString = (keyString, value, oldValues) => {
  * @param {Date} date
  * @return {string}
  */
-export const convertDateObjectToInputString = (date) => {
+export const convertDateObjectToInputString = (date: Date) => {
     return date.toLocaleString('sv-SE', {
         year: 'numeric',
         month: '2-digit',
@@ -49,29 +67,36 @@ export const convertDateObjectToInputString = (date) => {
     }).replace(' ', 'T');
 };
 
-export const completeDefaultValues = (validatorDefaults, userDefaults, shape?, keyText?) => {
+// todo: This could be typed better if we would teach the type system that validatorDefaults and userDefaults should match the shape
+export const completeDefaultValues = (
+    validatorDefaults: Record<string, ValueType>,
+    userDefaults: Record<string, ValueType>,
+    shape?: ObjectValidator,
+    keyText?: string
+): Record<string, ValueType> => {
     Object.entries(userDefaults).map(([key, value]) => {
         const thisKeyText = keyText === undefined ? key : keyText + '.' + key;
         if (value !== null) {
             if (Array.isArray(value)) {
-                if (validatorDefaults[key] === undefined || (validatorDefaults[key].length === 0)) {
+                if (validatorDefaults[key] === undefined || (validatorDefaults[key] as Array<any>).length === 0) {
                     try {
-                        const fieldValidator = findFieldValidatorFromName(thisKeyText, shape);
+                        // shape should be an ArrayValidator here, but typing doesn't know that (yet)
+                        const fieldValidator = findFieldValidatorFromName(thisKeyText, shape) as ArrayValidator<any>;
                         validatorDefaults[key] = [];
                         for (let c = 0; c < value.length; c++) {
-                            validatorDefaults[key].push(fieldValidator.of.getDefaultValue());
+                            (validatorDefaults[key] as Array<any>).push(fieldValidator.of.getDefaultValue());
                         }
                     } catch (e) {
                         // If the use has supplied some value for an array field that is not defined in the shape, we can safely ignore the shape
                         validatorDefaults[key] = [];
                     }
                 }
-                validatorDefaults[key] = completeDefaultValues(validatorDefaults[key], value, shape, thisKeyText);
+                validatorDefaults[key] = completeDefaultValues(validatorDefaults[key] as any, value as any, shape, thisKeyText);
             } else if (typeof value === 'object') {
                 if (validatorDefaults[key] === undefined) {
                     validatorDefaults[key] = {};
                 }
-                validatorDefaults[key] = completeDefaultValues(validatorDefaults[key], value, shape, thisKeyText);
+                validatorDefaults[key] = completeDefaultValues(validatorDefaults[key] as any, value as any, shape, thisKeyText);
             } else {
                 validatorDefaults[key] = value;
             }
@@ -80,7 +105,7 @@ export const completeDefaultValues = (validatorDefaults, userDefaults, shape?, k
     return validatorDefaults;
 };
 
-export const containsValuesThatAreNotFalse = (obj) => {
+export const containsValuesThatAreNotFalse = (obj: any): boolean => {
     if (Array.isArray(obj)) {
         return obj.filter((value) => {
             return containsValuesThatAreNotFalse(value) !== false;
@@ -98,6 +123,6 @@ export const containsValuesThatAreNotFalse = (obj) => {
  * @param {Date} date
  * @returns {boolean}
  */
-export const isInvalidDate = (date) => {
-    return isNaN(date);
+export const isInvalidDate = (date: Date) => {
+    return isNaN(Number(date));
 };

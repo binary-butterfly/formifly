@@ -11,7 +11,7 @@ describe('FormiflyForm', () => {
         });
         global.window.matchMedia = matchFn;
 
-        render(<FormiflyForm shape={new ObjectValidator({foo: new StringValidator()})} onSubmit={() => null}>
+        render(<FormiflyForm shape={new ObjectValidator({foo: new StringValidator()})} onSubmit={() => {}}>
             <b>Test</b>
         </FormiflyForm>);
 

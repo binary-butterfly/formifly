@@ -15,7 +15,7 @@ describe('AnyOfValidator', () => {
     });
 
     it('runs the mutate function if validation is successful', () => {
-        const mutate = (value) => {
+        const mutate = (value: any) => {
             return value + 'apple';
         };
 

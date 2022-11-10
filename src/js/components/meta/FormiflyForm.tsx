@@ -1,9 +1,10 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import {ThemeProvider} from 'styled-components';
-import {FormiflyProvider, useFormiflyContext} from './FormiflyContext';
+import {FormiflyProvider, SubmitFunction, SubmitValidationErrorFunction, useFormiflyContext} from './FormiflyContext';
+import ObjectValidator from '../../classes/ObjectValidator';
+import {ValueType} from '../../classes/BaseValidator';
 
-const Form = (props) => {
+const Form = (props: FormProps) => {
     const {handleSubmit} = useFormiflyContext();
     return <form onSubmit={e =>
         handleSubmit(props.onSubmit, props.onSubmitValidationError, e)} className={'formifly-form ' + (props.className ?? '')}>
@@ -11,7 +12,7 @@ const Form = (props) => {
     </form>;
 };
 
-const FormiflyForm = (props) => {
+const FormiflyForm = (props: FormiflyFormProps) => {
     const {
         shape,
         defaultValues,
@@ -48,25 +49,26 @@ const FormiflyForm = (props) => {
     </ThemeProvider>;
 };
 
-FormiflyForm.propTypes = {
-    shape: PropTypes.object.isRequired,
-    onSubmit: PropTypes.func.isRequired,
-    onSubmitValidationError: PropTypes.func,
-    className: PropTypes.string,
-    defaultValues: PropTypes.object,
-    disableNativeRequired: PropTypes.bool,
-    disableNativeMinMax: PropTypes.bool,
-    theme: PropTypes.shape({
-        inputBackgroundColor: PropTypes.string,
-        errorColor: PropTypes.string,
-        inputTextColor: PropTypes.string,
-        inputBorderColor: PropTypes.string,
-        highlightColor: PropTypes.string,
-        reducedMotion: PropTypes.bool,
-    }),
+type FormProps = {
+    onSubmit: SubmitFunction;
+    onSubmitValidationError?: SubmitValidationErrorFunction;
+    className?: string;
+    children: (JSX.Element|false)[] | JSX.Element | false;
+}
 
-    // todo: added the following to make ts happy; is it okay to just add this?
-    children: PropTypes.any,
-};
+export type FormiflyFormProps = FormProps & {
+    shape: ObjectValidator;
+    defaultValues?: Record<string, ValueType>;
+    disableNativeRequired?: boolean;
+    disableNativeMinMax?: boolean;
+    theme?: {
+        inputBackgroundColor?: string;
+        errorColor?: string;
+        inputTextColor?: string;
+        inputBorderColor?: string;
+        higghlightColor?: string;
+        reducedMotion?: boolean;
+    };
+}
 
 export default FormiflyForm;

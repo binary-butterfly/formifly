@@ -109,7 +109,7 @@ test('Test getPropType required', () => {
 
 test('Test getPropType first', () => {
     const validator = new ObjectValidator({foo: new StringValidator().required(), bar: new NumberValidator()});
-    expect(validator.getPropType(true)).toStrictEqual({foo: PropTypes.string.isRequired, bar: PropTypes.number});
+    expect(validator.getFirstPropType()).toStrictEqual({foo: PropTypes.string.isRequired, bar: PropTypes.number});
 });
 
 describe.each([
@@ -284,6 +284,5 @@ test('Test ObjectValidator rejects non set required child fields', () => {
 test('Test ObjectValidator can handle undefined if explicitly not required', () => {
     const validator = new ObjectValidator({foo: new StringValidator()}).notRequired();
 
-    // todo: should this really be able to handle undefined? if so, we need to fix the function signature.
-    expect(validator.validate(undefined as any)).toStrictEqual([true, undefined]);
+    expect(validator.validate(undefined)).toStrictEqual([true, undefined]);
 });

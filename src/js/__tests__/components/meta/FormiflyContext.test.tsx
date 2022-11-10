@@ -9,6 +9,7 @@ import AutomagicFormiflyField from '../../../components/input/AutomagicFormiflyF
 import {useFormiflyContext} from '../../../components/meta/FormiflyContext';
 import FormiflyForm from '../../../components/meta/FormiflyForm';
 import withFormifly from '../../../components/meta/withFormifly';
+import {ValueType} from '../../../classes/BaseValidator';
 
 const ObjectComponent = withFormifly((props) => {
     const {getFieldProps} = props;
@@ -18,7 +19,7 @@ const ObjectComponent = withFormifly((props) => {
 
 const NotInProviderComponent = () => {
     const {getFieldProps} = useFormiflyContext();
-    return <b {...getFieldProps('foo')}>Test</b>;
+    return <b {...getFieldProps('foo') as any}>Test</b>;
 };
 
 const SubmitErrorDisplay = withFormifly((props) => {
@@ -87,7 +88,7 @@ describe('FormiflyContext', () => {
             foo: new StringValidator('bar'),
         });
 
-        render(<FormiflyForm shape={shape} onSubmit={() => null} defaultValues={{fruit: [{name: 'banana', tasty: true}]}}>
+        render(<FormiflyForm shape={shape} onSubmit={() => {}} defaultValues={{fruit: [{name: 'banana', tasty: true}]}}>
             <AutomagicFormiflyField label="Name" name="fruit.0.name"/>
             <AutomagicFormiflyField label="Tasty" name="fruit.0.tasty"/>
             <AutomagicFormiflyField label="Foo" name="foo"/>
@@ -176,7 +177,7 @@ describe('FormiflyContext', () => {
 
         const input = screen.getByLabelText('Foo');
         expect((input as HTMLInputElement).required).toBe(false);
-        expect(input.attributes['aria-required']).toBeTruthy();
+        expect(input.attributes.getNamedItem('aria-required')).toBeTruthy();
     });
 
     it('can disable the native min and max props', () => {
@@ -212,8 +213,8 @@ describe('FormiflyContext', () => {
     it('can trigger field validation', () => {
         const CheckForm = withFormifly((props) => {
             const {validateField} = props;
-            const [valid1, setValid1] = React.useState();
-            const [valid2, setValid2] = React.useState();
+            const [valid1, setValid1] = React.useState<boolean>();
+            const [valid2, setValid2] = React.useState<boolean>();
 
             const handleTestButtonClick = () => validateField('foo', '').then((valid) => {
                 setValid1(valid);
@@ -251,7 +252,7 @@ describe('FormiflyContext', () => {
     it('returns a promise with the new values from setFieldValue', async () => {
         const FormThatMakesNoSense = withFormifly((props) => {
             const {setFieldValue} = props;
-            const [fooText, setFooText] = React.useState();
+            const [fooText, setFooText] = React.useState<ValueType>();
 
             const handleCoolButtonClick = () => {
                 setFieldValue('foo', 'foo').then((newValues) => {
@@ -282,7 +283,7 @@ describe('FormiflyContext', () => {
     it('can set multiple field values at once', async () => {
         const AwesomeForm = withFormifly((props) => {
             const {setMultipleFieldValues} = props;
-            const [fooText, setFooText] = React.useState();
+            const [fooText, setFooText] = React.useState<ValueType>();
 
 
             const handleButtonClick = () => {

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import ArrayValidator from '../../classes/ArrayValidator';
 import BooleanValidator from '../../classes/BooleanValidator';
@@ -15,43 +14,65 @@ import {
 import {
     findFieldValidatorAndSiblingsFromName,
     findFieldValidatorFromName,
+    UnpackedErrors,
     unpackErrors,
 } from '../../helpers/validationHelpers';
+import BaseValidator, {ObjectValue, ValidationResult, ValueType} from '../../classes/BaseValidator';
+import {FormiflyFieldProps} from '../input/FormiflyField';
 
-// todo: improve type once the methods are typed
+export type SubmitFunction = (_: ValueType|undefined, __: (___: any) => void) => Promise<void> | void;
+export type SubmitValidationErrorFunction = undefined | ((errors: ValueType, reason: UnpackedErrors) => void);
+
 export type FormiflyContextType = {
     setSubmitting: (value: (((prevState: boolean) => boolean) | boolean)) => void;
-    handleBlur: (event) => Promise<unknown>;
+    handleBlur: (event: React.ChangeEvent<HTMLInputElement>) => Promise<boolean>;
     submitting: boolean;
-    getFieldProps: (name, help?, type?, value?, id?, additionalDescribedBy?) => any;
-    validateMultipleFields: (pairs) => Promise<unknown>;
-    hasErrors: (fieldName) => (boolean | any);
-    shape: any;
-    setFieldValue: (field, value, oldValues?: any) => Promise<unknown>;
-    values: any;
-    handleRadioChange: (event) => Promise<unknown>;
-    handleMultiSelectChange: (name, newVal) => Promise<unknown>;
-    hasBeenTouched: (fieldName) => (any | boolean);
+    getFieldProps: (
+        name: string,
+        help?: string,
+        type?: string,
+        value?: string,
+        id?: string,
+        additionalDescribedBy?: string
+    ) => FormiflyFieldProps;
+    validateMultipleFields: (pairs: [string, ValueType?][]) => Promise<boolean>;
+    hasErrors: (fieldName: string) => false|string;
+    shape: ObjectValidator;
+    setFieldValue: <T extends ValueType>(
+        field: string, value: T, oldValues?: ObjectValue
+    ) => Promise<ObjectValue>;
+    values: ValueType;
+    handleRadioChange: (event: React.ChangeEvent<HTMLInputElement>) => Promise<boolean>;
+    handleMultiSelectChange: (name: string, newVal: ValueType) => Promise<boolean>;
+    hasBeenTouched: (fieldName: string) => (any | boolean);
     submitSuccess: boolean;
-    validateField: (name, value) => Promise<unknown>;
-    handleSubmit: (onSubmit, onSubmitValidationError, e) => void;
-    handleFocus: (event) => void;
-    validateAll: () => Promise<unknown>;
-    handleChange: (event) => void;
+    validateField: (name: string, value?: ValueType) => Promise<boolean>;
+    handleSubmit: (
+        onSubmit: SubmitFunction,
+        onSubmitValidationError: SubmitValidationErrorFunction,
+        e: React.FormEvent<HTMLFormElement>
+    ) => void;
+    handleFocus: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    validateAll: () => Promise<string|ObjectValue|undefined>;
+    handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     submitFailureReason: any;
-    setMultipleFieldValues: (pairs, oldValues?: any) => Promise<unknown>;
-    handleCheckChange: (event) => Promise<unknown>;
-    errors: any;
+    setMultipleFieldValues: <T extends ValueType>(
+        pairs: [string, T][], oldValues?: ObjectValue
+    ) => Promise<ObjectValue>;
+    handleCheckChange: (event: React.ChangeEvent<HTMLInputElement>) => Promise<boolean>;
+    errors: UnpackedErrors;
 };
 
-// todo: remove need for any cast
-export const Context = React.createContext<FormiflyContextType>({} as any);
+export type ErrorType = string|false|{[key: string]: ValidationResult<ErrorType>}|ValidationResult<ErrorType>[];
+
+// see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/24509#issuecomment-382213106 for why we need to cast here
+export const Context = React.createContext<FormiflyContextType>(undefined as any);
 Context.displayName = 'FormiflyContext';
 
-export const FormiflyProvider = (props) => {
+export const FormiflyProvider = (props: FormiflyProviderProps) => {
     const {shape, initialValues, children, disableNativeRequired, disableNativeMinMax} = props;
 
-    const [values, setValues] = React.useState(() => {
+    const [values, setValues] = React.useState<ObjectValue>(() => {
         const defaultValues = shape.getDefaultValue();
         if (!initialValues) {
             return defaultValues;
@@ -60,13 +81,15 @@ export const FormiflyProvider = (props) => {
         return completeDefaultValues(defaultValues, initialValues, shape);
     });
 
-    const [errors, setErrors] = React.useState({});
-    const [touched, setTouched] = React.useState({});
+    const [errors, setErrors] = React.useState<UnpackedErrors>({});
+    const [touched, setTouched] = React.useState<ValueType>({});
     const [submitting, setSubmitting] = React.useState(false);
     const [submitSuccess, setSubmitSuccess] = React.useState(false);
-    const [submitFailureReason, setSubmitFailureReason] = React.useState(null);
+    const [submitFailureReason, setSubmitFailureReason] = React.useState<any>(null);
 
-    const setFieldValue = (field, value, oldValues = values) => {
+    const setFieldValue = <T extends ValueType>(
+        field: string, value: T, oldValues: ObjectValue = values
+    ): Promise<ObjectValue> => {
         return new Promise((resolve) => {
             const newValues = setFieldValueFromKeyString(field, value, oldValues);
             setValues(newValues);
@@ -74,7 +97,9 @@ export const FormiflyProvider = (props) => {
         });
     };
 
-    const setMultipleFieldValues = (pairs, oldValues = values) => {
+    const setMultipleFieldValues = <T extends ValueType>(
+        pairs: [string, T][], oldValues: ObjectValue = values
+    ): Promise<ObjectValue> => {
         return new Promise((resolve) => {
             let newValues = oldValues;
             for (const pair of pairs) {
@@ -85,9 +110,9 @@ export const FormiflyProvider = (props) => {
         });
     };
 
-    const hasErrors = (fieldName) => {
+    const hasErrors = (fieldName: string): string|false => {
         try {
-            const errorsRes = getFieldValueFromKeyString(fieldName, errors);
+            const errorsRes = getFieldValueFromKeyString(fieldName, errors) as false|string;
             if (Array.isArray(errorsRes) || (typeof errorsRes === 'object' && errorsRes !== null)) {
                 if (!containsValuesThatAreNotFalse(errorsRes)) {
                     return false;
@@ -99,34 +124,34 @@ export const FormiflyProvider = (props) => {
         }
     };
 
-    const hasBeenTouched = (fieldName) => {
+    const hasBeenTouched = (fieldName: string): boolean => {
         try {
-            return submitSuccess ? true : getFieldValueFromKeyString(fieldName, touched);
+            return submitSuccess ? true : getFieldValueFromKeyString(fieldName, touched) as boolean;
         } catch {
             return false;
         }
     };
 
-    const handleChange = (event) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         setFieldValue(event.target.name, event.target.value);
     };
 
-    const handleCheckChange = (event) => {
+    const handleCheckChange = (event: React.ChangeEvent<HTMLInputElement>): Promise<boolean> => {
         setFieldValue(event.target.name, Boolean(event.target.checked));
         return validateField(event.target.name, event.target.checked);
     };
 
-    const handleRadioChange = (event) => {
+    const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>): Promise<boolean> => {
         setFieldValue(event.target.name, event.target.value);
         return validateField(event.target.name, event.target.value);
     };
 
-    const handleMultiSelectChange = (name, newVal) => {
+    const handleMultiSelectChange = (name: string, newVal: ValueType): Promise<boolean> => {
         setFieldValue(name, newVal);
         return validateField(name, newVal);
     };
 
-    const handleBlur = (event) => {
+    const handleBlur = (event: React.ChangeEvent<HTMLInputElement>): Promise<boolean> => {
         const name = event.target.name;
         return validateField(
             name,
@@ -134,7 +159,7 @@ export const FormiflyProvider = (props) => {
         );
     };
 
-    const validateField = (name, value) => {
+    const validateField = (name: string, value?: ValueType): Promise<boolean> => {
         if (value === undefined) {
             value = getFieldValueFromKeyString(name, values);
         }
@@ -148,13 +173,13 @@ export const FormiflyProvider = (props) => {
                 setErrors(setFieldValueFromKeyString(name, false, errors));
                 return resolve(true);
             } else {
-                setErrors(setFieldValueFromKeyString(name, validated[1], errors));
+                setErrors(setFieldValueFromKeyString(name, validated[1] as string, errors));
                 return resolve(false);
             }
         });
     };
 
-    const validateMultipleFields = (pairs) => {
+    const validateMultipleFields = (pairs: [string, ValueType?][]): Promise<boolean> => {
         return new Promise((resolve) => {
             let allValid = true;
             let newTouched = touched;
@@ -167,7 +192,7 @@ export const FormiflyProvider = (props) => {
                 if (validated[0]) {
                     newErrors = setFieldValueFromKeyString(name, false, newErrors);
                 } else {
-                    newErrors = setFieldValueFromKeyString(name, validated[1], newErrors);
+                    newErrors = setFieldValueFromKeyString(name, validated[1] as string, newErrors);
                     allValid = false;
                 }
                 newTouched = setFieldValueFromKeyString(name, true, newTouched);
@@ -178,7 +203,7 @@ export const FormiflyProvider = (props) => {
         });
     };
 
-    const handleFocus = (event) => {
+    const handleFocus = (event: React.ChangeEvent<HTMLInputElement>): void => {
         setErrors(setFieldValueFromKeyString(event.target.name, false, errors));
     };
 
@@ -193,12 +218,14 @@ export const FormiflyProvider = (props) => {
      * @param {String=} additionalDescribedBy - Use this to add additional ids to aria-describedby. (By default help and error displays are already connected.) This is especially useful when building a radio group without using the FormiflyRadioGroup component to add a title to the radio options.
      * @return {{onBlur: (function(*): Promise<unknown>), onChange: handleChange, name, id: string, type: string, value, errors: (*|boolean), onFocus: handleFocus}}
      */
-    const getFieldProps = (name, help, type, value, id, additionalDescribedBy) => {
-        const fieldValidator = findFieldValidatorFromName(name, shape);
+    const getFieldProps = (
+        name: string, help?: string, type?: string, value?: string, id?: string, additionalDescribedBy?: string
+    ): FormiflyFieldProps => {
+        const fieldValidator = findFieldValidatorFromName(name, shape) as ObjectValidator | ArrayValidator<any> | BaseValidator<any>;
         const fieldValue = getFieldValueFromKeyString(name, values);
 
         const guessedType = fieldValidator.defaultInputType;
-        // todo: remove any
+        // any isn't ideal, but I couldn't bring typescript to accept any other type easily and this is function internally at least anyway
         const additionalProps: any = {};
 
         if (type === 'radio') {
@@ -207,10 +234,10 @@ export const FormiflyProvider = (props) => {
             additionalProps.value = value;
             additionalProps.id = id ?? 'formifly-input-field-' + name + '-radio-' + value;
         } else if (type === 'radio-group') {
-            additionalProps.onchange = handleRadioChange;
+            additionalProps.onChange = handleRadioChange;
         } else if (fieldValidator instanceof DateTimeValidator) {
             if (fieldValue !== '') {
-                additionalProps.value = convertDateObjectToInputString(new Date(fieldValue));
+                additionalProps.value = convertDateObjectToInputString(new Date(fieldValue as string|Date));
             }
         } else if (fieldValidator instanceof NumberValidator) {
             if (!disableNativeMinMax && fieldValidator.minNum !== undefined) {
@@ -220,11 +247,11 @@ export const FormiflyProvider = (props) => {
                 additionalProps.max = fieldValidator.maxNum;
             }
         } else if (fieldValidator instanceof BooleanValidator) {
-            additionalProps.checked = fieldValue;
+            additionalProps.checked = fieldValue as string | boolean | undefined;
             additionalProps.onChange = handleCheckChange;
-        } else if (fieldValidator instanceof ArrayValidator) {
+        } else if (fieldValidator instanceof ArrayValidator<any>) {
             additionalProps.onChange = handleMultiSelectChange;
-            additionalProps.value = fieldValue.filter(thisValue => thisValue !== '');
+            additionalProps.value = (fieldValue as Array<ValueType>).filter((thisValue: ValueType) => thisValue !== '');
             additionalProps.multiple = true;
         } else if (fieldValidator instanceof ObjectValidator) {
             throw new Error('Object validators must not be used for input fields directly.');
@@ -269,7 +296,7 @@ export const FormiflyProvider = (props) => {
      * Validates all fields
      * @return {Promise<unknown>}
      */
-    const validateAll = () => {
+    const validateAll = (): Promise<string | ObjectValue | undefined> => {
         return new Promise((resolve, reject) => {
             const result = shape.validate(values, values, values);
             if (result[0]) {
@@ -280,7 +307,11 @@ export const FormiflyProvider = (props) => {
         });
     };
 
-    const handleSubmit = (onSubmit, onSubmitValidationError, e) => {
+    const handleSubmit = (
+        onSubmit: SubmitFunction,
+        onSubmitValidationError: SubmitValidationErrorFunction,
+        e: React.FormEvent<HTMLFormElement>
+    ) => {
         e.preventDefault();
         setSubmitting(true);
         setSubmitSuccess(false);
@@ -302,11 +333,13 @@ export const FormiflyProvider = (props) => {
                         setSubmitting(false);
                         setSubmitSuccess(true);
                     }
+                    return;
                 } catch (err) {
                     setSubmitFailureReason(err);
+                    return;
                 }
             })
-            .catch((reason) => {
+            .catch((reason: UnpackedErrors) => {
                 let newErrors = {};
                 Object.entries(reason).map(([key, value]) => {
                     newErrors = setFieldValueFromKeyString(key, value, newErrors);
@@ -348,15 +381,13 @@ export const FormiflyProvider = (props) => {
     return <Context.Provider value={FormiflyContext}>{children}</Context.Provider>;
 };
 
-FormiflyProvider.propTypes = {
-    shape: PropTypes.object.isRequired,
-    initialValues: PropTypes.object,
-    disableNativeMinMax: PropTypes.bool,
-    disableNativeRequired: PropTypes.bool,
-
-    // todo: added the following to make ts happy; is it okay to just add this?
-    children: PropTypes.any,
-};
+type FormiflyProviderProps = {
+    shape: ObjectValidator;
+    initialValues?: Record<string, ValueType>;
+    disableNativeMinMax?: boolean;
+    disableNativeRequired?: boolean;
+    children: JSX.Element[] | JSX.Element;
+}
 
 export const useFormiflyContext = (): FormiflyContextType => {
     const context = React.useContext<FormiflyContextType>(Context);

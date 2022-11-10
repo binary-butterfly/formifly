@@ -14,12 +14,12 @@ import {convertDateObjectToInputString} from '../../../helpers/generalHelpers';
  * @param element
  * @param newValue
  */
-const changeInputValue = (element, newValue) => {
+const changeInputValue = (element: HTMLElement, newValue: any) => {
     fireEvent.change(element, {target: {value: newValue}});
     fireEvent.blur(element);
 };
 
-function checkIfRoleEqualsAndContentNotEmpty(role, element) {
+function checkIfRoleEqualsAndContentNotEmpty(role: string, element: HTMLElement) {
     return role === 'alert' && element.textContent !== '';
 }
 

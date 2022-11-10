@@ -1,66 +1,81 @@
-export const findFieldValidatorFromName = (name, shape) => {
+import BaseValidator, {ValidationResult, ValueType} from '../classes/BaseValidator';
+import ArrayValidator from '../classes/ArrayValidator';
+import ObjectValidator from '../classes/ObjectValidator';
+
+
+export const findFieldValidatorFromName = (
+    name: string, shape?: ObjectValidator | ArrayValidator<any> | BaseValidator<any>
+): ObjectValidator | ArrayValidator<any> | BaseValidator<any> | undefined => {
     const fieldNames = name.split('.');
     let dependentValue = shape;
     for (const index in fieldNames) {
         const fieldName = fieldNames[index];
-        if (dependentValue.of !== undefined) {
+        if (dependentValue && 'of' in dependentValue) {
             // This is an array validator
-            if (!isNaN(fieldName)) {
+            if (!isNaN(Number(fieldName))) {
                 // Since the name is numeric, we work with it directly
                 dependentValue = dependentValue.of;
             } else {
+                const of = dependentValue.of as BaseValidator<any> | ObjectValidator;
                 // If the name is non numeric, we check if this may be an array of objects where an object has the given name
-                if (dependentValue.of?.fields[fieldName] === undefined) {
+                if (!('fields' in of ) || of.fields[fieldName] === undefined) {
                     throw new Error('Could not find validator for ' + name);
                 }
-                dependentValue = dependentValue.of?.fields[fieldName];
+                dependentValue = of.fields[fieldName];
             }
         } else {
-            if (dependentValue?.fields[fieldName] === undefined) {
+            if (!dependentValue || !('fields' in dependentValue) || dependentValue.fields[fieldName] === undefined) {
                 throw new Error('Could not find validator for ' + name);
             }
-            dependentValue = dependentValue?.fields[fieldName];
+            dependentValue = dependentValue.fields[fieldName];
         }
     }
     return dependentValue;
 };
 
-export const findFieldValidatorAndSiblingsFromName = (name: string, shape, values) => {
+export const findFieldValidatorAndSiblingsFromName = (
+    name: string,
+    shape: BaseValidator<any> | ArrayValidator<any> | ObjectValidator,
+    values: ValueType
+): [BaseValidator<any>, ValueType] => {
     const fieldNames = name.split('.');
     let validator = shape;
-    let siblings = values;
+
+    // todo: any, because in theory this needs to be explicitly type checked to make sure values and shape match
+    let siblings: any = values;
     let lastSiblings = siblings;
 
     for (const index in fieldNames) {
         const fieldName = fieldNames[index];
         lastSiblings = siblings;
         siblings = siblings[fieldName];
-        if (validator.of !== undefined) {
+        if ('of' in validator && validator.of !== undefined) {
             validator = validator.of;
         } else {
-            if (validator?.fields[fieldName] === undefined) {
+            if (!('fields' in validator) || validator.fields[fieldName] === undefined) {
                 throw new Error('Could not find validator for ' + name);
             }
-            validator = validator?.fields[fieldName];
+            validator = validator.fields[fieldName];
         }
     }
     return [validator, lastSiblings];
 };
 
-export const unpackErrors = (currentResult) => {
-    let ret = {};
+export type UnpackedErrors = string | false | {[key: string]: UnpackedErrors} | UnpackedErrors[];
+
+export const unpackErrors = (currentResult: ValidationResult<any>): UnpackedErrors => {
+    let ret: UnpackedErrors = {};
     if (currentResult[0] === false) {
         if (Array.isArray(currentResult[1])) {
             currentResult[1].map((result, index) => {
                 if (result[0] === false) {
-                    ret[index] = unpackErrors(result);
+                    (ret as UnpackedErrors[])[index] = unpackErrors(result);
                 }
             });
         } else if (currentResult[1] instanceof Object) {
-            // todo: remove any
-            Object.entries(currentResult[1]).map(([name, result]: [string, any]) => {
+            Object.entries(currentResult[1]).map(([name, result]) => {
                 if (result[0] === false) {
-                    ret[name] = unpackErrors(result);
+                    (ret as {[key: string]: UnpackedErrors})[name] = unpackErrors(result);
                 }
             });
         } else {

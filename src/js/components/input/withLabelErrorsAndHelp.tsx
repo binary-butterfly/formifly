@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import {FormiflyFieldProps} from './FormiflyField';
 
 export const FieldContainer = styled.div`
   display: flex;
@@ -11,7 +12,7 @@ export const FieldContainer = styled.div`
   }
 `;
 
-export const InputLabel = styled.label`
+export const InputLabel = styled.label<{'$noMove': boolean}>`
   display: block;
   position: relative;
   z-index: 10;
@@ -37,8 +38,8 @@ export const HelpSpan = styled.span`
   align-items: center;
 `;
 
-const withLabelErrorsAndHelp = (WrappedComponent) => {
-    return function LabelErrorsAndHelpInner(props) {
+const withLabelErrorsAndHelp = (WrappedComponent: React.ComponentType<any>) => {
+    return function LabelErrorsAndHelpInner(props: LabelErrorsAndHelpInnerProps) {
         const {
             label,
             help,
@@ -56,7 +57,7 @@ const withLabelErrorsAndHelp = (WrappedComponent) => {
         const ErrorComponent = props.errorComponent ?? ErrorSpan;
         const HelpComponent = props.helpComponent ?? HelpSpan;
 
-        const labelNoMove = props.labelNoMove ?? ['range', 'checkbox', 'radio'].includes(type);
+        const labelNoMove = props.labelNoMove ?? ['range', 'checkbox', 'radio'].includes(type ?? '');
 
         return <ContainerComponent className={'formifly-field-container formifly-' + type + '-field-container ' + (className ?? '')}>
             <div>
@@ -81,5 +82,22 @@ const withLabelErrorsAndHelp = (WrappedComponent) => {
         </ContainerComponent>;
     };
 };
+
+type LabelErrorsAndHelpInnerProps = Pick<FormiflyFieldProps,
+    'label' |
+    'help' |
+    'type' |
+    'id' |
+    'labelClassName' |
+    'className' |
+    'helpClassName' |
+    'errorClassName' |
+    'containerComponent' |
+    'helpComponent' |
+    'labelComponent' |
+    'errorComponent' |
+    'labelNoMove' |
+    'errors'
+    >
 
 export default withLabelErrorsAndHelp;

@@ -5,6 +5,7 @@ import {
     getFieldValueFromKeyString,
     setFieldValueFromKeyString,
 } from '../../helpers/generalHelpers';
+import {ValueType} from '../../classes/BaseValidator';
 
 describe.each([
     ['banana', {banana: 'apple'}, 'apple', 'works with shallow objects'],
@@ -139,7 +140,7 @@ describe.each([
     [{fruit: []}, {fruit: null}, {fruit: []}, 'skips null values'],
 ])('Test completeDefaultValues', (validatorDefaults, userDefaults, expected, name) => {
     test(name, () => {
-        expect(completeDefaultValues(validatorDefaults, userDefaults)).toStrictEqual(expected);
+        expect(completeDefaultValues(validatorDefaults, userDefaults as Record<string, ValueType>)).toStrictEqual(expected);
     });
 });
 

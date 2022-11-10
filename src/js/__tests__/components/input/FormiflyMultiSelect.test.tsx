@@ -12,7 +12,7 @@ describe.each([
 ])('Test FormiflyMultiSelect', (reducedMotion, expectedStyle, name) => {
     test(name, () => {
         const shape = new ObjectValidator({foo: new ArrayValidator(new StringValidator())});
-        render(<FormiflyForm shape={shape} onSubmit={() => null} theme={{reducedMotion: reducedMotion}}>
+        render(<FormiflyForm shape={shape} onSubmit={() => {}} theme={{reducedMotion: reducedMotion}}>
             <AutomagicFormiflyField label="test" name="foo" options={[{value: 'bla', label: 'blub'}]}/>
         </FormiflyForm>);
 

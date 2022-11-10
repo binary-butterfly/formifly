@@ -1,11 +1,10 @@
 import React from 'react';
-import styled from 'styled-components';
-import PropTypes from 'prop-types';
+import styled, {StyledComponent} from 'styled-components';
 import {CheckLabel} from './FormiflyCheckField';
 import {ErrorSpan, HelpSpan} from './withLabelErrorsAndHelp';
-import {fieldPropTypes} from './FormiflyField';
+import {FormiflyFieldProps} from './FormiflyField';
 
-export const RadioGroupContainer = styled.fieldset`
+export const RadioGroupContainer = styled.fieldset<{'$horizontal': boolean}>`
   display: flex;
   flex-wrap: wrap;
   width: fit-content;
@@ -19,7 +18,7 @@ export const RadioGroupContainer = styled.fieldset`
   }
 `;
 
-const FormiflyRadioGroup = (props) => {
+const FormiflyRadioGroup = (props: FormiflyRadioGroupProps) => {
     const {
         className,
         horizontal,
@@ -81,11 +80,13 @@ const FormiflyRadioGroup = (props) => {
     </ContainerComponent>;
 };
 
-FormiflyRadioGroup.propTypes = {
-    ...fieldPropTypes,
-    options: PropTypes.array.isRequired,
-    legendComponent: PropTypes.func,
-    legendClassName: PropTypes.string,
-};
+export type FormiflyRadioGroupProps = FormiflyFieldProps & {
+    options: {
+        label: string,
+        value: any,
+    }[],
+    legendComponent?: StyledComponent<any, any>,
+    legendClassName?: string
+}
 
 export default React.memo(FormiflyRadioGroup);

@@ -1,7 +1,6 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components';
-import {fieldPropTypes} from './FormiflyField';
+import styled, {StyledComponent} from 'styled-components';
+import {FormiflyFieldProps} from './FormiflyField';
 import withLabelErrorsAndHelp from './withLabelErrorsAndHelp';
 
 const Select = styled.select`
@@ -17,7 +16,7 @@ const Select = styled.select`
   }
 `;
 
-const FormiflySelectField = (props) => {
+const FormiflySelectField = (props: FormiflySelectFieldProps) => {
     const {
         name,
         value,
@@ -57,10 +56,13 @@ const FormiflySelectField = (props) => {
 
 };
 
-FormiflySelectField.propTypes = {
-    ...fieldPropTypes,
-    options: PropTypes.array.isRequired,
-    optionComponent: PropTypes.element,
-};
+export type FormiflySelectFieldProps = FormiflyFieldProps & {
+    options: {
+        label: string,
+        value: any,
+    }[],
+    optionComponent: StyledComponent<any, any>,
+    optionClassName: string,
+}
 
 export default React.memo(withLabelErrorsAndHelp(FormiflySelectField));

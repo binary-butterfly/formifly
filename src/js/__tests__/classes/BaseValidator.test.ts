@@ -10,7 +10,7 @@ describe.each([
     [undefined, true, 'returns true for undefined'],
 ])('Test BaseValidator not required', (value, expected, name) => {
     test(name, () => {
-        const validator = new BaseValidator();
+        const validator = new BaseValidator<any>();
         expect(validator.validate(value)).toStrictEqual([expected, value]);
     });
 });
@@ -22,8 +22,8 @@ describe.each([
     [undefined, [false, 'banana'], 'banana', 'returns false for undefined'],
 ])('Test BaseValidator required', (value, expected, msg, name) => {
     test(name, () => {
-        // todo: why doesn't ts allow null here?
-        const validator = new BaseValidator().required(msg as any);
+        // todo: this case is kinda obsolete. TS doesn't like null here and assumes only strings or undefined are passed
+        const validator = new BaseValidator<any>().required(msg as any);
         expect(validator.validate(value)).toStrictEqual(expected);
     });
 });
@@ -54,8 +54,8 @@ describe.each([
         {country: 'de', zip: '12345'},
         [
             [
-                ['country', country => country === 'de', new StringValidator().regex(/^\d{5}$/)],
-                ['country', country => country === 'us', new StringValidator().regex(/^\d{5}-\d{4}$/)],
+                ['country', (country: string) => country === 'de', new StringValidator().regex(/^\d{5}$/)],
+                ['country', (country: string) => country === 'us', new StringValidator().regex(/^\d{5}-\d{4}$/)],
             ],
         ],
         [true, '12345'],
@@ -66,8 +66,8 @@ describe.each([
         {country: 'us', zip: '12345'},
         [
             [
-                ['country', country => country === 'de', new StringValidator().regex(/^\d{5}$/)],
-                ['country', country => country === 'us', new StringValidator().regex(/^\d{5}-\d{4}$/, 'no us zip code :(')],
+                ['country', (country: string) => country === 'de', new StringValidator().regex(/^\d{5}$/)],
+                ['country', (country: string) => country === 'us', new StringValidator().regex(/^\d{5}-\d{4}$/, 'no us zip code :(')],
             ],
         ],
         [false, 'no us zip code :('],
@@ -78,8 +78,8 @@ describe.each([
         {country: 'ch', zip: '12345'},
         [
             [
-                ['country', country => country === 'de', new NumberValidator(true)],
-                ['country', country => country === 'invalid', new BaseValidator().alwaysFalse()],
+                ['country', (country: string) => country === 'de', new NumberValidator(true)],
+                ['country', (country: string) => country === 'invalid', new BaseValidator().alwaysFalse()],
             ],
         ],
         [true, '12345'],
@@ -98,14 +98,14 @@ describe.each([
     ['banana', 'banana', 'is set correctly'],
 ])('Test defaultValue', (defaultValue, expected, name) => {
     test(name, () => {
-        const validator = new BaseValidator(defaultValue);
+        const validator = new BaseValidator<string>(defaultValue);
         expect(validator.getDefaultValue()).toStrictEqual(expected);
     });
 });
 
 test('Test onError callback is called on error', () => {
     const callback = jest.fn();
-    const validator = new BaseValidator(undefined, undefined, undefined, callback).alwaysFalse();
+    const validator = new BaseValidator<boolean>('', undefined, undefined, callback).alwaysFalse();
     validator.validate(false, {foo: 'bar'});
     expect(callback).toHaveBeenCalledWith(false, {foo: 'bar'});
 });
@@ -121,7 +121,7 @@ test('Test getPropType required', () => {
 });
 
 test('Test mutationFunc', () => {
-    const mutation = (value) => {
+    const mutation = (value: any) => {
         return value + 'banana';
     };
     const validator = new BaseValidator(undefined, undefined, mutation);
@@ -251,7 +251,7 @@ describe('Test oneOfArrayFieldValues', () => {
     });
 
     it('Works with custom check functions and can return true', () => {
-        const validator = new BaseValidator().oneOfArrayFieldValues('array', (compare, value) => {
+        const validator = new BaseValidator<any>().oneOfArrayFieldValues('array', (compare, value) => {
             for (const val of compare) {
                 if (val.id === value) {
                     return true;
@@ -264,7 +264,7 @@ describe('Test oneOfArrayFieldValues', () => {
     });
 
     it('Works with custom check functions and can return false', () => {
-        const validator = new BaseValidator().oneOfArrayFieldValues('array', (compare, value) => {
+        const validator = new BaseValidator<any>().oneOfArrayFieldValues('array', (compare, value) => {
             for (const val of compare) {
                 if (val.id === value) {
                     return true;
@@ -298,7 +298,7 @@ describe('Test oneOfArraySiblingFieldValues', () => {
     });
 
     it('Works with custom check functions and can return true', () => {
-        const validator = new BaseValidator().oneOfArraySiblingFieldValues('array', (compare, value) => {
+        const validator = new BaseValidator<any>().oneOfArraySiblingFieldValues('array', (compare, value) => {
             for (const val of compare) {
                 if (val.id === value) {
                     return true;
@@ -312,7 +312,7 @@ describe('Test oneOfArraySiblingFieldValues', () => {
     });
 
     it('Works with custom check functions and can return false', () => {
-        const validator = new BaseValidator().oneOfArraySiblingFieldValues('array', (compare, value) => {
+        const validator = new BaseValidator<any>().oneOfArraySiblingFieldValues('array', (compare, value) => {
             for (const val of compare) {
                 if (val.id === value) {
                     return true;

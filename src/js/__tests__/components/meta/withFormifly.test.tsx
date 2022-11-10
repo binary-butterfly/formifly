@@ -44,7 +44,7 @@ test('withFormifly', () => {
     const shape = new ObjectValidator({
         foo: new StringValidator(),
     });
-    render(<FormiflyForm shape={shape} onSubmit={() => null}>
+    render(<FormiflyForm shape={shape} onSubmit={() => {}}>
         <ComponentThatUsesHoc/>
     </FormiflyForm>);
 });

@@ -9,6 +9,7 @@ import StringValidator from '../../classes/StringValidator';
 import AutomagicFormiflyField from '../input/AutomagicFormiflyField';
 import {useFormiflyContext} from '../meta/FormiflyContext';
 import FormiflyForm from '../meta/FormiflyForm';
+import {Dependent, ErrorFunction, MutationFunction, ValueType} from '../../classes/BaseValidator';
 
 const Button = styled.button`
   background-color: transparent;
@@ -36,12 +37,13 @@ const FruitError = styled.p`
   color: red;
 `;
 
-const DemoFormContent = (props) => {
+// todo: this any is really unfortunate...
+const DemoFormContent = (props: any) => {
     const {shape} = props;
     const {values, setFieldValue, errors, validateField} = useFormiflyContext();
 
-    const handleRemoveFruitClick = (index) => {
-        const newFruitValue = [...values.fruit.filter((value, fIndex) => fIndex !== index)];
+    const handleRemoveFruitClick = (index: number) => {
+        const newFruitValue = [...values.fruit.filter((_: unknown, fIndex: number) => fIndex !== index)];
         setFieldValue('fruit', newFruitValue);
         validateField('fruit', newFruitValue);
     };
@@ -103,7 +105,7 @@ const DemoFormContent = (props) => {
         <FruitError aria-live="polite" aria-relevant="additions" role="alert">
             {!!errors.fruit && typeof errors.fruit === 'string' && errors.fruit}
         </FruitError>
-        {values.fruit.map((value, index) => {
+        {values.fruit.map((_: unknown, index: number) => {
             const disabled = values.fruit.length <= shape.fields.fruit.minChildCount;
             return <FruitContainer key={'fruit-input' + index}>
                 <Button onClick={() => handleRemoveFruitClick(index)} type="button"
@@ -130,9 +132,15 @@ const DemoFormContent = (props) => {
 };
 
 class NotTrueValidator extends BooleanValidator {
-    constructor(defaultValue?, defaultErrorMsg?, mutationFunc?, onError?, dependent?) {
+    constructor(
+        defaultValue?: boolean,
+        defaultErrorMsg?: string,
+        mutationFunc?: MutationFunction<boolean|string>,
+        onError?: ErrorFunction,
+        dependent?: Dependent
+    ) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
-        this.validateFuncs.push([value => value !== 'true' && value !== true, defaultErrorMsg]);
+        this.validateFuncs.push(value => ({success: value !== 'true' && value !== true, errorMsg: defaultErrorMsg ?? ''}));
     }
 }
 
@@ -166,7 +174,7 @@ const DemoForm = () => {
             .maxLength(5, 'There can not be more than 5 fruit.'),
     });
 
-    const onSubmit = (values) => {
+    const onSubmit = (values?: ValueType) => {
         return new Promise<void>((resolve) => {
             setSuccessText(JSON.stringify(values));
             resolve();

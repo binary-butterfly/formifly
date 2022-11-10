@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import {fieldPropTypes} from './FormiflyField';
+import {FormiflyFieldProps} from './FormiflyField';
 import {ErrorSpan, FieldContainer, HelpSpan} from './withLabelErrorsAndHelp';
 
 export const CheckLabel = styled.label`
@@ -11,7 +11,7 @@ export const CheckLabel = styled.label`
   }
 `;
 
-const FormiflyCheckField = (props) => {
+const FormiflyCheckField = (props: FormiflyCheckFieldProps) => {
     const {
         name,
         value,
@@ -68,6 +68,6 @@ const FormiflyCheckField = (props) => {
     </ContainerComponent>;
 };
 
-FormiflyCheckField.propTypes = fieldPropTypes;
+export type FormiflyCheckFieldProps = FormiflyFieldProps & {checked: boolean|string; value: string}
 
 export default React.memo(FormiflyCheckField);

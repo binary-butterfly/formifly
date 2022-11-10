@@ -7,16 +7,18 @@ import {InputType} from './BaseValidator';
  * @extends EmailValidator
  */
 class CustomEmailValidator extends EmailValidator {
-    protected defaultInputType: InputType = 'email';
+    public defaultInputType: InputType = 'email';
 
     public notFromDomain(domain: string, msg = 'This domain is not allowed'): this {
-        this.validateFuncs.push([
-            (value: string) => {
+        this.validateFuncs.push(
+            (value) => {
+                if (value === undefined) {
+                    return {success: false, errorMsg: msg};
+                }
                 const splitString = value.split('@');
-                return splitString[splitString.length - 1] !== domain;
-            },
-            msg,
-        ]);
+                return {success: splitString[splitString.length - 1] !== domain, errorMsg: msg};
+            }
+        );
         return this;
     }
 }

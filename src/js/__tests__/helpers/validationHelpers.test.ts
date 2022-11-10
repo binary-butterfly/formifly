@@ -8,6 +8,7 @@ import {
     findFieldValidatorFromName,
     unpackErrors,
 } from '../../helpers/validationHelpers';
+import {ValidationResult} from '../../classes/BaseValidator';
 
 describe.each([
     [
@@ -127,7 +128,7 @@ describe.each([
     ],
 ])('Test unpackErrors', (errors, expected, name) => {
     test(name, () => {
-        expect(unpackErrors(errors)).toStrictEqual(expected);
+        expect(unpackErrors(errors as ValidationResult<any>)).toStrictEqual(expected);
     });
 });
 

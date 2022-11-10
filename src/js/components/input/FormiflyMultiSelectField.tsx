@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import styled, {StyledComponent} from 'styled-components';
 import {CheckLabel} from './FormiflyCheckField';
 import withLabelErrorsAndHelp from './withLabelErrorsAndHelp';
-import {fieldPropTypes} from './FormiflyField';
+import {FormiflyFieldProps} from './FormiflyField';
 
 export const OptionsMenu = styled.menu`
   background-color: ${props => props.theme.inputBackgroundColor};
@@ -69,7 +69,7 @@ export const SelectContainer = styled.div`
   }
 `;
 
-export const Option = (props) => {
+export const Option = (props: OptionProps) => {
     const {onChange, label, checked, className} = props;
     return <li className={className}>
         <CheckLabel><input onChange={onChange} type="checkbox" checked={checked}/>{label}</CheckLabel>
@@ -83,7 +83,14 @@ Option.propTypes = {
     className: PropTypes.string,
 };
 
-const FormiflyMultiSelectField = (props) => {
+type OptionProps = {
+    checked: boolean;
+    label: string;
+    onChange?: React.ChangeEventHandler;
+    className?: string;
+}
+
+const FormiflyMultiSelectField = (props: FormiflyMultiSelectFieldProps) => {
     const {
         value,
         options,
@@ -118,7 +125,7 @@ const FormiflyMultiSelectField = (props) => {
         }
     };
 
-    const handleOptionChange = (optionValue) => {
+    const handleOptionChange = (optionValue: any) => {
         if (value.includes(optionValue)) {
             onChange(name, value.filter(val => val !== optionValue));
         } else {
@@ -164,23 +171,26 @@ const FormiflyMultiSelectField = (props) => {
     </ContainerComponent>;
 };
 
-FormiflyMultiSelectField.propTypes = {
-    ...fieldPropTypes,
-    options: PropTypes.array.isRequired,
-    value: PropTypes.array.isRequired,
-    selectAllText: PropTypes.string,
-    nothingSelectedText: PropTypes.string,
-    numSelectedText: PropTypes.string,
-    allSelectedText: PropTypes.string,
-    optionComponent: PropTypes.func,
-    optionClassName: PropTypes.string,
-    selectionDisplayCutoff: PropTypes.number,
-    selectedDisplayComponent: PropTypes.func,
-    selectedDisplayClassName: PropTypes.string,
-    menuComponent: PropTypes.func,
-    menuClassName: PropTypes.string,
-    selectContainerComponent: PropTypes.func,
-    selectContainerClassName: PropTypes.string,
-};
+export type FormiflyMultiSelectFieldProps = FormiflyFieldProps & {
+    options: {
+        label: string,
+        value: any,
+    }[],
+    value: any[],
+    selectAllText?: string,
+    nothingSelectedText?: string,
+    numSelectedText?: string,
+    allSelectedText?: string,
+    optionComponent?: StyledComponent<any, any>,
+    optionClassName?: string,
+    selectionDisplayCutoff?: number,
+    selectedDisplayComponent?: StyledComponent<any, any>,
+    selectedDisplayClassName?: string,
+    menuComponent?: StyledComponent<any, any>,
+    menuClassName?: string,
+    selectContainerComponent?: StyledComponent<any, any>,
+    selectContainerClassName?: string,
+    onChange: (name: string, value: any) => void;
+}
 
 export default React.memo(withLabelErrorsAndHelp(FormiflyMultiSelectField));
