@@ -1,11 +1,11 @@
 import {findFieldValidatorFromName} from './validationHelpers';
 import ArrayValidator from '../classes/ArrayValidator';
-import ObjectValidator from '../classes/ObjectValidator';
-import {ObjectValue, UnpackedErrors, ValueType} from '../types';
+import {ObjectValue, UnpackedErrors, Value} from '../types';
+import BaseValidator from '../classes/BaseValidator';
 
 export const getFieldValueFromKeyString = (
-    keyString: string|number, values: ValueType|UnpackedErrors
-): ValueType => {
+    keyString: string|number, values: Value|UnpackedErrors<any>
+): Value => {
     const fieldNames = String(keyString).split('.');
     let dependentValue = values;
     for (const fieldName of fieldNames) {
@@ -17,8 +17,8 @@ export const getFieldValueFromKeyString = (
     return dependentValue;
 };
 
-const setDeepValue = <T extends ValueType>(
-    value: ValueType, fieldNames: string[], currentIndex: number, oldValues: ValueType
+const setDeepValue = <T extends Value>(
+    value: Value, fieldNames: string[], currentIndex: number, oldValues: Value
 ): T => {
     if (typeof oldValues !== 'object' && !Array.isArray(oldValues)) {
         if (fieldNames.length !== 0) {
@@ -43,8 +43,8 @@ const setDeepValue = <T extends ValueType>(
     return ret as T;
 };
 
-export const setFieldValueFromKeyString = <T extends ValueType>(
-    keyString: string, value: ValueType, oldValues: T
+export const setFieldValueFromKeyString = <T extends Value>(
+    keyString: string, value: Value, oldValues: T
 ): T => {
     const fieldNames = keyString.split('.');
 
@@ -68,33 +68,33 @@ export const convertDateObjectToInputString = (date: Date) => {
 };
 
 // todo: This could be typed better if we would teach the type system that validatorDefaults and userDefaults should match the shape
-export const completeDefaultValues = (
-    validatorDefaults: Record<string, ValueType>,
-    userDefaults: Record<string, ValueType>,
-    shape?: ObjectValidator,
+export const completeDefaultValues = <T extends ObjectValue>(
+    validatorDefaults: T,
+    userDefaults: Partial<T>,
+    shape?: BaseValidator<any>,
     keyText?: string
-): Record<string, ValueType> => {
-    Object.entries(userDefaults).map(([key, value]) => {
-        const thisKeyText = keyText === undefined ? key : keyText + '.' + key;
+): T => {
+    Object.entries(userDefaults).map(([key, value]: [keyof T, T[keyof T]]) => {
+        const thisKeyText = keyText === undefined ? String(key) : keyText + '.' + String(key);
         if (value !== null) {
             if (Array.isArray(value)) {
                 if (validatorDefaults[key] === undefined || (validatorDefaults[key] as Array<any>).length === 0) {
                     try {
                         // shape should be an ArrayValidator here, but typing doesn't know that (yet)
                         const fieldValidator = findFieldValidatorFromName(thisKeyText, shape) as ArrayValidator<any>;
-                        validatorDefaults[key] = [];
+                        validatorDefaults[key] = [] as any;
                         for (let c = 0; c < value.length; c++) {
                             (validatorDefaults[key] as Array<any>).push(fieldValidator.of.getDefaultValue());
                         }
                     } catch (e) {
                         // If the use has supplied some value for an array field that is not defined in the shape, we can safely ignore the shape
-                        validatorDefaults[key] = [];
+                        validatorDefaults[key] = [] as any;
                     }
                 }
                 validatorDefaults[key] = completeDefaultValues(validatorDefaults[key] as any, value as any, shape, thisKeyText);
             } else if (typeof value === 'object') {
                 if (validatorDefaults[key] === undefined) {
-                    validatorDefaults[key] = {};
+                    validatorDefaults[key] = {} as any;
                 }
                 validatorDefaults[key] = completeDefaultValues(validatorDefaults[key] as any, value as any, shape, thisKeyText);
             } else {

@@ -34,7 +34,7 @@ class NumberValidator extends BaseValidator<number|string> {
         wholeNumber = false,
         defaultValue: string | number = '',
         defaultErrorMsg?: string,
-        mutationFunc?: MutationFunction<number|string>,
+        mutationFunc?: MutationFunction,
         onError?: ErrorFunction,
         dependent?: Dependent
     ) {

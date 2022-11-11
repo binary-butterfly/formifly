@@ -12,7 +12,7 @@ import {
     ValidateFunction,
     ValidationResult,
     ValidatorStep,
-    ValueType,
+    Value,
 } from '../types';
 
 
@@ -20,7 +20,7 @@ import {
  * The validator that all validators extend.
  * Probably should not be used on its own
  */
-class BaseValidator<T extends ValueType> {
+class BaseValidator<T extends Value> {
     public defaultInputType: InputType = 'text';
     protected _isRequired: boolean = false;
 
@@ -28,10 +28,10 @@ class BaseValidator<T extends ValueType> {
     protected validateFuncs: Array<ValidateFunction<T>> = [];
     protected defaultErrorMsg: string;
     private dependent: Dependent;
-    private defaultValue: T | string;
+    private defaultValue: T;
     protected propType: PropTypes.Requireable<any> = PropTypes.any;
     protected onError?: ErrorFunction;
-    protected mutationFunc?: MutationFunction<T>;
+    protected mutationFunc?: MutationFunction;
 
     /**
      * @param [defaultValue]
@@ -40,9 +40,9 @@ class BaseValidator<T extends ValueType> {
      * @param {Function} [onError]
      * @param {Array|Boolean} [dependent]
      */
-    constructor(defaultValue: T | string = '',
+    constructor(defaultValue: T,
                 defaultErrorMsg?: string,
-                mutationFunc?: MutationFunction<T>,
+                mutationFunc?: MutationFunction,
                 onError?: ErrorFunction,
                 dependent: Dependent = false) {
         this.defaultErrorMsg = defaultErrorMsg ?? 'There is an error within this field';
@@ -65,7 +65,7 @@ class BaseValidator<T extends ValueType> {
      * Sets the default value for this validator
      * @param {any} newDefaultValue
      */
-    public setDefaultValue(newDefaultValue: T | string): void {
+    public setDefaultValue(newDefaultValue: T): void {
         this.defaultValue = newDefaultValue;
     }
 
@@ -81,7 +81,7 @@ class BaseValidator<T extends ValueType> {
      * Set the validators mutation function
      * @param {MutationFunction} newMutationFunc
      */
-    public setMutationFunc(newMutationFunc: MutationFunction<T>): void {
+    public setMutationFunc(newMutationFunc: MutationFunction): void {
         this.mutationFunc = newMutationFunc;
     }
 
@@ -132,7 +132,7 @@ class BaseValidator<T extends ValueType> {
     }
 
     private validateDependentStep(
-        step: ValidatorStep | boolean, value: T | string | undefined, otherValues: ValueType, siblings: ValueType
+        step: ValidatorStep | boolean, value: T | string | undefined, otherValues: Value, siblings: Value
     ): DependentValidationResult<T> {
         const dependentValue = getFieldValueFromKeyString(Array.isArray(step) ? step[0] : '', otherValues);
         if (isValidatorStep(step) && step[1](dependentValue, value)) {
@@ -142,7 +142,7 @@ class BaseValidator<T extends ValueType> {
         }
     }
 
-    private validateDependent(value: T | undefined, otherValues: ValueType, siblings: ValueType): ValidationResult<T> {
+    private validateDependent(value: T | undefined, otherValues: Value, siblings: Value): ValidationResult<T> {
         if (isValidatorStepArrayArray(this.dependent)) {
             for (const step of this.dependent[0]) {
                 const validated = this.validateDependentStep(step, value, otherValues, siblings);
@@ -160,7 +160,7 @@ class BaseValidator<T extends ValueType> {
         return this.validateIndependent(value, otherValues, siblings);
     }
 
-    private validateIndependent(value: T | undefined, otherValues: ValueType, siblings: ValueType): ValidationResult<T> {
+    private validateIndependent(value: T | undefined, otherValues: Value, siblings: Value): ValidationResult<T> {
         if (!this.validateRequired(value)) {
             if (this._isRequired) {
                 return [false, this.requiredError ?? this.defaultErrorMsg];
@@ -415,7 +415,7 @@ class BaseValidator<T extends ValueType> {
      * @param siblings
      * @return {*}
      */
-    public validate(value?: T, otherValues: ValueType = {}, siblings: ValueType = {}): ValidationResult<T> {
+    public validate(value?: T, otherValues: Value = {}, siblings: Value = {}): ValidationResult<T> {
         let ret: ValidationResult<T>;
         if (this.dependent) {
             ret = this.validateDependent(value, otherValues, siblings);
@@ -434,9 +434,9 @@ class BaseValidator<T extends ValueType> {
 
     /**
      * Returns the validator's default value
-     * @return {ValueType}
+     * @return {Value}
      */
-    public getDefaultValue(): T | string {
+    public getDefaultValue(): T {
         return this.defaultValue;
     }
 

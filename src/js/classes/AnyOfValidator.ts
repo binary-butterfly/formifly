@@ -1,5 +1,5 @@
 import BaseValidator from './BaseValidator';
-import {Dependent, ErrorFunction, MutationFunction, ValidationResult, ValueType} from '../types';
+import {Dependent, ErrorFunction, MutationFunction, ValidationResult, Value} from '../types';
 
 /**
  * A "meta" validator that allows you to check if a value can be successfully validated by any of a given list of validators.
@@ -23,7 +23,7 @@ class AnyOfValidator extends BaseValidator<any> {
         validatorOptions: Array<BaseValidator<any>>,
         defaultValue?: any,
         defaultErrorMsg = 'None of the available validators match',
-        mutationFunc?: MutationFunction<any>,
+        mutationFunc?: MutationFunction,
         onError?: ErrorFunction,
         dependent?: Dependent,
     ) {
@@ -31,7 +31,7 @@ class AnyOfValidator extends BaseValidator<any> {
         this.validatorOptions = validatorOptions;
     }
 
-    public validate(value: ValueType, otherValues = {}, siblings = {}): ValidationResult<any> {
+    public validate(value: Value, otherValues = {}, siblings = {}): ValidationResult<any> {
         if (!this.isRequired && !this.validateRequired(value)) {
             return [true, value];
         }

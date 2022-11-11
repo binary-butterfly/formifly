@@ -2,10 +2,16 @@ import React from 'react';
 import {ThemeProvider} from 'styled-components';
 import {FormiflyProvider, useFormiflyContext} from './FormiflyContext';
 import ObjectValidator from '../../classes/ObjectValidator';
-import {SubmitFunction, SubmitValidationErrorFunction, ValueType} from '../../types';
+import {
+    ObjectValidatorFields,
+    SubmitFunction,
+    SubmitValidationErrorFunction,
+    Value,
+    ValueOfObjectValidatorFields,
+} from '../../types';
 
-const Form = (props: FormProps) => {
-    const {handleSubmit} = useFormiflyContext();
+const Form = <T extends ObjectValidatorFields>(props: FormProps<ValueOfObjectValidatorFields<T>>) => {
+    const {handleSubmit} = useFormiflyContext<T>();
     return <form onSubmit={e =>
         handleSubmit(props.onSubmit, props.onSubmitValidationError, e)}
                  className={'formifly-form ' + (props.className ?? '')}>
@@ -13,7 +19,7 @@ const Form = (props: FormProps) => {
     </form>;
 };
 
-const FormiflyForm = (props: FormiflyFormProps) => {
+const FormiflyForm = <T extends ObjectValidatorFields>(props: FormiflyFormProps<T>) => {
     const {
         shape,
         defaultValues,
@@ -50,16 +56,16 @@ const FormiflyForm = (props: FormiflyFormProps) => {
     </ThemeProvider>;
 };
 
-export type FormProps = {
+export type FormProps<T extends Value> = {
     onSubmit: SubmitFunction;
-    onSubmitValidationError?: SubmitValidationErrorFunction;
+    onSubmitValidationError?: SubmitValidationErrorFunction<T>;
     className?: string;
     children: (JSX.Element | false)[] | JSX.Element | false;
 }
 
-export type FormiflyFormProps = FormProps & {
-    shape: ObjectValidator;
-    defaultValues?: Record<string, ValueType>;
+export type FormiflyFormProps<T extends ObjectValidatorFields> = FormProps<ValueOfObjectValidatorFields<T>> & {
+    shape: ObjectValidator<T>;
+    defaultValues?: Partial<ValueOfObjectValidatorFields<T>>;
     disableNativeRequired?: boolean;
     disableNativeMinMax?: boolean;
     theme?: {
@@ -67,7 +73,7 @@ export type FormiflyFormProps = FormProps & {
         errorColor?: string;
         inputTextColor?: string;
         inputBorderColor?: string;
-        higghlightColor?: string;
+        highlightColor?: string;
         reducedMotion?: boolean;
     };
 }

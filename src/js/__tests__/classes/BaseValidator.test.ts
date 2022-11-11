@@ -11,7 +11,7 @@ describe.each([
     [undefined, true, 'returns true for undefined'],
 ])('Test BaseValidator not required', (value, expected, name) => {
     test(name, () => {
-        const validator = new BaseValidator<any>();
+        const validator = new BaseValidator(undefined as any);
         expect(validator.validate(value)).toStrictEqual([expected, value]);
     });
 });
@@ -24,13 +24,13 @@ describe.each([
 ])('Test BaseValidator required', (value, expected, msg, name) => {
     test(name, () => {
         // todo: this case is kinda obsolete. TS doesn't like null here and assumes only strings or undefined are passed
-        const validator = new BaseValidator<any>().required(msg as any);
+        const validator = new BaseValidator(undefined as any).required(msg as any);
         expect(validator.validate(value)).toStrictEqual(expected);
     });
 });
 
 test('Test always false validator', () => {
-    const validator = new BaseValidator().alwaysFalse();
+    const validator = new BaseValidator(undefined as any).alwaysFalse();
     expect(validator.validate('banana')).toStrictEqual([false, 'This validator will never return true']);
 });
 
@@ -40,10 +40,10 @@ describe.each([
     ['abc', {banana: 'apple'}, [true, 'abc'], 'uses dependent validator and can pass when condition is met'],
 ])('Test dependent validator', (value, otherValues, expected, name) => {
     test(name, () => {
-        const validator = new BaseValidator(undefined, undefined, undefined, undefined, [
+        const validator = new BaseValidator(undefined as any, undefined, undefined, undefined, [
             'banana',
             thisValue => thisValue === 'apple',
-            new BaseValidator().required(),
+            new BaseValidator(undefined as any).required(),
         ]);
         expect(validator.validate(value, otherValues)).toStrictEqual(expected);
     });
@@ -80,7 +80,7 @@ describe.each([
         [
             [
                 ['country', (country: string) => country === 'de', new NumberValidator(true)],
-                ['country', (country: string) => country === 'invalid', new BaseValidator().alwaysFalse()],
+                ['country', (country: string) => country === 'invalid', new BaseValidator(undefined as any).alwaysFalse()],
             ],
         ],
         [true, '12345'],
@@ -88,36 +88,36 @@ describe.each([
     ],
 ])('Test dependent validator with multiple dependents', (value, otherValues, dependent, expected, name) => {
     test(name, () => {
-        const validator = new BaseValidator();
+        const validator = new BaseValidator<string>('');
         validator.setDependent(dependent as Dependent);
         expect(validator.validate(value, otherValues)).toStrictEqual(expected);
     });
 });
 
 describe.each([
-    [undefined, '', 'defaults to empty string'],
+    [undefined, undefined, 'does not set a default'],
     ['banana', 'banana', 'is set correctly'],
 ])('Test defaultValue', (defaultValue, expected, name) => {
     test(name, () => {
-        const validator = new BaseValidator<string>(defaultValue);
+        const validator = new BaseValidator<string>(defaultValue as any);
         expect(validator.getDefaultValue()).toStrictEqual(expected);
     });
 });
 
 test('Test onError callback is called on error', () => {
     const callback = jest.fn();
-    const validator = new BaseValidator<boolean>('', undefined, undefined, callback).alwaysFalse();
+    const validator = new BaseValidator<boolean>(true, undefined, undefined, callback).alwaysFalse();
     validator.validate(false, {foo: 'bar'});
     expect(callback).toHaveBeenCalledWith(false, {foo: 'bar'});
 });
 
 test('Test getPropType', () => {
-    const validator = new BaseValidator();
+    const validator = new BaseValidator(undefined as any);
     expect(validator.getPropType()).toBe(PropTypes.any);
 });
 
 test('Test getPropType required', () => {
-    const validator = new BaseValidator().required();
+    const validator = new BaseValidator(undefined as any).required();
     expect(validator.getPropType()).toBe(PropTypes.any.isRequired);
 });
 
@@ -125,7 +125,7 @@ test('Test mutationFunc', () => {
     const mutation = (value: any) => {
         return value + 'banana';
     };
-    const validator = new BaseValidator(undefined, undefined, mutation);
+    const validator = new BaseValidator(undefined as any, undefined, mutation);
 
     expect(validator.validate('my favourite fruit is the ')).toStrictEqual([true, 'my favourite fruit is the banana']);
 });
@@ -139,7 +139,7 @@ describe.each([
     [2, {foo: 2, banana: 2}, 'banana', 'apple', [false, 'apple'], 'returns false for same value'],
 ])('Test greaterThan', (value, otherValues, otherName, msg, expected, name) => {
     test(name, () => {
-        const validator = new BaseValidator().greaterThan(otherName, msg);
+        const validator = new BaseValidator(undefined as any).greaterThan(otherName, msg);
         expect(validator.validate(value, otherValues)).toStrictEqual(expected);
     });
 });
@@ -153,7 +153,7 @@ describe.each([
     [2, {foo: 2, banana: 2}, 'banana', 'apple', [false, 'apple'], 'returns false for same value'],
 ])('Test lessThan', (value, otherValues, otherName, msg, expected, name) => {
     test(name, () => {
-        const validator = new BaseValidator().lessThan(otherName, msg);
+        const validator = new BaseValidator(undefined as any).lessThan(otherName, msg);
         expect(validator.validate(value, otherValues)).toStrictEqual(expected);
     });
 });
@@ -164,7 +164,7 @@ describe.each([
     [1, {foo: 1, banana: 2}, 'banana', 'apple', [false, 'apple'], 'returns false for smaller value'],
 ])('Test greaterOrEqualTo', (value, otherValues, otherName, msg, expected, name) => {
     test(name, () => {
-        const validator = new BaseValidator().greaterOrEqualTo(otherName, msg);
+        const validator = new BaseValidator(undefined as any).greaterOrEqualTo(otherName, msg);
         expect(validator.validate(value, otherValues)).toStrictEqual(expected);
     });
 });
@@ -175,7 +175,7 @@ describe.each([
     [2, {foo: 2, banana: 1}, 'banana', 'apple', [false, 'apple'], 'returns false for greater value'],
 ])('Test lessOrEqualTo', (value, otherValues, otherName, msg, expected, name) => {
     test(name, () => {
-        const validator = new BaseValidator().lessOrEqualTo(otherName, msg);
+        const validator = new BaseValidator(undefined as any).lessOrEqualTo(otherName, msg);
         expect(validator.validate(value, otherValues)).toStrictEqual(expected);
     });
 });
@@ -192,26 +192,26 @@ describe.each([
     ['foo', ['fo', 'fooo'], 'banana', [false, 'banana'], 'uses correct error message'],
 ])('Test oneOf', (value, values, msg, expected, name) => {
     test(name, () => {
-        const validator = new BaseValidator().oneOf(values, msg);
+        const validator = new BaseValidator(undefined as any).oneOf(values, msg);
         expect(validator.validate(value)).toStrictEqual(expected);
     });
 });
 
 test('Test set default input type', () => {
-    const validator = new BaseValidator();
+    const validator = new BaseValidator(undefined as any);
     validator.setDefaultInputType('number');
     expect(validator['defaultInputType']).toStrictEqual('number');
 });
 
 test('Test set default value', () => {
-    const validator = new BaseValidator();
+    const validator = new BaseValidator(undefined as any);
     validator.setDefaultValue('banana');
     expect(validator['defaultValue']).toStrictEqual('banana');
 });
 
 test('Test set onError', () => {
     const handler = jest.fn();
-    const validator = new BaseValidator();
+    const validator = new BaseValidator(undefined as any);
     validator.setOnError(handler);
 
     validator['onError']!('', {});
@@ -219,20 +219,20 @@ test('Test set onError', () => {
 });
 
 test('Test set dependent', () => {
-    const validator = new BaseValidator();
+    const validator = new BaseValidator(undefined as any);
     validator.setDependent([]);
     expect(validator['dependent']).toStrictEqual([]);
 });
 
 test('Test setDefaultErrorMsg', () => {
-    const validator = new BaseValidator();
+    const validator = new BaseValidator(undefined as any);
     validator.setDefaultErrorMsg('banana');
     expect(validator['defaultErrorMsg']).toStrictEqual('banana');
 });
 
 test('Test setMutationFunc', () => {
     const mutationFunc = jest.fn();
-    const validator = new BaseValidator();
+    const validator = new BaseValidator(undefined as any);
 
     validator.setMutationFunc(mutationFunc);
     validator['mutationFunc']!('');
@@ -242,17 +242,17 @@ test('Test setMutationFunc', () => {
 
 describe('Test oneOfArrayFieldValues', () => {
     it('Can return true if the value is included', () => {
-        const validator = new BaseValidator().oneOfArrayFieldValues('array');
+        const validator = new BaseValidator(undefined as any).oneOfArrayFieldValues('array');
         expect(validator.validate('foo', {array: ['foo', 'bar', 'baz']})).toStrictEqual([true, 'foo']);
     });
 
     it('Can return fasle if the value is not included', () => {
-        const validator = new BaseValidator().oneOfArrayFieldValues('array', undefined, 'err');
+        const validator = new BaseValidator(undefined as any).oneOfArrayFieldValues('array', undefined, 'err');
         expect(validator.validate('banana', {array: ['foo', 'bar']})).toStrictEqual([false, 'err']);
     });
 
     it('Works with custom check functions and can return true', () => {
-        const validator = new BaseValidator<any>().oneOfArrayFieldValues('array', (compare, value) => {
+        const validator = new BaseValidator(undefined as any).oneOfArrayFieldValues('array', (compare, value) => {
             for (const val of compare) {
                 if (val.id === value) {
                     return true;
@@ -265,7 +265,7 @@ describe('Test oneOfArrayFieldValues', () => {
     });
 
     it('Works with custom check functions and can return false', () => {
-        const validator = new BaseValidator<any>().oneOfArrayFieldValues('array', (compare, value) => {
+        const validator = new BaseValidator(undefined as any).oneOfArrayFieldValues('array', (compare, value) => {
             for (const val of compare) {
                 if (val.id === value) {
                     return true;
@@ -280,7 +280,7 @@ describe('Test oneOfArrayFieldValues', () => {
     it('Warns the user if the field that is compared against is not an array field', () => {
         const warn = jest.fn();
         global.console.warn = warn;
-        const validator = new BaseValidator().oneOfArrayFieldValues('notAnArray');
+        const validator = new BaseValidator(undefined as any).oneOfArrayFieldValues('notAnArray');
         expect(validator.validate('foo', {notAnArray: 'banana'})).toStrictEqual([false, 'This value is not allowed.']);
         expect(warn).toHaveBeenCalledWith('Attempted to use oneOfArrayFieldValues validator on a non array field. This is not possible.');
         warn.mockRestore();
@@ -289,17 +289,17 @@ describe('Test oneOfArrayFieldValues', () => {
 
 describe('Test oneOfArraySiblingFieldValues', () => {
     it('Can return true if the value is included', () => {
-        const validator = new BaseValidator().oneOfArraySiblingFieldValues('array');
+        const validator = new BaseValidator(undefined as any).oneOfArraySiblingFieldValues('array');
         expect(validator.validate('foo', {array: ['foo', 'bar', 'baz']}, {array: ['foo', 'bar', 'baz']})).toStrictEqual([true, 'foo']);
     });
 
     it('Can return false if the value is not included', () => {
-        const validator = new BaseValidator().oneOfArraySiblingFieldValues('array', undefined, 'err');
+        const validator = new BaseValidator(undefined as any).oneOfArraySiblingFieldValues('array', undefined, 'err');
         expect(validator.validate('banana', {array: ['foo', 'bar']}, {array: ['foo', 'bar']})).toStrictEqual([false, 'err']);
     });
 
     it('Works with custom check functions and can return true', () => {
-        const validator = new BaseValidator<any>().oneOfArraySiblingFieldValues('array', (compare, value) => {
+        const validator = new BaseValidator(undefined as any).oneOfArraySiblingFieldValues('array', (compare, value) => {
             for (const val of compare) {
                 if (val.id === value) {
                     return true;
@@ -313,7 +313,7 @@ describe('Test oneOfArraySiblingFieldValues', () => {
     });
 
     it('Works with custom check functions and can return false', () => {
-        const validator = new BaseValidator<any>().oneOfArraySiblingFieldValues('array', (compare, value) => {
+        const validator = new BaseValidator(undefined as any).oneOfArraySiblingFieldValues('array', (compare, value) => {
             for (const val of compare) {
                 if (val.id === value) {
                     return true;
@@ -331,7 +331,7 @@ describe('Test oneOfArraySiblingFieldValues', () => {
     it('Warns the user if the field that is compared against is not an array field', () => {
         const warn = jest.fn();
         global.console.warn = warn;
-        const validator = new BaseValidator().oneOfArraySiblingFieldValues('notAnArray');
+        const validator = new BaseValidator(undefined as any).oneOfArraySiblingFieldValues('notAnArray');
         expect(validator.validate('foo', {notAnArray: 'banana'}, {notAnArray: 'banana'}))
             .toStrictEqual([false, 'This value is not allowed.']);
         expect(warn)

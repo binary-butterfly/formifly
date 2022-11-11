@@ -24,7 +24,7 @@ class DateTimeValidator extends BaseValidator<Date | string> {
      */
     constructor(defaultValue: Date | string = '',
                 defaultMsg: string = 'This field must contain a date/time',
-                mutationFunc?: MutationFunction<Date | string>,
+                mutationFunc?: MutationFunction,
                 onError?: ErrorFunction,
                 dependent?: Dependent) {
         super(defaultValue, defaultMsg, mutationFunc, onError, dependent);

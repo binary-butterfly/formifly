@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import {ensureValueIsNumeric} from '../helpers/developerInputValidators';
 import BaseValidator from './BaseValidator';
 import ObjectValidator from './ObjectValidator';
-import {Dependent, ErrorFunction, InputType, MutationFunction, ValidationResult, ValueType} from '../types';
+import {Dependent, ErrorFunction, InputType, MutationFunction, ValidationResult, Value} from '../types';
 
 /**
  * A validator that allows you to validate array fields.
@@ -10,10 +10,10 @@ import {Dependent, ErrorFunction, InputType, MutationFunction, ValidationResult,
  *
  * @property {BaseValidator|AnyOfValidator|ArrayValidator|BooleanValidator|EmailValidator|NumberValidator|ObjectValidator|PhoneNumberValidator|StringValidator} of  - The validator of what this is an array of
  */
-class ArrayValidator<T extends ValueType> extends BaseValidator<Array<T>|string> {
-    public readonly of: BaseValidator<any>;
-    protected minChildCount: number = 0;
-    protected maxChildCount?: number;
+class ArrayValidator<T extends Value> extends BaseValidator<Array<T>> {
+    public readonly of: BaseValidator<T>;
+    public minChildCount: number = 0;
+    public maxChildCount: number = Number.POSITIVE_INFINITY;
     public defaultInputType: InputType = 'select';
 
     /**
@@ -25,11 +25,11 @@ class ArrayValidator<T extends ValueType> extends BaseValidator<Array<T>|string>
      * @param {Array} [dependent]
      */
     constructor(of: BaseValidator<any>,
-                defaultMessage = 'This field has to be an array',
-                mutationFunc?: MutationFunction<Array<T>|string>,
-                onError?: ErrorFunction,
-                dependent?: Dependent) {
-        super(undefined, defaultMessage, mutationFunc, onError, dependent);
+                          defaultMessage = 'This field has to be an array',
+                          mutationFunc?: MutationFunction,
+                          onError?: ErrorFunction,
+                          dependent?: Dependent) {
+        super([], defaultMessage, mutationFunc, onError, dependent);
         this.of = of;
         this.propType = PropTypes.arrayOf(of.getPropType());
     }
@@ -115,9 +115,9 @@ class ArrayValidator<T extends ValueType> extends BaseValidator<Array<T>|string>
      */
     public validateWithoutRecursion(
         values: Array<T>,
-        otherValues?: ValueType,
-        siblings?: ValueType
-    ): ValidationResult<Array<T>|string> {
+        otherValues?: Value,
+        siblings?: Value
+    ): ValidationResult<Array<T>> {
         return this.validate(values, otherValues, siblings, false);
     }
 
@@ -126,7 +126,7 @@ class ArrayValidator<T extends ValueType> extends BaseValidator<Array<T>|string>
         otherValues = {},
         siblings = {},
         recursion = true
-    ): ValidationResult<Array<T>|string> {
+    ): ValidationResult<Array<T>> {
         // First we validate the amount of entries as well as dependent filters and requirement filters
         const preValidate = super.validate(values, otherValues, siblings);
         if (preValidate[0] === false) {
@@ -138,7 +138,7 @@ class ArrayValidator<T extends ValueType> extends BaseValidator<Array<T>|string>
         }
 
         // Then, if the amount is correct, we validate the specific entries
-        const tests: Array<ValidationResult<Array<ValueType>>> = [];
+        const tests: Array<ValidationResult<T>> = [];
 
         let testFunc;
         if (recursion || !(this.of instanceof ObjectValidator || this.of instanceof ArrayValidator)) {
@@ -153,12 +153,12 @@ class ArrayValidator<T extends ValueType> extends BaseValidator<Array<T>|string>
         for (const index in testValues) {
             const value = testValues[index];
 
-            const test = testFunc(value, otherValues, testValues);
+            const test = testFunc(value, otherValues, testValues) as ValidationResult<T>;
             tests.push(test);
             if (test[0] === false) {
                 allOk = false;
             } else if (allOk) {
-                testValues[index] = test[1];
+                testValues[index] = test[1]!;
             }
         }
 

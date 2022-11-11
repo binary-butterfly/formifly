@@ -1,12 +1,12 @@
 import BaseValidator from '../classes/BaseValidator';
 import ArrayValidator from '../classes/ArrayValidator';
 import ObjectValidator from '../classes/ObjectValidator';
-import {UnpackedErrors, ValidationResult, ValueType} from '../types';
+import {UnpackedErrors, ValidationResult, Value} from '../types';
 
 
 export const findFieldValidatorFromName = (
-    name: string, shape?: ObjectValidator | ArrayValidator<any> | BaseValidator<any>
-): ObjectValidator | ArrayValidator<any> | BaseValidator<any> | undefined => {
+    name: string, shape?: ObjectValidator<any> | ArrayValidator<any> | BaseValidator<any>
+): ObjectValidator<any> | ArrayValidator<any> | BaseValidator<any> | undefined => {
     const fieldNames = name.split('.');
     let dependentValue = shape;
     for (const index in fieldNames) {
@@ -17,7 +17,7 @@ export const findFieldValidatorFromName = (
                 // Since the name is numeric, we work with it directly
                 dependentValue = dependentValue.of;
             } else {
-                const of = dependentValue.of as BaseValidator<any> | ObjectValidator;
+                const of = dependentValue.of as BaseValidator<any> | ObjectValidator<any>;
                 // If the name is non numeric, we check if this may be an array of objects where an object has the given name
                 if (!('fields' in of) || of.fields[fieldName] === undefined) {
                     throw new Error('Could not find validator for ' + name);
@@ -36,9 +36,9 @@ export const findFieldValidatorFromName = (
 
 export const findFieldValidatorAndSiblingsFromName = (
     name: string,
-    shape: BaseValidator<any> | ArrayValidator<any> | ObjectValidator,
-    values: ValueType
-): [BaseValidator<any>, ValueType] => {
+    shape: BaseValidator<any> | ArrayValidator<any> | ObjectValidator<any>,
+    values: Value
+): [BaseValidator<any>, Value] => {
     const fieldNames = name.split('.');
     let validator = shape;
 
@@ -62,19 +62,19 @@ export const findFieldValidatorAndSiblingsFromName = (
     return [validator, lastSiblings];
 };
 
-export const unpackErrors = (currentResult: ValidationResult<any>): UnpackedErrors => {
-    let ret: UnpackedErrors = {};
+export const unpackErrors = <T extends Value>(currentResult: ValidationResult<T>): UnpackedErrors<T>|{} => {
+    let ret: any = {};
     if (currentResult[0] === false) {
         if (Array.isArray(currentResult[1])) {
             currentResult[1].map((result, index) => {
                 if (result[0] === false) {
-                    (ret as UnpackedErrors[])[index] = unpackErrors(result);
+                    ret[index] = unpackErrors(result);
                 }
             });
         } else if (currentResult[1] instanceof Object) {
             Object.entries(currentResult[1]).map(([name, result]) => {
                 if (result[0] === false) {
-                    (ret as { [key: string]: UnpackedErrors })[name] = unpackErrors(result);
+                    ret[name] = unpackErrors(result);
                 }
             });
         } else {

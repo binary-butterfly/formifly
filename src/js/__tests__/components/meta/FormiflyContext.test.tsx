@@ -9,7 +9,7 @@ import AutomagicFormiflyField from '../../../components/input/AutomagicFormiflyF
 import {useFormiflyContext} from '../../../components/meta/FormiflyContext';
 import FormiflyForm from '../../../components/meta/FormiflyForm';
 import withFormifly from '../../../components/meta/withFormifly';
-import {ValueType} from '../../../types';
+import {Value} from '../../../types';
 
 const ObjectComponent = withFormifly((props) => {
     const {getFieldProps} = props;
@@ -252,7 +252,7 @@ describe('FormiflyContext', () => {
     it('returns a promise with the new values from setFieldValue', async () => {
         const FormThatMakesNoSense = withFormifly((props) => {
             const {setFieldValue} = props;
-            const [fooText, setFooText] = React.useState<ValueType>();
+            const [fooText, setFooText] = React.useState<Value>();
 
             const handleCoolButtonClick = () => {
                 setFieldValue('foo', 'foo').then((newValues) => {
@@ -283,7 +283,7 @@ describe('FormiflyContext', () => {
     it('can set multiple field values at once', async () => {
         const AwesomeForm = withFormifly((props) => {
             const {setMultipleFieldValues} = props;
-            const [fooText, setFooText] = React.useState<ValueType>();
+            const [fooText, setFooText] = React.useState<Value>();
 
 
             const handleButtonClick = () => {

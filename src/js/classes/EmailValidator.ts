@@ -12,7 +12,7 @@ class EmailValidator extends StringValidator {
 
     constructor(defaultValue?: string,
                 defaultErrorMsg = 'This must be a valid email address',
-                mutationFunc?: MutationFunction<string>,
+                mutationFunc?: MutationFunction,
                 onError?: ErrorFunction,
                 dependent?: Dependent) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);

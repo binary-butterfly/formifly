@@ -1,7 +1,16 @@
 import PropTypes from 'prop-types';
 import ArrayValidator from './ArrayValidator';
 import BaseValidator from './BaseValidator';
-import {Dependent, ErrorFunction, MutationFunction, ObjectValue, ValidationResult, ValueType} from '../types';
+import {
+    Dependent,
+    ErrorFunction,
+    MutationFunction,
+    ObjectValidatorFields,
+    ObjectValue,
+    ValidationResult,
+    Value,
+    ValueOfObjectValidatorFields,
+} from '../types';
 
 
 /**
@@ -10,8 +19,8 @@ import {Dependent, ErrorFunction, MutationFunction, ObjectValue, ValidationResul
  *
  * @property {BaseValidator|AnyOfValidator|ArrayValidator|BooleanValidator|EmailValidator|NumberValidator|ObjectValidator|PhoneNumberValidator|StringValidator} fields  - The fields of the object
  */
-class ObjectValidator extends BaseValidator<ObjectValue | string> {
-    public readonly fields: Record<string, BaseValidator<any>> = {};
+class ObjectValidator<T extends ObjectValidatorFields, V extends ObjectValue = ValueOfObjectValidatorFields<T>> extends BaseValidator<V> {
+    public readonly fields: T;
     private dropEmpty: boolean;
     private dropNotInShape: boolean;
     private reallyNotRequired: boolean = false;
@@ -26,15 +35,21 @@ class ObjectValidator extends BaseValidator<ObjectValue | string> {
      * @param {Boolean} [dropNotInShape]
      */
     constructor(
-        fields: Record<string, BaseValidator<any>>,
+        fields: T,
         defaultMessage?: string,
-        mutationFunc?: MutationFunction<ObjectValue | string>,
+        mutationFunc?: MutationFunction,
         onError?: ErrorFunction,
         dependent?: Dependent,
         dropEmpty = true,
         dropNotInShape = false
     ) {
-        super({}, defaultMessage, mutationFunc, onError, dependent);
+        const defaultValues = Object.fromEntries(
+            Object.entries(fields).map(
+                ([k, v]) => [k, v.getDefaultValue()]
+            )
+        ) as V;
+        super(defaultValues, defaultMessage, mutationFunc, onError, dependent);
+
         this.fields = fields;
         this.dropEmpty = dropEmpty;
         this.dropNotInShape = dropNotInShape;
@@ -69,15 +84,18 @@ class ObjectValidator extends BaseValidator<ObjectValue | string> {
     /**
      * @return {{}}
      */
-    public getDefaultValue(): ObjectValue {
-        const ret: Record<string, ObjectValue> = {};
-        for (const fieldName in this.fields) {
-            ret[fieldName] = this.fields[fieldName].getDefaultValue();
-        }
-        return ret;
+    public getDefaultValue(): V {
+
+        const ret = Object.fromEntries(
+            Object.entries(this.fields).map(
+                ([k, v]) => [k, v.getDefaultValue()]
+            )
+        );
+
+        return ret as V;
     }
 
-    protected validateRequired(value?: ObjectValue): boolean {
+    protected validateRequired(value?: V | Partial<V> | string): boolean {
         if (typeof value === 'object') {
             return Object.keys(value).length > 0;
         } else {
@@ -93,30 +111,30 @@ class ObjectValidator extends BaseValidator<ObjectValue | string> {
      * @return {*|[boolean, *]|[boolean, {}]}
      */
     public validateWithoutRecursion(
-        value: ObjectValue,
-        otherValues?: ValueType,
-        siblings?: ValueType
-    ): ValidationResult<ObjectValue> {
+        value: V,
+        otherValues?: Value,
+        siblings?: Value
+    ): ValidationResult<V> {
         return this.validate(value, otherValues, siblings, false);
     }
 
-    public validate(value?: ObjectValue,
-                    otherValues?: ValueType,
-                    siblings?: ValueType,
-                    recursion = true): ValidationResult<ObjectValue> {
+    public validate(value?: V | Partial<V>,
+                    otherValues?: Value,
+                    siblings?: Value,
+                    recursion = true): ValidationResult<V> {
         if (this.reallyNotRequired && !this.validateRequired(value)) {
-            return [true, value];
+            return [true, value as V];
         }
 
-        const preValidate = super.validate(value, otherValues, siblings);
+        const preValidate = super.validate(value as V, otherValues, siblings);
         if (!preValidate[0]) {
             return preValidate;
         }
 
         // Unpack the test value to avoid mutating the original object
-        const testValue: ObjectValue = {...value};
+        const testValue = {...value} as V;
         let allOk = true;
-        const tests: Record<string, ValidationResult<ObjectValue>> = {};
+        const tests: Record<string, ValidationResult<V>> = {};
         for (const fieldName in this.fields) {
             if (!recursion) {
                 if (this.fields[fieldName] instanceof ArrayValidator || this.fields[fieldName] instanceof ObjectValidator) {
@@ -133,16 +151,16 @@ class ObjectValidator extends BaseValidator<ObjectValue | string> {
                     if (Array.isArray(test[1])) {
                         const filtered = test[1].filter(val => val !== '');
                         if (filtered.length > 0) {
-                            testValue[fieldName] = filtered;
+                            testValue[fieldName] = filtered as any;
                             continue;
                         }
                     } else if (test[1] !== '') {
-                        testValue[fieldName] = test[1];
+                        testValue[fieldName] = test[1]!;
                         continue;
                     }
                     delete testValue[fieldName];
                 } else {
-                    testValue[fieldName] = test[1];
+                    testValue[fieldName] = test[1]!;
                 }
             }
         }

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import BaseValidator from './BaseValidator';
-import {Dependent, ErrorFunction, InputType, MutationFunction, ValidationResult, ValueType} from '../types';
+import {Dependent, ErrorFunction, InputType, MutationFunction, ValidationResult, Value} from '../types';
 
 /**
  * A validator that allows you to validate boolean fields.
@@ -23,7 +23,7 @@ class BooleanValidator extends BaseValidator<boolean | string> {
     constructor(
         defaultValue = false,
         defaultErrorMsg = 'This field has to be a boolean',
-        mutationFunc?: MutationFunction<boolean | string>,
+        mutationFunc?: MutationFunction,
         onError?: ErrorFunction,
         dependent?: Dependent,
         realBool = false,
@@ -45,8 +45,8 @@ class BooleanValidator extends BaseValidator<boolean | string> {
 
     public validate(
         value: boolean | string,
-        otherValues: ValueType = {},
-        siblings: ValueType = {}
+        otherValues: Value = {},
+        siblings: Value = {}
     ): ValidationResult<boolean | string> {
         const result = super.validate(value, otherValues, siblings);
         if (result[0] && this.realBool || !result[0]) {

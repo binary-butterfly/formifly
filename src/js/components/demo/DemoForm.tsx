@@ -9,7 +9,7 @@ import StringValidator from '../../classes/StringValidator';
 import AutomagicFormiflyField from '../input/AutomagicFormiflyField';
 import {useFormiflyContext} from '../meta/FormiflyContext';
 import FormiflyForm from '../meta/FormiflyForm';
-import {Dependent, ErrorFunction, MutationFunction, ValueType} from '../../types';
+import {Dependent, ErrorFunction, MutationFunction, Value} from '../../types';
 
 const Button = styled.button`
   background-color: transparent;
@@ -37,13 +37,12 @@ const FruitError = styled.p`
   color: red;
 `;
 
-// todo: this any is really unfortunate...
-const DemoFormContent = (props: any) => {
+const DemoFormContent = (props: {shape: typeof validator}) => {
     const {shape} = props;
-    const {values, setFieldValue, errors, validateField} = useFormiflyContext();
+    const {values, setFieldValue, errors, validateField} = useFormiflyContext<typeof shape.fields>();
 
     const handleRemoveFruitClick = (index: number) => {
-        const newFruitValue = [...values.fruit.filter((_: unknown, fIndex: number) => fIndex !== index)];
+        const newFruitValue = [...values.fruit.filter((_: any, fIndex: number) => fIndex !== index)];
         setFieldValue('fruit', newFruitValue);
         validateField('fruit', newFruitValue);
     };
@@ -135,7 +134,7 @@ class NotTrueValidator extends BooleanValidator {
     constructor(
         defaultValue?: boolean,
         defaultErrorMsg?: string,
-        mutationFunc?: MutationFunction<boolean|string>,
+        mutationFunc?: MutationFunction,
         onError?: ErrorFunction,
         dependent?: Dependent
     ) {
@@ -144,49 +143,49 @@ class NotTrueValidator extends BooleanValidator {
     }
 }
 
+const validator = new ObjectValidator({
+    number: new NumberValidator()
+        .min(2)
+        .required()
+        .decimalPlaces(2),
+    wholeNumber: new NumberValidator(true).max(5),
+    string: new StringValidator()
+        .required()
+        .regex(/^[a-z]+$/),
+    foo: new StringValidator(),
+    date: new DateTimeValidator().minDate(new Date()),
+    laterDate: new DateTimeValidator().greaterThanSibling('date'),
+    select: new StringValidator().required(),
+    selectTwo: new StringValidator(),
+    radioGroupOne: new StringValidator(),
+    radioGroupTwo: new StringValidator().required(),
+    radioGroupThree: new StringValidator(),
+    multi: new ArrayValidator(new StringValidator()).minLength(1, 'You must select at least one option.'),
+    fruit: new ArrayValidator(new ObjectValidator({
+        name: new StringValidator().required(),
+        tasty: new BooleanValidator(true),
+        expired: new NotTrueValidator(undefined, 'You cannot add expired food.'),
+    })).minLength(1, 'You must create at least one fruit.')
+        .maxLength(5, 'There can not be more than 5 fruit.'),
+});
+
 const DemoForm = () => {
 
     const [successText, setSuccessText] = React.useState('');
 
-    const shape = new ObjectValidator({
-        number: new NumberValidator()
-            .min(2)
-            .required()
-            .decimalPlaces(2),
-        wholeNumber: new NumberValidator(true).max(5),
-        string: new StringValidator()
-            .required()
-            .regex(/^[a-z]+$/),
-        foo: new StringValidator(),
-        date: new DateTimeValidator().minDate(new Date()),
-        laterDate: new DateTimeValidator().greaterThanSibling('date'),
-        select: new StringValidator().required(),
-        selectTwo: new StringValidator(),
-        radioGroupOne: new StringValidator(),
-        radioGroupTwo: new StringValidator().required(),
-        radioGroupThree: new StringValidator(),
-        multi: new ArrayValidator(new StringValidator()).minLength(1, 'You must select at least one option.'),
-        fruit: new ArrayValidator(new ObjectValidator({
-            name: new StringValidator().required(),
-            tasty: new BooleanValidator(true),
-            expired: new NotTrueValidator(undefined, 'You cannot add expired food.'),
-        })).minLength(1, 'You must create at least one fruit.')
-            .maxLength(5, 'There can not be more than 5 fruit.'),
-    });
-
-    const onSubmit = (values?: ValueType) => {
+    const onSubmit = (values?: Value) => {
         return new Promise<void>((resolve) => {
             setSuccessText(JSON.stringify(values));
             resolve();
         });
     };
 
-    return <FormiflyForm shape={shape} onSubmit={onSubmit}>
+    return <FormiflyForm shape={validator} onSubmit={onSubmit}>
         {successText !== '' && <>
             <p>Submission successful</p>
             <p>Result: {successText}</p>
         </>}
-        <DemoFormContent shape={shape}/>
+        <DemoFormContent shape={validator}/>
     </FormiflyForm>;
 
 };

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import {ensureValueIsNumeric, ensureValueIsRegexp} from '../helpers/developerInputValidators';
 import BaseValidator from './BaseValidator';
-import {InputType} from '../types';
+import {Dependent, ErrorFunction, InputType, MutationFunction} from '../types';
 
 /**
  * A validator that allows you to validate string fields.
@@ -10,6 +10,14 @@ import {InputType} from '../types';
 class StringValidator extends BaseValidator<string> {
     public defaultInputType: InputType = 'text';
     protected propType = PropTypes.string;
+
+    constructor(defaultValue: string = '',
+                defaultErrorMsg?: string,
+                mutationFunc?: MutationFunction,
+                onError?: ErrorFunction,
+                dependent: Dependent = false) {
+        super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
+    }
 
     /**
      * Match the string against a regular expression
