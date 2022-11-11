@@ -4,10 +4,13 @@ import replace from '@rollup/plugin-replace';
 import globals from 'rollup-plugin-node-globals';
 import styles from 'rollup-plugin-styles';
 import babel from '@rollup/plugin-babel';
+import typescript from '@rollup/plugin-typescript';
+import dts from 'rollup-plugin-dts';
+import del from 'rollup-plugin-delete';
 
 const env = process.env.NODE_ENV;
 
-const config = {
+const config = [{
     input: 'src/js/components/demo/DemoPage.tsx',
     output: {
         file: 'dist/formifly.js',
@@ -41,12 +44,24 @@ const config = {
             'process.env.NODE_ENV': JSON.stringify(env === 'production' ? 'production' : 'development'),
             'preventAssignment': true,
         }),
+        typescript({tsconfig: './build.tsconfig.json'}),
     ],
-};
+}, {
+    input: 'dist/src/js/main.d.ts',
+    output: [{
+        file: 'dist/index.d.ts',
+        format: 'es',
+        plugins: [],
+    }],
+    plugins: [
+        dts(),
+        del({targets: 'dist/src', hook: 'buildEnd'}),
+    ],
+}];
 
 if (env === 'production') {
-    config.input = 'src/js/main.ts';
-    config.output = [
+    config[0].input = 'src/js/main.ts';
+    config[0].output = [
         {
             file: 'dist/umd/formifly.js',
             format: 'umd',
@@ -74,7 +89,7 @@ if (env === 'production') {
             exports: 'auto',
         },
     ];
-    config.external = [
+    config[0].external = [
         'react',
         'reactDOM',
         'prop-types',

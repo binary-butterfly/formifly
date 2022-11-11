@@ -6,8 +6,6 @@
     "allowSyntheticDefaultImports": true,
     "rootDir": ".",
     "sourceMap": true,
-    "declaration": true,
-    "declarationDir": "dist/types",
     "outDir": "dist",
 
     "strict": true,

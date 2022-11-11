@@ -2,11 +2,13 @@
   "extends": "./tsconfig.json",
 
   "compilerOptions": {
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationDir": "./types"
   },
 
   "exclude": [
     "./src/js/components/demo/*",
-    "./src/js/__tests__/components/demo/*"
+    "./src/js/__tests__/**/*"
   ]
 }
