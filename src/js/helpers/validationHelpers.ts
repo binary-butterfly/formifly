@@ -34,16 +34,15 @@ export const findFieldValidatorFromName = (
     return dependentValue;
 };
 
-export const findFieldValidatorAndSiblingsFromName = (
+export const findFieldValidatorAndSiblingsFromName = <T extends BaseValidator<any>|ArrayValidator<any>|ObjectValidator<any>>(
     name: string,
-    shape: BaseValidator<any> | ArrayValidator<any> | ObjectValidator<any>,
-    values: Value
-): [BaseValidator<any>, Value] => {
+    shape: T,
+    values: ValueOfValidator<T>
+): [T, Value] => {
     const fieldNames = name.split('.');
     let validator = shape;
 
-    // todo: any, because in theory this needs to be explicitly type checked to make sure values and shape match
-    let siblings: any = values;
+    let siblings = values;
     let lastSiblings = siblings;
 
     for (const index in fieldNames) {
