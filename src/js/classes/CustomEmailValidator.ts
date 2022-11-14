@@ -12,9 +12,6 @@ class CustomEmailValidator extends EmailValidator {
     public notFromDomain(domain: string, msg = 'This domain is not allowed'): this {
         this.validateFuncs.push(
             (value) => {
-                if (value === undefined) {
-                    return {success: false, errorMsg: msg};
-                }
                 const splitString = value.split('@');
                 return {success: splitString[splitString.length - 1] !== domain, errorMsg: msg};
             }

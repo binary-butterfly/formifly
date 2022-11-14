@@ -335,17 +335,12 @@ export const FormiflyProvider = <T extends BaseValidator<any>>(props: FormiflyPr
                 }
             })
             .catch((reason: UnpackedErrors<T>) => {
-                // todo: isn't this just copying reason to newErrors? why?
-                let newErrors = {} as any;
-                Object.entries(reason).map(([key, value]) => {
-                    newErrors = setFieldValueFromKeyString(key, value, newErrors);
-                });
-                setErrors(newErrors);
+                setErrors(reason);
                 setSubmitSuccess(false);
                 setSubmitting(false);
 
                 if (typeof onSubmitValidationError === 'function') {
-                    onSubmitValidationError(newErrors, reason);
+                    onSubmitValidationError(reason, reason);
                 }
             });
     };

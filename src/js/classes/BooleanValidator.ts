@@ -26,7 +26,7 @@ class BooleanValidator extends BaseValidator<boolean | string> {
         mutationFunc?: MutationFunction,
         onError?: ErrorFunction,
         dependent?: Dependent,
-        realBool = false,
+        realBool = true,
     ) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
         this.validateFuncs

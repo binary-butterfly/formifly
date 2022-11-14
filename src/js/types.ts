@@ -5,14 +5,14 @@ import ArrayValidator from './classes/ArrayValidator';
 
 export type SubmitFunction = (_: Value | undefined, __: (___: any) => void) => Promise<void> | void;
 export type SubmitValidationErrorFunction<T extends BaseValidator<any>> =
-    undefined | ((errors: ValueOfValidator<T>, reason: UnpackedErrors<T>) => void);
+    undefined | ((errors: UnpackedErrors<T>, reason: UnpackedErrors<T>) => void);
 
 
 export type MutationFunction<T extends Value = any> = (value?: T, values?: Value, siblings?: Value) => T;
 export type ValidateFunction<T extends Value> =
-    (value: T | undefined, values: Value, siblings: Value) => IndividualValidationResult<T>;
+    (value: T, values: Value, siblings: Value) => IndividualValidationResult<T>;
 export type ErrorFunction = (value: Value | undefined, otherValues: Value) => void;
-export type CheckFunction<T extends Value> = (_: Array<T>, __?: T) => boolean;
+export type CheckFunction = (valueArray: ArrayValue, value: Value) => boolean;
 
 
 // In theory, ValidationResult could be typed more specifically. For example, in the third type of the union, the map

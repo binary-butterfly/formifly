@@ -12,10 +12,10 @@ const AutomagicFormiflyField = (props: AutomagicFormiflyFieldProps) => {
     const fieldProps = getFieldProps(props.name, props.help, props.type, props.value, props.id, props.additionalDescribedBy);
     const type = props.type ?? fieldProps.type;
 
-    if (!!props.options) {
+    const options = props.options;
+    if (options !== undefined) {
         if (props.type === 'radio-group') {
-            // @ts-expect-error for some reason typescript doesn't understand that we checked for the existence of 'options'
-            return <FormiflyRadioGroup {...fieldProps} {...props}/>;
+            return <FormiflyRadioGroup {...fieldProps} {...props} options={options}/>;
         } else if (!!props.multiple || !!fieldProps.multiple) {
             return <FormiflyMultiSelectField {...fieldProps} {...props}/>;
         } else {

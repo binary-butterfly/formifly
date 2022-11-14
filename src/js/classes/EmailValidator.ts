@@ -18,7 +18,7 @@ class EmailValidator extends StringValidator {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
 
         this.validateFuncs.push(
-            value => ({success: value !== undefined && emailRegexp.test(value), errorMsg: defaultErrorMsg})
+            value => ({success: emailRegexp.test(value), errorMsg: defaultErrorMsg})
         );
     }
 

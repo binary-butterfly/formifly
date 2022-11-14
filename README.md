@@ -1175,30 +1175,16 @@ Let's imagine an email validator that does not allow email addresses hosted from
 We would write that something like this:
 
 ```js
-const emailRegexp = /.+@.+/;
+class CustomEmailValidator extends EmailValidator {
+    public defaultInputType: InputType = 'email';
 
-class CustomEmailValidator extends StringValidator {
-    defaultInputType = 'email';
-
-    constructor(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent) {
-        super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
-
-        this.validateFuncs.push([
-            value => {
-                return emailRegexp.test(value);
-            },
-            defaultErrorMsg,
-        ]);
-    }
-
-    notFromDomain(domain, msg = 'This domain is not allowed') {
-        this.validateFuncs.push([
-            value => {
+    public notFromDomain(domain: string, msg = 'This domain is not allowed'): this {
+        this.validateFuncs.push(
+            (value) => {
                 const splitString = value.split('@');
-                return splitString[splitString.length - 1] !== domain;
-            },
-            msg
-        ])
+                return {success: splitString[splitString.length - 1] !== domain, errorMsg: msg};
+            }
+        );
         return this;
     }
 }

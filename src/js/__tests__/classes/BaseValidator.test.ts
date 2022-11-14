@@ -254,7 +254,7 @@ describe('Test oneOfArrayFieldValues', () => {
     it('Works with custom check functions and can return true', () => {
         const validator = new BaseValidator(undefined as any).oneOfArrayFieldValues('array', (compare, value) => {
             for (const val of compare) {
-                if (val.id === value) {
+                if ((val as any).id === value) {
                     return true;
                 }
             }
@@ -267,7 +267,7 @@ describe('Test oneOfArrayFieldValues', () => {
     it('Works with custom check functions and can return false', () => {
         const validator = new BaseValidator(undefined as any).oneOfArrayFieldValues('array', (compare, value) => {
             for (const val of compare) {
-                if (val.id === value) {
+                if ((val as any).id === value) {
                     return true;
                 }
             }
@@ -301,7 +301,7 @@ describe('Test oneOfArraySiblingFieldValues', () => {
     it('Works with custom check functions and can return true', () => {
         const validator = new BaseValidator(undefined as any).oneOfArraySiblingFieldValues('array', (compare, value) => {
             for (const val of compare) {
-                if (val.id === value) {
+                if ((val as any).id === value) {
                     return true;
                 }
             }
@@ -315,7 +315,7 @@ describe('Test oneOfArraySiblingFieldValues', () => {
     it('Works with custom check functions and can return false', () => {
         const validator = new BaseValidator(undefined as any).oneOfArraySiblingFieldValues('array', (compare, value) => {
             for (const val of compare) {
-                if (val.id === value) {
+                if ((val as any).id === value) {
                     return true;
                 }
             }

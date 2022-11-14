@@ -52,7 +52,7 @@ class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOf
         ensureValueIsNumeric(num, 'minLength', 'ArrayValidator', 'num');
         let errorMsg = msg ?? 'There must be at least ' + num + ' entries for this';
         errorMsg = errorMsg.replace('{{num}}', String(num));
-        this.validateFuncs.push(values => ({success: values !== undefined && values.length >= num, errorMsg}));
+        this.validateFuncs.push(values => ({success: values.length >= num, errorMsg}));
 
         if (num > 0) {
             this.required(errorMsg);
@@ -71,7 +71,7 @@ class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOf
         ensureValueIsNumeric(num, 'maxLength', 'ArrayValidator', 'num');
         let errorMsg = msg ?? 'There must be at most ' + num + ' entries for this';
         errorMsg = errorMsg.replace('{{num}}', String(num));
-        this.validateFuncs.push(values => ({success: values !== undefined && values.length <= num, errorMsg}));
+        this.validateFuncs.push(values => ({success: values.length <= num, errorMsg}));
         this.maxChildCount = num;
         return this;
     }
@@ -89,7 +89,7 @@ class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOf
         let errorMsg = msg ?? 'There must be between ' + min + ' and ' + max + ' entries for this';
         errorMsg = errorMsg.replace('{{min}}', String(min));
         errorMsg = errorMsg.replace('{{max}}', String(max));
-        this.validateFuncs.push(values => ({success: values !== undefined && values.length >= min && values.length <= max, errorMsg}));
+        this.validateFuncs.push(values => ({success: values.length >= min && values.length <= max, errorMsg}));
 
         if (min > 0) {
             this.required(errorMsg);

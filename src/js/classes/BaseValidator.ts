@@ -161,7 +161,7 @@ class BaseValidator<T extends Value> {
     }
 
     private validateIndependent(value: T | undefined, otherValues: Value, siblings: Value): ValidationResult<T> {
-        if (!this.validateRequired(value)) {
+        if (!this.validateRequired(value) || value === undefined) {
             if (this._isRequired) {
                 return [false, this.requiredError ?? this.defaultErrorMsg];
             }
@@ -192,7 +192,7 @@ class BaseValidator<T extends Value> {
         this.validateFuncs.push(
             (value, otherValues) => {
                 const otherVal = getFieldValueFromKeyString(name, otherValues);
-                return {success: value as T > otherVal, errorMsg};
+                return {success: value > otherVal, errorMsg};
             }
         );
 
@@ -211,7 +211,7 @@ class BaseValidator<T extends Value> {
         this.validateFuncs.push(
             (value, otherValues) => {
                 const otherVal = getFieldValueFromKeyString(name, otherValues);
-                return {success: (value as T) < otherVal, errorMsg};
+                return {success: value < otherVal, errorMsg};
             }
         );
 
@@ -230,7 +230,7 @@ class BaseValidator<T extends Value> {
         this.validateFuncs.push(
             (value, otherValues) => {
                 const otherVal = getFieldValueFromKeyString(name, otherValues);
-                return {success: value as T >= otherVal, errorMsg};
+                return {success: value >= otherVal, errorMsg};
             }
         );
 
@@ -249,7 +249,7 @@ class BaseValidator<T extends Value> {
         this.validateFuncs.push(
             (value, otherValues) => {
                 const otherVal = getFieldValueFromKeyString(name, otherValues);
-                return {success: (value as T) <= otherVal, errorMsg};
+                return {success: value <= otherVal, errorMsg};
             }
         );
 
@@ -268,7 +268,7 @@ class BaseValidator<T extends Value> {
         this.validateFuncs.push(
             (value, otherValues, siblings) => {
                 const otherVal = getFieldValueFromKeyString(key, siblings);
-                return {success: value as T > otherVal, errorMsg};
+                return {success: value > otherVal, errorMsg};
             }
         );
 
@@ -287,7 +287,7 @@ class BaseValidator<T extends Value> {
         this.validateFuncs.push(
             (value, otherValues, siblings) => {
                 const otherVal = getFieldValueFromKeyString(key, siblings);
-                return {success: (value as T) < otherVal, errorMsg};
+                return {success: value < otherVal, errorMsg};
             }
         );
 
@@ -306,7 +306,7 @@ class BaseValidator<T extends Value> {
         this.validateFuncs.push(
             (value, otherValues, siblings) => {
                 const otherVal = getFieldValueFromKeyString(key, siblings);
-                return {success: value as T >= otherVal, errorMsg};
+                return {success: value >= otherVal, errorMsg};
             }
         );
 
@@ -325,7 +325,7 @@ class BaseValidator<T extends Value> {
         this.validateFuncs.push(
             (value, otherValues, siblings) => {
                 const otherVal = getFieldValueFromKeyString(key, siblings);
-                return {success: (value as T) <= otherVal, errorMsg};
+                return {success: value <= otherVal, errorMsg};
             },
         );
 
@@ -339,16 +339,16 @@ class BaseValidator<T extends Value> {
      * @param {String} [msg]
      * @return {this}
      */
-    public oneOfArrayFieldValues(key: string, checkFn?: CheckFunction<T>, msg?: string): this {
+    public oneOfArrayFieldValues(key: string, checkFn?: CheckFunction, msg?: string): this {
         const errorMsg = msg ?? 'This value is not allowed.';
 
         this.validateFuncs.push(
             (value, otherValues) => {
                 if (!checkFn) {
-                    checkFn = (compare, value) => compare.includes(value as T);
+                    checkFn = (compare, value) => compare.includes(value);
                 }
 
-                const compare = getFieldValueFromKeyString(key, otherValues) as T[];
+                const compare = getFieldValueFromKeyString(key, otherValues);
                 if (Array.isArray(compare)) {
                     return {success: checkFn(compare, value), errorMsg};
                 } else {
@@ -368,16 +368,16 @@ class BaseValidator<T extends Value> {
      * @param {String} [msg]
      * @return {this}
      */
-    public oneOfArraySiblingFieldValues(key: string, checkFn?: CheckFunction<T>, msg?: string): this {
+    public oneOfArraySiblingFieldValues(key: string, checkFn?: CheckFunction, msg?: string): this {
         const errorMsg = msg ?? 'This value is not allowed.';
 
         this.validateFuncs.push(
             (value, otherValues, siblings) => {
                 if (!checkFn) {
-                    checkFn = (compare, value) => compare.includes(value as T);
+                    checkFn = (compare, value) => compare.includes(value);
                 }
 
-                const compare = getFieldValueFromKeyString(key, siblings) as T[];
+                const compare = getFieldValueFromKeyString(key, siblings);
                 if (Array.isArray(compare)) {
                     return {success: checkFn(compare, value), errorMsg};
                 } else {
@@ -401,7 +401,7 @@ class BaseValidator<T extends Value> {
 
         this.validateFuncs.push(
             (value) => {
-                return {success: values.includes(value as T), errorMsg};
+                return {success: values.includes(value), errorMsg};
             }
         );
 
