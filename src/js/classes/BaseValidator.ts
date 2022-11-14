@@ -134,7 +134,7 @@ class BaseValidator<T extends Value> {
     private validateDependentStep(
         step: ValidatorStep | boolean, value: T | string | undefined, otherValues: Value, siblings: Value
     ): DependentValidationResult<T> {
-        const dependentValue = getFieldValueFromKeyString(Array.isArray(step) ? step[0] : '', otherValues);
+        const dependentValue = getFieldValueFromKeyString(isValidatorStep(step) ? step[0] : '', otherValues);
         if (isValidatorStep(step) && step[1](dependentValue, value)) {
             return [true, step[2].validate(value, otherValues, siblings)];
         } else {

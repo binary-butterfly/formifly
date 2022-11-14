@@ -15,6 +15,9 @@ export type ErrorFunction = (value: Value | undefined, otherValues: Value) => vo
 export type CheckFunction<T extends Value> = (_: Array<T>, __?: T) => boolean;
 
 
+// In theory, ValidationResult could be typed more specifically. For example, in the third type of the union, the map
+// is always based on a known shape. In practise, we iterate over all elements of the map anyway, so designing this type
+// so it is known which fields are in the map at compile type seems superfluous.
 export type ValidationResult<T extends Value | ErrorType> = |
     [true, T?] |
     [false, string] |
@@ -44,7 +47,6 @@ export type ValidatorStep = [string, (dependentValue: Value, value?: Value) => b
 export type Dependent = boolean | ValidatorStep | Array<Array<ValidatorStep>>
 
 
-// todo: there is a link between input types and ValueTypes, would be great to have it explicitly modeled
 export type InputType =
     'text'
     | 'number'
