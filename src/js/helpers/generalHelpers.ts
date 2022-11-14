@@ -1,6 +1,6 @@
 import {findFieldValidatorFromName} from './validationHelpers';
 import ArrayValidator from '../classes/ArrayValidator';
-import {ObjectValue, UnpackedErrors, Value} from '../types';
+import {ObjectValue, UnpackedErrors, Value, ValueOfValidator} from '../types';
 import BaseValidator from '../classes/BaseValidator';
 
 export const getFieldValueFromKeyString = (
@@ -67,14 +67,16 @@ export const convertDateObjectToInputString = (date: Date) => {
     }).replace(' ', 'T');
 };
 
-// todo: This could be typed better if we would teach the type system that validatorDefaults and userDefaults should match the shape
-export const completeDefaultValues = <T extends ObjectValue>(
-    validatorDefaults: T,
-    userDefaults: Partial<T>,
-    shape?: BaseValidator<any>,
+// todo: lots of any casts in this, unfortunately. I'm sure we could get away with fewer casts by using better typeguards,
+// but as all casts are internally only and the interface is well typed, I don't think this is urgent.
+export const completeDefaultValues = <T extends BaseValidator<any>>(
+    validatorDefaults: ValueOfValidator<T>,
+    userDefaults: Partial<ValueOfValidator<T>>,
+    shape?: T,
     keyText?: string
-): T => {
-    Object.entries(userDefaults).map(([key, value]: [keyof T, T[keyof T]]) => {
+): ValueOfValidator<T> => {
+    Object.entries(userDefaults).map(([keyInternal, value]: [string|number, any]) => {
+        const key = keyInternal as keyof ValueOfValidator<T>;
         const thisKeyText = keyText === undefined ? String(key) : keyText + '.' + String(key);
         if (value !== null) {
             if (Array.isArray(value)) {
@@ -91,12 +93,12 @@ export const completeDefaultValues = <T extends ObjectValue>(
                         validatorDefaults[key] = [] as any;
                     }
                 }
-                validatorDefaults[key] = completeDefaultValues(validatorDefaults[key] as any, value as any, shape, thisKeyText);
+                validatorDefaults[key] = completeDefaultValues(validatorDefaults[key] as any, value as any, shape, thisKeyText) as any;
             } else if (typeof value === 'object') {
                 if (validatorDefaults[key] === undefined) {
                     validatorDefaults[key] = {} as any;
                 }
-                validatorDefaults[key] = completeDefaultValues(validatorDefaults[key] as any, value as any, shape, thisKeyText);
+                validatorDefaults[key] = completeDefaultValues(validatorDefaults[key] as any, value as any, shape, thisKeyText) as any;
             } else {
                 validatorDefaults[key] = value;
             }
