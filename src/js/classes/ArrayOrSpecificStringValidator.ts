@@ -1,6 +1,6 @@
 import ArrayValidator from './ArrayValidator';
 import BaseValidator from './BaseValidator';
-import {Dependent, ErrorFunction, MutationFunction, ValidationResult, Value} from '../types';
+import {Dependent, ErrorFunction, MutationFunction, ValidationResult, Value, ValueOfValidator} from '../types';
 
 /**
  * A validator that allows you to validate array fields that may also contain a string instead of an array value.
@@ -9,7 +9,7 @@ import {Dependent, ErrorFunction, MutationFunction, ValidationResult, Value} fro
  * @property {BaseValidator|AnyOfValidator|ArrayValidator|BooleanValidator|EmailValidator|NumberValidator|ObjectValidator|PhoneNumberValidator|StringValidator} of  - The validator of what this is an array of
  * @property {String} allowedString - The string that is allowed instead of an array value
  */
-class ArrayOrSpecificStringValidator<T extends Value> extends BaseValidator<Array<T>|string> {
+class ArrayOrSpecificStringValidator<T extends BaseValidator<any>> extends BaseValidator<Array<ValueOfValidator<T>>|string> {
     private readonly allowedString: string;
     private readonly internalArrayValidator: ArrayValidator<T>;
 
@@ -22,7 +22,7 @@ class ArrayOrSpecificStringValidator<T extends Value> extends BaseValidator<Arra
      * @param {Array} [dependent]
      * @param {String} [allowedString
      */
-    constructor(of: BaseValidator<any>,
+    constructor(of: T,
                 defaultMessage: string = 'This field has to be an array',
                 mutationFunc?: MutationFunction,
                 onError?: ErrorFunction,
@@ -34,8 +34,8 @@ class ArrayOrSpecificStringValidator<T extends Value> extends BaseValidator<Arra
     }
 
     public validate(
-        values: Array<T>|string, otherValues = {}, siblings = {}, recursion = true
-    ): ValidationResult<Array<T>|string> {
+        values: Array<ValueOfValidator<T>>|string, otherValues = {}, siblings = {}, recursion = true
+    ): ValidationResult<Array<ValueOfValidator<T>>|string> {
         if (values === this.allowedString) {
             return [true, values];
         }
@@ -84,7 +84,7 @@ class ArrayOrSpecificStringValidator<T extends Value> extends BaseValidator<Arra
      * Get the default value for the array's children
      * @return {*[]}
      */
-    public getDefaultValue(): Array<T> {
+    public getDefaultValue(): Array<ValueOfValidator<T>> {
         return this.internalArrayValidator.getDefaultValue();
     }
 
@@ -98,10 +98,10 @@ class ArrayOrSpecificStringValidator<T extends Value> extends BaseValidator<Arra
      * @return {*|[boolean, *[]]|[boolean, *[]]}
      */
     public validateWithoutRecursion(
-        values: Array<T>|string,
+        values: Array<ValueOfValidator<T>>|string,
         otherValues?: Value,
         siblings?: Value
-    ): ValidationResult<Array<T>|string> {
+    ): ValidationResult<Array<ValueOfValidator<T>>|string> {
         return this.validate(values, otherValues, siblings, false);
     }
 }

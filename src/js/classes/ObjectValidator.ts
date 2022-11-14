@@ -6,7 +6,6 @@ import {
     ErrorFunction,
     MutationFunction,
     ObjectValidatorFields,
-    ObjectValue,
     ValidationResult,
     Value,
     ValueOfObjectValidatorFields,
@@ -19,7 +18,7 @@ import {
  *
  * @property {BaseValidator|AnyOfValidator|ArrayValidator|BooleanValidator|EmailValidator|NumberValidator|ObjectValidator|PhoneNumberValidator|StringValidator} fields  - The fields of the object
  */
-class ObjectValidator<T extends ObjectValidatorFields, V extends ObjectValue = ValueOfObjectValidatorFields<T>> extends BaseValidator<V> {
+class ObjectValidator<T extends ObjectValidatorFields> extends BaseValidator<ValueOfObjectValidatorFields<T>> {
     public readonly fields: T;
     private dropEmpty: boolean;
     private dropNotInShape: boolean;
@@ -47,7 +46,7 @@ class ObjectValidator<T extends ObjectValidatorFields, V extends ObjectValue = V
             Object.entries(fields).map(
                 ([k, v]) => [k, v.getDefaultValue()]
             )
-        ) as V;
+        ) as ValueOfObjectValidatorFields<T>;
         super(defaultValues, defaultMessage, mutationFunc, onError, dependent);
 
         this.fields = fields;
@@ -84,7 +83,7 @@ class ObjectValidator<T extends ObjectValidatorFields, V extends ObjectValue = V
     /**
      * @return {{}}
      */
-    public getDefaultValue(): V {
+    public getDefaultValue(): ValueOfObjectValidatorFields<T> {
 
         const ret = Object.fromEntries(
             Object.entries(this.fields).map(
@@ -92,10 +91,10 @@ class ObjectValidator<T extends ObjectValidatorFields, V extends ObjectValue = V
             )
         );
 
-        return ret as V;
+        return ret as ValueOfObjectValidatorFields<T>;
     }
 
-    protected validateRequired(value?: V | Partial<V> | string): boolean {
+    protected validateRequired(value?: ValueOfObjectValidatorFields<T> | Partial<ValueOfObjectValidatorFields<T>> | string): boolean {
         if (typeof value === 'object') {
             return Object.keys(value).length > 0;
         } else {
@@ -111,30 +110,30 @@ class ObjectValidator<T extends ObjectValidatorFields, V extends ObjectValue = V
      * @return {*|[boolean, *]|[boolean, {}]}
      */
     public validateWithoutRecursion(
-        value: V,
+        value: ValueOfObjectValidatorFields<T>,
         otherValues?: Value,
         siblings?: Value
-    ): ValidationResult<V> {
+    ): ValidationResult<ValueOfObjectValidatorFields<T>> {
         return this.validate(value, otherValues, siblings, false);
     }
 
-    public validate(value?: V | Partial<V>,
+    public validate(value?: ValueOfObjectValidatorFields<T> | Partial<ValueOfObjectValidatorFields<T>>,
                     otherValues?: Value,
                     siblings?: Value,
-                    recursion = true): ValidationResult<V> {
+                    recursion = true): ValidationResult<ValueOfObjectValidatorFields<T>> {
         if (this.reallyNotRequired && !this.validateRequired(value)) {
-            return [true, value as V];
+            return [true, value as ValueOfObjectValidatorFields<T>];
         }
 
-        const preValidate = super.validate(value as V, otherValues, siblings);
+        const preValidate = super.validate(value as ValueOfObjectValidatorFields<T>, otherValues, siblings);
         if (!preValidate[0]) {
             return preValidate;
         }
 
         // Unpack the test value to avoid mutating the original object
-        const testValue = {...value} as V;
+        const testValue = {...value} as ValueOfObjectValidatorFields<T>;
         let allOk = true;
-        const tests: Record<string, ValidationResult<V>> = {};
+        const tests: Record<string, ValidationResult<ValueOfObjectValidatorFields<T>>> = {};
         for (const fieldName in this.fields) {
             if (!recursion) {
                 if (this.fields[fieldName] instanceof ArrayValidator || this.fields[fieldName] instanceof ObjectValidator) {

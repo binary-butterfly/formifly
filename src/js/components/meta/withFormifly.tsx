@@ -1,8 +1,8 @@
 import React from 'react';
 import {FormiflyContextType, useFormiflyContext} from './FormiflyContext';
-import {ObjectValidatorFields} from '../../types';
+import BaseValidator from '../../classes/BaseValidator';
 
-const withFormifly = <T extends ObjectValidatorFields>(
+const withFormifly = <T extends BaseValidator<any>>(
     WrappedComponent: React.ComponentType<FormiflyContextType<T>>
 ): (props: React.PropsWithChildren<any>) => JSX.Element => {
     return function WithFormiflyInner(props) {

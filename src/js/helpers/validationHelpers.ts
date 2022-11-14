@@ -1,7 +1,7 @@
 import BaseValidator from '../classes/BaseValidator';
 import ArrayValidator from '../classes/ArrayValidator';
 import ObjectValidator from '../classes/ObjectValidator';
-import {UnpackedErrors, ValidationResult, Value} from '../types';
+import {UnpackedErrors, ValidationResult, Value, ValueOfValidator} from '../types';
 
 
 export const findFieldValidatorFromName = (
@@ -62,7 +62,7 @@ export const findFieldValidatorAndSiblingsFromName = (
     return [validator, lastSiblings];
 };
 
-export const unpackErrors = <T extends Value>(currentResult: ValidationResult<T>): UnpackedErrors<T>|{} => {
+export const unpackErrors = <T extends BaseValidator<any>>(currentResult: ValidationResult<ValueOfValidator<T>>): UnpackedErrors<T>|{} => {
     let ret: any = {};
     if (currentResult[0] === false) {
         if (Array.isArray(currentResult[1])) {

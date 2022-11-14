@@ -1,8 +1,11 @@
 import BaseValidator from './classes/BaseValidator';
+import ObjectValidator from './classes/ObjectValidator';
+import ArrayValidator from './classes/ArrayValidator';
 
 
 export type SubmitFunction = (_: Value | undefined, __: (___: any) => void) => Promise<void> | void;
-export type SubmitValidationErrorFunction<T extends Value> = undefined | ((errors: T, reason: UnpackedErrors<T>) => void);
+export type SubmitValidationErrorFunction<T extends BaseValidator<any>> =
+    undefined | ((errors: ValueOfValidator<T>, reason: UnpackedErrors<T>) => void);
 
 
 export type MutationFunction<T extends Value = any> = (value?: T, values?: Value, siblings?: Value) => T;
@@ -18,15 +21,13 @@ export type ValidationResult<T extends Value | ErrorType> = |
     [false, Record<string, ValidationResult<Value | ErrorType>>] |
     [false, ValidationResult<Value | ErrorType>[]];
 
-// todo: needs to be reworked due to the dreaded 'excessively deep' error
-export type UnpackedErrors<T extends Value> =
-    T extends ObjectValue ?
-        {[K in keyof T]: UnpackedErrors<T[K]>} :
-        T extends ArrayValue ?
-            {[K in keyof T]: K extends number ? UnpackedErrors<T[0]> : never} :
-            string | false
+export type UnpackedErrors<V extends BaseValidator<any>> =
+    V extends ObjectValidator<infer O> ?
+        {[K in keyof O]: UnpackedErrors<O[K]>} :
+        V extends ArrayValidator<infer A> ?
+            UnpackedErrors<A>[] :
+            string|false;
 
-//export type UnpackedErrors = string | false | { [key: string]: UnpackedErrors } | UnpackedErrors[];
 export type ErrorType = string | false | { [key: string]: ValidationResult<ErrorType> } | ValidationResult<ErrorType>[];
 
 export type DependentValidationResult<T extends Value> = [false] | [true, ValidationResult<T>];

@@ -39,7 +39,7 @@ const FruitError = styled.p`
 
 const DemoFormContent = (props: {shape: typeof validator}) => {
     const {shape} = props;
-    const {values, setFieldValue, errors, validateField} = useFormiflyContext<typeof shape.fields>();
+    const {values, setFieldValue, errors, validateField} = useFormiflyContext<typeof shape>();
 
     const handleRemoveFruitClick = (index: number) => {
         const newFruitValue = [...values.fruit.filter((_: any, fIndex: number) => fIndex !== index)];

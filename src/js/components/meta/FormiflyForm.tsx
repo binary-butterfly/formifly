@@ -1,16 +1,10 @@
 import React from 'react';
 import {ThemeProvider} from 'styled-components';
 import {FormiflyProvider, useFormiflyContext} from './FormiflyContext';
-import ObjectValidator from '../../classes/ObjectValidator';
-import {
-    ObjectValidatorFields,
-    SubmitFunction,
-    SubmitValidationErrorFunction,
-    Value,
-    ValueOfObjectValidatorFields,
-} from '../../types';
+import {SubmitFunction, SubmitValidationErrorFunction, ValueOfValidator} from '../../types';
+import BaseValidator from '../../classes/BaseValidator';
 
-const Form = <T extends ObjectValidatorFields>(props: FormProps<ValueOfObjectValidatorFields<T>>) => {
+const Form = <T extends BaseValidator<any>>(props: FormProps<T>) => {
     const {handleSubmit} = useFormiflyContext<T>();
     return <form onSubmit={e =>
         handleSubmit(props.onSubmit, props.onSubmitValidationError, e)}
@@ -19,7 +13,7 @@ const Form = <T extends ObjectValidatorFields>(props: FormProps<ValueOfObjectVal
     </form>;
 };
 
-const FormiflyForm = <T extends ObjectValidatorFields>(props: FormiflyFormProps<T>) => {
+const FormiflyForm = <T extends BaseValidator<any>>(props: FormiflyFormProps<T>) => {
     const {
         shape,
         defaultValues,
@@ -56,16 +50,16 @@ const FormiflyForm = <T extends ObjectValidatorFields>(props: FormiflyFormProps<
     </ThemeProvider>;
 };
 
-export type FormProps<T extends Value> = {
+export type FormProps<T extends BaseValidator<any>> = {
     onSubmit: SubmitFunction;
     onSubmitValidationError?: SubmitValidationErrorFunction<T>;
     className?: string;
     children: (JSX.Element | false)[] | JSX.Element | false;
 }
 
-export type FormiflyFormProps<T extends ObjectValidatorFields> = FormProps<ValueOfObjectValidatorFields<T>> & {
-    shape: ObjectValidator<T>;
-    defaultValues?: Partial<ValueOfObjectValidatorFields<T>>;
+export type FormiflyFormProps<T extends BaseValidator<any>> = FormProps<T> & {
+    shape: T;
+    defaultValues?: Partial<ValueOfValidator<T>>;
     disableNativeRequired?: boolean;
     disableNativeMinMax?: boolean;
     theme?: {

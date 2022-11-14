@@ -18,16 +18,9 @@ import {
 } from '../../helpers/validationHelpers';
 import BaseValidator from '../../classes/BaseValidator';
 import {FormiflyFieldProps} from '../input/FormiflyField';
-import {
-    ObjectValidatorFields,
-    SubmitFunction,
-    SubmitValidationErrorFunction,
-    UnpackedErrors,
-    Value,
-    ValueOfObjectValidatorFields,
-} from '../../types';
+import {SubmitFunction, SubmitValidationErrorFunction, UnpackedErrors, Value, ValueOfValidator} from '../../types';
 
-export type FormiflyContextType<T extends ObjectValidatorFields> = {
+export type FormiflyContextType<T extends BaseValidator<any>> = {
     setSubmitting: (value: (((prevState: boolean) => boolean) | boolean)) => void;
     handleBlur: (event: React.ChangeEvent<HTMLInputElement>) => Promise<boolean>;
     submitting: boolean;
@@ -41,11 +34,11 @@ export type FormiflyContextType<T extends ObjectValidatorFields> = {
     ) => FormiflyFieldProps;
     validateMultipleFields: (pairs: [string, Value?][]) => Promise<boolean>;
     hasErrors: (fieldName: string) => false | string;
-    shape: ObjectValidator<T>;
+    shape: T;
     setFieldValue: <V extends Value>(
-        field: string, value: V, oldValues?: ValueOfObjectValidatorFields<T>
-    ) => Promise<ValueOfObjectValidatorFields<T>>;
-    values: ValueOfObjectValidatorFields<T>;
+        field: string, value: V, oldValues?: ValueOfValidator<T>
+    ) => Promise<ValueOfValidator<T>>;
+    values: ValueOfValidator<T>;
     handleRadioChange: (event: React.ChangeEvent<HTMLInputElement>) => Promise<boolean>;
     handleMultiSelectChange: (name: string, newVal: Value) => Promise<boolean>;
     hasBeenTouched: (fieldName: string) => (any | boolean);
@@ -53,28 +46,28 @@ export type FormiflyContextType<T extends ObjectValidatorFields> = {
     validateField: (name: string, value?: Value) => Promise<boolean>;
     handleSubmit: (
         onSubmit: SubmitFunction,
-        onSubmitValidationError: SubmitValidationErrorFunction<ValueOfObjectValidatorFields<T>>,
+        onSubmitValidationError: SubmitValidationErrorFunction<T>,
         e: React.FormEvent<HTMLFormElement>
     ) => void;
     handleFocus: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    validateAll: () => Promise<string | ValueOfObjectValidatorFields<T> | undefined>;
+    validateAll: () => Promise<string | ValueOfValidator<T> | undefined>;
     handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     submitFailureReason: any;
     setMultipleFieldValues: <V extends Value>(
-        pairs: [string, V][], oldValues?: ValueOfObjectValidatorFields<T>
-    ) => Promise<ValueOfObjectValidatorFields<T>>;
+        pairs: [string, V][], oldValues?: ValueOfValidator<T>
+    ) => Promise<ValueOfValidator<T>>;
     handleCheckChange: (event: React.ChangeEvent<HTMLInputElement>) => Promise<boolean>;
-    errors: UnpackedErrors<ValueOfObjectValidatorFields<T>>;
+    errors: UnpackedErrors<T>;
 };
 
 // see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/24509#issuecomment-382213106 for why we need to cast here
 export const Context = React.createContext<FormiflyContextType<any>>(undefined as any);
 Context.displayName = 'FormiflyContext';
 
-export const FormiflyProvider = <T extends ObjectValidatorFields>(props: FormiflyProviderProps<T>) => {
+export const FormiflyProvider = <T extends BaseValidator<any>>(props: FormiflyProviderProps<T>) => {
     const {shape, initialValues, children, disableNativeRequired, disableNativeMinMax} = props;
 
-    const [values, setValues] = React.useState<ValueOfObjectValidatorFields<T>>(() => {
+    const [values, setValues] = React.useState<ValueOfValidator<T>>(() => {
         const defaultValues = shape.getDefaultValue();
         if (!initialValues) {
             return defaultValues;
@@ -83,15 +76,15 @@ export const FormiflyProvider = <T extends ObjectValidatorFields>(props: Formifl
         return completeDefaultValues(defaultValues, initialValues, shape);
     });
 
-    const [errors, setErrors] = React.useState<UnpackedErrors<ValueOfObjectValidatorFields<T>>>({} as any);
+    const [errors, setErrors] = React.useState<UnpackedErrors<T>>({} as any);
     const [touched, setTouched] = React.useState<Value>({});
     const [submitting, setSubmitting] = React.useState(false);
     const [submitSuccess, setSubmitSuccess] = React.useState(false);
     const [submitFailureReason, setSubmitFailureReason] = React.useState<any>(null);
 
     const setFieldValue = <V extends Value>(
-        field: string, value: V, oldValues: ValueOfObjectValidatorFields<T> = values
-    ): Promise<ValueOfObjectValidatorFields<T>> => {
+    field: string, value: V, oldValues: ValueOfValidator<T> = values
+    ): Promise<ValueOfValidator<T>> => {
         return new Promise((resolve) => {
             const newValues = setFieldValueFromKeyString(field, value, oldValues);
             setValues(newValues);
@@ -100,8 +93,8 @@ export const FormiflyProvider = <T extends ObjectValidatorFields>(props: Formifl
     };
 
     const setMultipleFieldValues = <V extends Value>(
-        pairs: [string, V][], oldValues: ValueOfObjectValidatorFields<T> = values
-    ): Promise<ValueOfObjectValidatorFields<T>> => {
+        pairs: [string, V][], oldValues: ValueOfValidator<T> = values
+    ): Promise<ValueOfValidator<T>> => {
         return new Promise((resolve) => {
             let newValues = oldValues;
             for (const pair of pairs) {
@@ -298,7 +291,7 @@ export const FormiflyProvider = <T extends ObjectValidatorFields>(props: Formifl
      * Validates all fields
      * @return {Promise<unknown>}
      */
-    const validateAll = (): Promise<string | ValueOfObjectValidatorFields<T> | undefined> => {
+    const validateAll = (): Promise<string | ValueOfValidator<T> | undefined> => {
         return new Promise((resolve, reject) => {
             const result = shape.validate(values, values, values);
             if (result[0]) {
@@ -311,7 +304,7 @@ export const FormiflyProvider = <T extends ObjectValidatorFields>(props: Formifl
 
     const handleSubmit = (
         onSubmit: SubmitFunction,
-        onSubmitValidationError: SubmitValidationErrorFunction<ValueOfObjectValidatorFields<T>>,
+        onSubmitValidationError: SubmitValidationErrorFunction<T>,
         e: React.FormEvent<HTMLFormElement>
     ) => {
         e.preventDefault();
@@ -341,7 +334,7 @@ export const FormiflyProvider = <T extends ObjectValidatorFields>(props: Formifl
                     return;
                 }
             })
-            .catch((reason: UnpackedErrors<ValueOfObjectValidatorFields<T>>) => {
+            .catch((reason: UnpackedErrors<T>) => {
                 // todo: isn't this just copying reason to newErrors? why?
                 let newErrors = {} as any;
                 Object.entries(reason).map(([key, value]) => {
@@ -384,15 +377,15 @@ export const FormiflyProvider = <T extends ObjectValidatorFields>(props: Formifl
     return <Context.Provider value={FormiflyContext}>{children}</Context.Provider>;
 };
 
-type FormiflyProviderProps<T extends ObjectValidatorFields> = {
-    shape: ObjectValidator<T>;
-    initialValues?: Partial<ValueOfObjectValidatorFields<T>>;
+type FormiflyProviderProps<T extends BaseValidator<any>> = {
+    shape: T;
+    initialValues?: Partial<ValueOfValidator<T>>;
     disableNativeMinMax?: boolean;
     disableNativeRequired?: boolean;
     children: JSX.Element[] | JSX.Element;
 }
 
-export const useFormiflyContext = <T extends ObjectValidatorFields>(): FormiflyContextType<T> => {
+export const useFormiflyContext = <T extends BaseValidator<any>>(): FormiflyContextType<T> => {
     const context = React.useContext<FormiflyContextType<T>>(Context);
     if (!context || Object.keys(context).length === 0) {
         throw new Error(

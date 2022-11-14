@@ -2,7 +2,15 @@ import PropTypes from 'prop-types';
 import {ensureValueIsNumeric} from '../helpers/developerInputValidators';
 import BaseValidator from './BaseValidator';
 import ObjectValidator from './ObjectValidator';
-import {Dependent, ErrorFunction, InputType, MutationFunction, ValidationResult, Value} from '../types';
+import {
+    Dependent,
+    ErrorFunction,
+    InputType,
+    MutationFunction,
+    ValidationResult,
+    Value,
+    ValueOfValidator,
+} from '../types';
 
 /**
  * A validator that allows you to validate array fields.
@@ -10,8 +18,8 @@ import {Dependent, ErrorFunction, InputType, MutationFunction, ValidationResult,
  *
  * @property {BaseValidator|AnyOfValidator|ArrayValidator|BooleanValidator|EmailValidator|NumberValidator|ObjectValidator|PhoneNumberValidator|StringValidator} of  - The validator of what this is an array of
  */
-class ArrayValidator<T extends Value> extends BaseValidator<Array<T>> {
-    public readonly of: BaseValidator<T>;
+class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOfValidator<T>[]> {
+    public readonly of: T;
     public minChildCount: number = 0;
     public maxChildCount: number = Number.POSITIVE_INFINITY;
     public defaultInputType: InputType = 'select';
@@ -24,7 +32,7 @@ class ArrayValidator<T extends Value> extends BaseValidator<Array<T>> {
      * @param {Function} [onError]
      * @param {Array} [dependent]
      */
-    constructor(of: BaseValidator<any>,
+    constructor(of: T,
                           defaultMessage = 'This field has to be an array',
                           mutationFunc?: MutationFunction,
                           onError?: ErrorFunction,
@@ -95,9 +103,9 @@ class ArrayValidator<T extends Value> extends BaseValidator<Array<T>> {
      * Get the default value for the array's children
      * @return {*[]}
      */
-    public getDefaultValue(): Array<T> {
+    public getDefaultValue(): Array<ValueOfValidator<T>> {
         const fieldDefault = this.of.getDefaultValue();
-        const ret: Array<T> = [];
+        const ret: Array<ValueOfValidator<T>> = [];
         for (let c = 0; c < this.minChildCount; c++) {
             ret.push(fieldDefault);
         }
@@ -114,19 +122,19 @@ class ArrayValidator<T extends Value> extends BaseValidator<Array<T>> {
      * @return {*|[boolean, *[]]|[boolean, *[]]}
      */
     public validateWithoutRecursion(
-        values: Array<T>,
+        values: Array<ValueOfValidator<T>>,
         otherValues?: Value,
         siblings?: Value
-    ): ValidationResult<Array<T>> {
+    ): ValidationResult<Array<ValueOfValidator<T>>> {
         return this.validate(values, otherValues, siblings, false);
     }
 
     public validate(
-        values: Array<T>,
+        values: Array<ValueOfValidator<T>>,
         otherValues = {},
         siblings = {},
         recursion = true
-    ): ValidationResult<Array<T>> {
+    ): ValidationResult<Array<ValueOfValidator<T>>> {
         // First we validate the amount of entries as well as dependent filters and requirement filters
         const preValidate = super.validate(values, otherValues, siblings);
         if (preValidate[0] === false) {
@@ -138,7 +146,7 @@ class ArrayValidator<T extends Value> extends BaseValidator<Array<T>> {
         }
 
         // Then, if the amount is correct, we validate the specific entries
-        const tests: Array<ValidationResult<T>> = [];
+        const tests: Array<ValidationResult<ValueOfValidator<T>>> = [];
 
         let testFunc;
         if (recursion || !(this.of instanceof ObjectValidator || this.of instanceof ArrayValidator)) {
@@ -153,7 +161,7 @@ class ArrayValidator<T extends Value> extends BaseValidator<Array<T>> {
         for (const index in testValues) {
             const value = testValues[index];
 
-            const test = testFunc(value, otherValues, testValues) as ValidationResult<T>;
+            const test = testFunc(value, otherValues, testValues) as ValidationResult<ValueOfValidator<T>>;
             tests.push(test);
             if (test[0] === false) {
                 allOk = false;
