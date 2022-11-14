@@ -21,10 +21,7 @@ const setDeepValue = <T extends Value>(
     value: Value, fieldNames: string[], currentIndex: number, oldValues: Value
 ): T => {
     if (typeof oldValues !== 'object' && !Array.isArray(oldValues)) {
-        if (fieldNames.length !== 0) {
-            throw new Error('Could not find value for ' + fieldNames.join('.'));
-        }
-        return value as T;
+        throw new Error('Could not find value for ' + fieldNames.join('.'));
     }
 
     const ret = Array.isArray(oldValues) ? [...oldValues] : {...oldValues};

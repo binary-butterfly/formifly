@@ -1,6 +1,8 @@
 import ArrayOrSpecificStringValidator from '../../classes/ArrayOrSpecificStringValidator';
 import StringValidator from '../../classes/StringValidator';
 
+jest.mock('../../classes/ArrayValidator');
+
 describe('ArrayOrSpecificStringValidator', () => {
     it('allows the specific string', () => {
         const validator = new ArrayOrSpecificStringValidator(
@@ -14,5 +16,34 @@ describe('ArrayOrSpecificStringValidator', () => {
         const validator = new ArrayOrSpecificStringValidator(new StringValidator());
 
         expect(validator.validate('not correct')).toStrictEqual([false, 'This field has to be an array']);
+    });
+
+    describe('forwards calls to its internal ArrayValidator', () => {
+        it.each`
+        call                |params
+        ${'minLength'}      |${[6, 'message']}
+        ${'maxLength'}      |${[3, 'hello']}
+        ${'lengthRange'}    |${[4, 7, 'please remember to be kind']}
+        ${'getDefaultValue'}|${[]}
+        ${'validate'}       |${[['value'], 'other', 'siblings', true]}
+        `('calls $call on its internal ArrayValidator', ({call, params}) => {
+            const validator = new ArrayOrSpecificStringValidator(new StringValidator());
+            (validator as any)[call](...params);
+
+            expect((validator['internalArrayValidator'] as any)[call]).toBeCalledWith(...params);
+        });
+    });
+
+    it('validates without recursion', () => {
+        const value = 'value';
+        const other = 'other';
+        const siblings = 'siblings';
+
+        const validator = new ArrayOrSpecificStringValidator(new StringValidator());
+        validator.validate = jest.fn();
+
+        validator.validateWithoutRecursion(value, other, siblings);
+
+        expect(validator.validate).toBeCalledWith(value, other, siblings, false);
     });
 });

@@ -96,6 +96,11 @@ describe.each([
     });
 });
 
+it('throws if oldValues is not an array or object', () => {
+    expect(() => setFieldValueFromKeyString('field.name', 'newValue', 'oldValues'))
+        .toThrowErrorMatchingInlineSnapshot(`"Could not find value for field.name"`);
+});
+
 describe.each([
     [
         {
