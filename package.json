@@ -10,7 +10,8 @@
     "src/js/components/*",
     "src/js/main.ts",
     "dist/esm/*",
-    "dist/umd/*"
+    "dist/umd/*",
+    "dist/index.d.ts"
   ],
   "jsnext:main": "src/js/main.js",
   "scripts": {
