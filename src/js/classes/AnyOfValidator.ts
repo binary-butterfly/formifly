@@ -12,17 +12,17 @@ class AnyOfValidator extends BaseValidator<any> {
 
     /**
      * Validates something against an array of different validators and returns true if any of them match.
-     * @param {Array} validatorOptions
+     * @param {Array<BaseValidator<any>>} validatorOptions
      * @param {Any} [defaultValue]
      * @param {String} [defaultErrorMsg]
-     * @param {Function} [mutationFunc]
-     * @param {Function} [onError]
-     * @param {Array|Boolean} [dependent]
+     * @param {MutationFunction} [mutationFunc]
+     * @param {ErrorFunction} [onError]
+     * @param {Dependent} [dependent]
      */
     constructor(
         validatorOptions: Array<BaseValidator<any>>,
         defaultValue?: any,
-        defaultErrorMsg = 'None of the available validators match',
+        defaultErrorMsg: string = 'None of the available validators match',
         mutationFunc?: MutationFunction,
         onError?: ErrorFunction,
         dependent?: Dependent,

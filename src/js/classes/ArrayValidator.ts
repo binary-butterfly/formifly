@@ -16,7 +16,7 @@ import {
  * A validator that allows you to validate array fields.
  * @extends BaseValidator
  *
- * @property {BaseValidator|AnyOfValidator|ArrayValidator|BooleanValidator|EmailValidator|NumberValidator|ObjectValidator|PhoneNumberValidator|StringValidator} of  - The validator of what this is an array of
+ * @property {BaseValidator} of  - The validator of which this is an array of
  */
 class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOfValidator<T>[]> {
     public readonly of: T;
@@ -28,12 +28,12 @@ class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOf
      * Validate an array of fields
      * @param {BaseValidator} of
      * @param {String} [defaultMessage]
-     * @param {Function} [mutationFunc]
-     * @param {Function} [onError]
-     * @param {Array} [dependent]
+     * @param {MutationFunction} [mutationFunc]
+     * @param {ErrorFunction} [onError]
+     * @param {Dependent} [dependent]
      */
     constructor(of: T,
-                          defaultMessage = 'This field has to be an array',
+                          defaultMessage: string = 'This field has to be an array',
                           mutationFunc?: MutationFunction,
                           onError?: ErrorFunction,
                           dependent?: Dependent) {
@@ -46,7 +46,7 @@ class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOf
      * Enforce a minimum count (inclusive) of entries
      * @param {Number} num
      * @param {String} [msg]
-     * @return {ArrayValidator}
+     * @return {this}
      */
     public minLength(num: number, msg?: string): this {
         ensureValueIsNumeric(num, 'minLength', 'ArrayValidator', 'num');
@@ -65,7 +65,7 @@ class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOf
      * Enforce a maximum count (inclusive) of entries
      * @param {Number} num
      * @param {String} [msg]
-     * @return {ArrayValidator}
+     * @return {this}
      */
     public maxLength(num: number, msg?: string): this {
         ensureValueIsNumeric(num, 'maxLength', 'ArrayValidator', 'num');
@@ -81,7 +81,7 @@ class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOf
      * @param {Number} min
      * @param {Number} max
      * @param {String} [msg]
-     * @return {ArrayValidator}
+     * @return {this}
      */
     public lengthRange(min: number, max: number, msg?: string): this {
         ensureValueIsNumeric(min, 'lengthRange', 'ArrayValidator', 'min');

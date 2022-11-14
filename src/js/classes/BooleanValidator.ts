@@ -15,14 +15,14 @@ class BooleanValidator extends BaseValidator<boolean | string> {
      * Validate a boolean field
      * @param {Boolean} [defaultValue]
      * @param {String} [defaultErrorMsg]
-     * @param {Function} [mutationFunc]
-     * @param {Function} [onError]
-     * @param {Array} [dependent]
+     * @param {MutationFunction} [mutationFunc]
+     * @param {ErrorFunction} [onError]
+     * @param {Dependent} [dependent]
      * @param {Boolean} [realBool]
      */
     constructor(
-        defaultValue = false,
-        defaultErrorMsg = 'This field has to be a boolean',
+        defaultValue: boolean = false,
+        defaultErrorMsg: string = 'This field has to be a boolean',
         mutationFunc?: MutationFunction,
         onError?: ErrorFunction,
         dependent?: Dependent,

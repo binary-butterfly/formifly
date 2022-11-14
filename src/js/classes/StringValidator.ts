@@ -11,6 +11,14 @@ class StringValidator extends BaseValidator<string> {
     public defaultInputType: InputType = 'text';
     protected propType = PropTypes.string;
 
+
+    /**
+     * @param {String} defaultValue
+     * @param {String} [defaultErrorMsg]
+     * @param {MutationFunction} [mutationFunc]
+     * @param {ErrorFunction} [onError]
+     * @param {Dependent} [dependent]
+     */
     constructor(defaultValue: string = '',
                 defaultErrorMsg?: string,
                 mutationFunc?: MutationFunction,

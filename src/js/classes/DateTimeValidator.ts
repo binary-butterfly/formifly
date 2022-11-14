@@ -16,11 +16,11 @@ class DateTimeValidator extends BaseValidator<Date | string> {
 
     /**
      * Validate a datetime input
-     * @param {String} [defaultValue]
+     * @param {Date|String} [defaultValue]
      * @param {String} [defaultMsg]
-     * @param {Function} [mutationFunc]
-     * @param {Function} [onError]
-     * @param {Array} [dependent]
+     * @param {MutationFunction} [mutationFunc]
+     * @param {ErrorFunction} [onError]
+     * @param {Dependent} [dependent]
      */
     constructor(defaultValue: Date | string = '',
                 defaultMsg: string = 'This field must contain a date/time',

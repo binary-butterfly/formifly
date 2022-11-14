@@ -36,9 +36,9 @@ class BaseValidator<T extends Value> {
     /**
      * @param [defaultValue]
      * @param {String} [defaultErrorMsg]
-     * @param {Function} [mutationFunc]
-     * @param {Function} [onError]
-     * @param {Array|Boolean} [dependent]
+     * @param {MutationFunction} [mutationFunc]
+     * @param {ErrorFunction} [onError]
+     * @param {Dependent} [dependent]
      */
     constructor(defaultValue: T,
                 defaultErrorMsg?: string,
@@ -87,7 +87,7 @@ class BaseValidator<T extends Value> {
 
     /**
      * Set the validators onError handler
-     * @param {Error} newOnError
+     * @param {ErrorFunction} newOnError
      */
     public setOnError(newOnError: ErrorFunction): void {
         this.onError = newOnError;
@@ -95,7 +95,7 @@ class BaseValidator<T extends Value> {
 
     /**
      * Set the validators dependent field
-     * @param {Array|boolean} newDependent
+     * @param {Dependent} newDependent
      */
     public setDependent(newDependent: Dependent): void {
         this.dependent = newDependent;
@@ -335,7 +335,7 @@ class BaseValidator<T extends Value> {
     /**
      * Checks if the field's value is included within the values of an array field
      * @param {String} key
-     * @param {function} [checkFn]
+     * @param {CheckFunction} [checkFn]
      * @param {String} [msg]
      * @return {this}
      */
@@ -364,7 +364,7 @@ class BaseValidator<T extends Value> {
     /**
      * Checks if the field's value is included within the values of an array field that is a sibling
      * @param {String} key
-     * @param {function} [checkFn]
+     * @param {CheckFunction} [checkFn]
      * @param {String} [msg]
      * @return {this}
      */
@@ -410,10 +410,10 @@ class BaseValidator<T extends Value> {
 
     /**
      * Validates a value
-     * @param value
-     * @param otherValues
-     * @param siblings
-     * @return {*}
+     * @param {Value} value
+     * @param {Value} otherValues
+     * @param {Value} siblings
+     * @return {ValidationResult}
      */
     public validate(value?: T, otherValues: Value = {}, siblings: Value = {}): ValidationResult<T> {
         let ret: ValidationResult<T>;

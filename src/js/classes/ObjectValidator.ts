@@ -27,9 +27,9 @@ class ObjectValidator<T extends ObjectValidatorFields> extends BaseValidator<Val
     /**
      * @param {Object} fields
      * @param {String} [defaultMessage]
-     * @param {Function} [mutationFunc]
-     * @param {Function} [onError]
-     * @param {Array} [dependent]
+     * @param {MutationFunction} [mutationFunc]
+     * @param {ErrorFunction} [onError]
+     * @param {Dependent} [dependent]
      * @param {Boolean} [dropEmpty]
      * @param {Boolean} [dropNotInShape]
      */
@@ -56,7 +56,7 @@ class ObjectValidator<T extends ObjectValidatorFields> extends BaseValidator<Val
 
     /**
      * Sets the object validator as non required
-     * @returns {ObjectValidator}
+     * @returns {this}
      */
     public notRequired(): this {
         this._isRequired = false;
@@ -177,7 +177,7 @@ class ObjectValidator<T extends ObjectValidatorFields> extends BaseValidator<Val
 
     /**
      * Returns the PropTypes representation of the validator.
-     * @return {any}
+     * @return {Object}
      */
     public getPropType(): PropTypes.Validator<any> {
         const types: Record<string, PropTypes.Validator<any>> = {};
@@ -193,7 +193,7 @@ class ObjectValidator<T extends ObjectValidatorFields> extends BaseValidator<Val
      * Returns the PropTypes representation of the validator.
      *
      * Return an object instead of PropTypes.shape. This is useful if you want to assign this validator's PropType to the PropTypes of a component.
-     * @return {any}
+     * @return {Object}
      */
     public getFirstPropType(): Record<string, PropTypes.Validator<any>> {
         const types: Record<string, PropTypes.Validator<any>> = {};

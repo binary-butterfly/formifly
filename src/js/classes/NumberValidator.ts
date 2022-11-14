@@ -24,11 +24,11 @@ class NumberValidator extends BaseValidator<number|string> {
     /**
      * Validate a numeric input field
      * @param wholeNumber - Set to true to only allow whole numbers
-     * @param [defaultValue]
-     * @param [defaultErrorMsg]
-     * @param [mutationFunc]
-     * @param [onError]
-     * @param [dependent]
+     * @param {String|Number} [defaultValue]
+     * @param {String} [defaultErrorMsg]
+     * @param {MutationFunction} [mutationFunc]
+     * @param {ErrorFunction} [onError]
+     * @param {Dependent} [dependent]
      */
     constructor(
         wholeNumber = false,

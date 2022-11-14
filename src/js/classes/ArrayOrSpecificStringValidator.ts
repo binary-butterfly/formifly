@@ -6,8 +6,6 @@ import {Dependent, ErrorFunction, MutationFunction, ValidationResult, Value, Val
  * A validator that allows you to validate array fields that may also contain a string instead of an array value.
  * @extends BaseValidator
  *
- * @property {BaseValidator|AnyOfValidator|ArrayValidator|BooleanValidator|EmailValidator|NumberValidator|ObjectValidator|PhoneNumberValidator|StringValidator} of  - The validator of what this is an array of
- * @property {String} allowedString - The string that is allowed instead of an array value
  */
 class ArrayOrSpecificStringValidator<T extends BaseValidator<any>> extends BaseValidator<Array<ValueOfValidator<T>>|string> {
     private readonly allowedString: string;
@@ -17,9 +15,9 @@ class ArrayOrSpecificStringValidator<T extends BaseValidator<any>> extends BaseV
      * Validate an array of fields
      * @param {BaseValidator} of
      * @param {String} [defaultMessage]
-     * @param {Function} [mutationFunc]
-     * @param {Function} [onError]
-     * @param {Array} [dependent]
+     * @param {MutationFunction} [mutationFunc]
+     * @param {ErrorFunction} [onError]
+     * @param {Dependent} [dependent]
      * @param {String} [allowedString
      */
     constructor(of: T,
@@ -27,7 +25,7 @@ class ArrayOrSpecificStringValidator<T extends BaseValidator<any>> extends BaseV
                 mutationFunc?: MutationFunction,
                 onError?: ErrorFunction,
                 dependent?: Dependent,
-                allowedString = '_any') {
+                allowedString: string = '_any') {
         super([], defaultMessage, mutationFunc, onError, dependent);
         this.internalArrayValidator = new ArrayValidator<T>(of, defaultMessage, mutationFunc, onError, dependent);
         this.allowedString = allowedString;
@@ -49,7 +47,7 @@ class ArrayOrSpecificStringValidator<T extends BaseValidator<any>> extends BaseV
      * Enforce a minimum count (inclusive) of entries
      * @param {Number} num
      * @param {String} [msg]
-     * @return {ArrayValidator}
+     * @return {this}
      */
     public minLength(num: number, msg?: string): this {
         this.internalArrayValidator.minLength(num, msg);
@@ -60,7 +58,7 @@ class ArrayOrSpecificStringValidator<T extends BaseValidator<any>> extends BaseV
      * Enforce a maximum count (inclusive) of entries
      * @param {Number} num
      * @param {String} [msg]
-     * @return {ArrayValidator}
+     * @return {this}
      */
     public maxLength(num: number, msg?: string): this {
         this.internalArrayValidator.maxLength(num, msg);
@@ -72,7 +70,7 @@ class ArrayOrSpecificStringValidator<T extends BaseValidator<any>> extends BaseV
      * @param {Number} min
      * @param {Number} max
      * @param {String} [msg]
-     * @return {ArrayValidator}
+     * @return {this}
      */
     public lengthRange(min: number, max: number, msg?: string): this {
         this.internalArrayValidator.lengthRange(min, max, msg);
