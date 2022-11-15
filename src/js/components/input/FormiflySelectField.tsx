@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, {StyledComponent} from 'styled-components';
+import styled from 'styled-components';
 import {FormiflyFieldProps} from './FormiflyField';
 import withLabelErrorsAndHelp from './withLabelErrorsAndHelp';
 
@@ -59,9 +59,9 @@ const FormiflySelectField = (props: FormiflySelectFieldProps) => {
 export type FormiflySelectFieldProps = FormiflyFieldProps & {
     options: {
         label: string,
-        value: any,
+        value: string,
     }[],
-    optionComponent: StyledComponent<any, any>,
+    optionComponent: React.ComponentType<{value: string, disabled?: boolean, className? : string}>,
     optionClassName: string,
 }
 

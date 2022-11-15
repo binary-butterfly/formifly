@@ -69,14 +69,14 @@ export type FormiflyFieldProps = Pick<AutomagicFormiflyFieldProps,
     'multiple' |
     'checked'
     > & {
-    value: number | string | any[] | boolean,
+    value: number | string,
     onChange: React.ChangeEventHandler,
     onFocus: React.ChangeEventHandler,
     label?: string,
     id: string,
     type: string,
     errors: boolean | string,
-    onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => Promise<boolean>,
+    onBlur?: React.FocusEventHandler,
     'aria-invalid'?: boolean,
     'aria-describedby'?: string,
     'aria-required'?: boolean,

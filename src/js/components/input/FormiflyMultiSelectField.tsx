@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, {StyledComponent} from 'styled-components';
+import styled from 'styled-components';
 import {CheckLabel} from './FormiflyCheckField';
 import withLabelErrorsAndHelp from './withLabelErrorsAndHelp';
 import {FormiflyFieldProps} from './FormiflyField';
@@ -173,14 +173,14 @@ export type FormiflyMultiSelectFieldProps = FormiflyFieldProps & {
     nothingSelectedText?: string,
     numSelectedText?: string,
     allSelectedText?: string,
-    optionComponent?: StyledComponent<any, any>,
+    optionComponent?: React.ComponentType,
     optionClassName?: string,
     selectionDisplayCutoff?: number,
-    selectedDisplayComponent?: StyledComponent<any, any>,
+    selectedDisplayComponent?: React.ComponentType,
     selectedDisplayClassName?: string,
-    menuComponent?: StyledComponent<any, any>,
+    menuComponent?: React.ComponentType,
     menuClassName?: string,
-    selectContainerComponent?: StyledComponent<any, any>,
+    selectContainerComponent?: React.ComponentType,
     selectContainerClassName?: string,
     onChange: (name: string, value: any) => void;
 }

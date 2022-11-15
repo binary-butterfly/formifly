@@ -5,7 +5,6 @@ import FormiflyField from './FormiflyField';
 import FormiflyMultiSelectField from './FormiflyMultiSelectField';
 import FormiflyRadioGroup from './FormiflyRadioGroup';
 import FormiflySelectField from './FormiflySelectField';
-import {StyledComponent} from 'styled-components';
 
 const AutomagicFormiflyField = (props: AutomagicFormiflyFieldProps) => {
     const {getFieldProps} = useFormiflyContext();
@@ -41,12 +40,12 @@ export type AutomagicFormiflyFieldProps = {
     errorClassName?: string,
     helpClassName?: string,
     legendClassName?: string,
-    containerComponent?: StyledComponent<any, any>,
-    inputComponent?: StyledComponent<any, any>,
-    labelComponent?: StyledComponent<any, any>,
-    errorComponent?: StyledComponent<any, any>,
-    helpComponent?: StyledComponent<any, any>,
-    legendComponent?: StyledComponent<any, any>,
+    containerComponent?: React.ComponentType<{'$horizontal'?: boolean}>,
+    inputComponent?: React.ComponentType<{onBlur?: React.FocusEventHandler}>,
+    labelComponent?: React.ComponentType,
+    errorComponent?: React.ComponentType,
+    helpComponent?: React.ComponentType,
+    legendComponent?: React.ComponentType,
     labelNoMove?: boolean,
     additionalDescribedBy?: string,
     options?: {
@@ -55,11 +54,11 @@ export type AutomagicFormiflyFieldProps = {
     }[],
     multiple?: boolean,
     selectionDisplayCutoff?: number,
-    selectedDisplayComponent?: StyledComponent<any, any>,
+    selectedDisplayComponent?: React.ComponentType,
     selectedDisplayClassName?: string,
-    menuComponent?: StyledComponent<any, any>,
+    menuComponent?: React.ComponentType,
     menuClassName?: string,
-    selectContainerComponent?: StyledComponent<any, any>,
+    selectContainerComponent?: React.ComponentType,
     selectContainerClassName?: string,
     selectAllText?: string,
     nothingSelectedText?: string,
