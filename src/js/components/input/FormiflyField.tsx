@@ -66,8 +66,7 @@ export type FormiflyFieldProps = Pick<AutomagicFormiflyFieldProps,
     'labelNoMove' |
     'horizontal' |
     'options' |
-    'multiple' |
-    'checked'
+    'multiple'
     > & {
     value: number | string,
     onChange: React.ChangeEventHandler,
@@ -83,6 +82,7 @@ export type FormiflyFieldProps = Pick<AutomagicFormiflyFieldProps,
     required?: boolean,
     min?: number,
     max?: number,
+    checked?: boolean|string,
 }
 
 export default React.memo(withLabelErrorsAndHelp(FormiflyField));

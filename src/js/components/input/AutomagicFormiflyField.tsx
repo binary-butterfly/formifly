@@ -20,7 +20,7 @@ const AutomagicFormiflyField = (props: AutomagicFormiflyFieldProps) => {
         } else {
             return <FormiflySelectField {...fieldProps} {...props}/>;
         }
-    } else if (['checkbox', 'radio'].includes(type) && (fieldProps.checked !== undefined || props.checked !== undefined)) {
+    } else if (['checkbox', 'radio'].includes(type) && (fieldProps.checked !== undefined)) {
         // @ts-expect-error for some reason typescript doesn't understand that we checked for the existence of 'checked'
         return <FormiflyCheckField {...fieldProps} {...props}/>;
     } else {
@@ -66,7 +66,6 @@ export type AutomagicFormiflyFieldProps = {
     allSelectedText?: string,
     horizontal?: boolean,
     value?: string,
-    checked?: boolean|string,
 }
 
 export default AutomagicFormiflyField;

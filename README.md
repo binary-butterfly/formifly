@@ -1160,11 +1160,17 @@ Creating your own validator is really easy. This is a quick "tl;dr" example for 
 
 ```ts
 class NotTrueValidator extends BooleanValidator {
-    constructor(defaultValue?: boolean, defaultErrorMsg?: string, mutationFunc?: MutationFunction, onError?: ErrorFunction, dependent?: Dependent) {
+    constructor(
+        defaultValue: boolean | undefined,
+        defaultErrorMsg: string,
+        mutationFunc?: MutationFunction,
+        onError?: ErrorFunction,
+        dependent?: Dependent
+    ) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
         this.validateFuncs.push(value => ({
             success: value !== 'true' && value !== true,
-            errorMsg: defaultErrorMsg ?? '',
+            errorMsg: defaultErrorMsg,
             changedValue: Boolean(value),
         }));
     }

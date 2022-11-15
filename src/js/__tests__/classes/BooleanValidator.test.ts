@@ -20,6 +20,8 @@ test('Test BoolValidator realBool param', () => {
     validator.setRealBool(false);
     expect(validator.validate(true)).toStrictEqual([true, 'true']);
 
+    expect(validator.validate(false)).toStrictEqual([true, 'false']);
+
     validator.setRealBool(true);
     expect(validator.validate(true)).toStrictEqual([true, true]);
 });

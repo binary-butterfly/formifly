@@ -76,5 +76,5 @@ export function isValidatorStepArrayArray(dependent?: Dependent): dependent is A
 }
 
 export function isValidatorStep(dependent?: boolean | ValidatorStep): dependent is ValidatorStep {
-    return !!dependent && Array.isArray(dependent);
+    return !!dependent && Array.isArray(dependent) && !Array.isArray(dependent[0]);
 }

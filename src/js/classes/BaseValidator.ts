@@ -150,10 +150,13 @@ class BaseValidator<T extends Value> {
                     return (validated[1]);
                 }
             }
-        } else if (isValidatorStep(this.dependent)) {
-            const validated = this.validateDependentStep(this.dependent, value, otherValues, siblings);
-            if (validated[0]) {
-                return validated[1];
+        } else {
+            // istanbul ignore else: else part is unreachable because when this method is called, this.dependent is not undefined
+            if (isValidatorStep(this.dependent)) {
+                const validated = this.validateDependentStep(this.dependent, value, otherValues, siblings);
+                if (validated[0]) {
+                    return validated[1];
+                }
             }
         }
 
