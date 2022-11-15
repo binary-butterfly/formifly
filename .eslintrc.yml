@@ -1,2 +1,12 @@
 extends:
   - "@binary-butterfly/eslint-config"
+
+overrides:
+  - files: ['*.ts', '*.tsx']
+    rules:
+      no-undef: off
+      no-unused-vars: off
+      '@typescript-eslint/no-unused-vars': warn
+    parser: '@typescript-eslint/parser'
+    plugins:
+      - "@typescript-eslint"
