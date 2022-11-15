@@ -242,7 +242,7 @@ export const FormiflyProvider = <T extends BaseValidator<any>>(props: FormiflyPr
                 additionalProps.max = fieldValidator.maxNum;
             }
         } else if (fieldValidator instanceof BooleanValidator) {
-            additionalProps.checked = fieldValue as string | boolean | undefined;
+            additionalProps.checked = Boolean(fieldValue);
             additionalProps.onChange = handleCheckChange;
         } else if (fieldValidator instanceof ArrayValidator<any>) {
             additionalProps.onChange = handleMultiSelectChange;

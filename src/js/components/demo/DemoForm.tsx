@@ -139,7 +139,11 @@ class NotTrueValidator extends BooleanValidator {
         dependent?: Dependent
     ) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
-        this.validateFuncs.push(value => ({success: value !== 'true' && value !== true, errorMsg: defaultErrorMsg ?? ''}));
+        this.validateFuncs.push(value => ({
+            success: value !== 'true' && value !== true,
+            errorMsg: defaultErrorMsg ?? '',
+            changedValue: Boolean(value),
+        }));
     }
 }
 
