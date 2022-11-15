@@ -27,7 +27,7 @@ class BaseValidator<T extends Value> {
     private requiredError?: string;
     protected validateFuncs: Array<ValidateFunction<T>> = [];
     protected defaultErrorMsg: string;
-    private dependent: Dependent;
+    private dependent?: Dependent;
     private defaultValue: T;
     protected propType: PropTypes.Requireable<any> = PropTypes.any;
     protected onError?: ErrorFunction;
@@ -44,7 +44,7 @@ class BaseValidator<T extends Value> {
                 defaultErrorMsg?: string,
                 mutationFunc?: MutationFunction,
                 onError?: ErrorFunction,
-                dependent: Dependent = false) {
+                dependent?: Dependent) {
         this.defaultErrorMsg = defaultErrorMsg ?? 'There is an error within this field';
         this.mutationFunc = mutationFunc;
         this.onError = onError;
@@ -132,10 +132,10 @@ class BaseValidator<T extends Value> {
     }
 
     private validateDependentStep(
-        step: ValidatorStep | boolean, value: T | string | undefined, otherValues: Value, siblings: Value
+        step: ValidatorStep, value: T | string | undefined, otherValues: Value, siblings: Value
     ): DependentValidationResult<T> {
-        const dependentValue = getFieldValueFromKeyString(isValidatorStep(step) ? step[0] : '', otherValues);
-        if (isValidatorStep(step) && step[1](dependentValue, value)) {
+        const dependentValue = getFieldValueFromKeyString(step[0], otherValues);
+        if (step[1](dependentValue, value)) {
             return [true, step[2].validate(value, otherValues, siblings)];
         } else {
             return [false];
@@ -150,7 +150,7 @@ class BaseValidator<T extends Value> {
                     return (validated[1]);
                 }
             }
-        } else {
+        } else if (isValidatorStep(this.dependent)) {
             const validated = this.validateDependentStep(this.dependent, value, otherValues, siblings);
             if (validated[0]) {
                 return validated[1];

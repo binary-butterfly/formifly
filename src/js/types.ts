@@ -44,7 +44,7 @@ export type IndividualValidationResult<T extends Value> = {
 // todo: discuss if we want to use an object instead, to be able to name the components. That'd be a breaking change tho
 export type ValidatorStep = [string, (dependentValue: Value, value?: Value) => boolean, BaseValidator<any>];
 
-export type Dependent = boolean | ValidatorStep | Array<Array<ValidatorStep>>
+export type Dependent = ValidatorStep | Array<Array<ValidatorStep>>
 
 
 export type InputType =
@@ -71,10 +71,10 @@ export type ValueOfObjectValidatorFields<T extends ObjectValidatorFields> = {[K 
 export type ObjectValidatorFields = {[key: string]: BaseValidator<any>};
 
 
-export function isValidatorStepArrayArray(dependent: Dependent): dependent is Array<Array<ValidatorStep>> {
-    return Array.isArray(dependent) && Array.isArray(dependent[0]);
+export function isValidatorStepArrayArray(dependent?: Dependent): dependent is Array<Array<ValidatorStep>> {
+    return !!dependent && Array.isArray(dependent) && Array.isArray(dependent[0]);
 }
 
-export function isValidatorStep(dependent: boolean | ValidatorStep): dependent is ValidatorStep {
-    return Array.isArray(dependent);
+export function isValidatorStep(dependent?: boolean | ValidatorStep): dependent is ValidatorStep {
+    return !!dependent && Array.isArray(dependent);
 }

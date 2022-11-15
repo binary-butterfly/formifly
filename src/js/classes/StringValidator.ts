@@ -23,7 +23,7 @@ class StringValidator extends BaseValidator<string> {
                 defaultErrorMsg?: string,
                 mutationFunc?: MutationFunction,
                 onError?: ErrorFunction,
-                dependent: Dependent = false) {
+                dependent?: Dependent) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
     }
 
