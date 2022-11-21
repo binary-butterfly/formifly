@@ -6,16 +6,10 @@
   "module": "dist/esm/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "src/js/classes/*",
-    "src/js/helpers/*",
-    "src/js/components/*",
-    "src/js/main.ts",
-    "src/js/types.ts",
     "dist/esm/*",
     "dist/umd/*",
     "dist/index.d.ts"
   ],
-  "jsnext:main": "src/js/main.js",
   "scripts": {
     "test": "jest --config jest.config.js ",
     "test:watch": "jest --config jest.config.js --watch",
