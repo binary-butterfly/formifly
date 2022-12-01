@@ -142,6 +142,7 @@ class NotTrueValidator extends BooleanValidator {
         this.validateFuncs.push(value => ({
             success: value !== 'true' && value !== true,
             errorMsg: defaultErrorMsg,
+            msgName: 'not_true',
             changedValue: Boolean(value),
         }));
     }

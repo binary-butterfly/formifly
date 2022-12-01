@@ -9,12 +9,12 @@ import {InputType} from '../types';
 class CustomEmailValidator extends EmailValidator {
     public defaultInputType: InputType = 'email';
 
-    public notFromDomain(domain: string, msg = 'This domain is not allowed'): this {
+    public notFromDomain(domain: string, msg?: string): this {
         this.validateFuncs.push(
             (value) => {
                 const splitString = value.split('@');
-                return {success: splitString[splitString.length - 1] !== domain, errorMsg: msg};
-            }
+                return {success: splitString[splitString.length - 1] !== domain, errorMsg: msg, msgName: 'custom_email_validator'};
+            },
         );
         return this;
     }

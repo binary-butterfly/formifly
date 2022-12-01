@@ -26,17 +26,21 @@ export type ValidationResult<T extends Value | ErrorType> = |
 
 export type UnpackedErrors<V extends BaseValidator<any>> =
     V extends ObjectValidator<infer O> ?
-        {[K in keyof O]: UnpackedErrors<O[K]>} :
+        { [K in keyof O]: UnpackedErrors<O[K]> } :
         V extends ArrayValidator<infer A> ?
             UnpackedErrors<A>[] :
-            string|false;
+            string | false;
 
 export type ErrorType = string | false | { [key: string]: ValidationResult<ErrorType> } | ValidationResult<ErrorType>[];
 
 export type DependentValidationResult<T extends Value> = [false] | [true, ValidationResult<T>];
 export type IndividualValidationResult<T extends Value> = {
     success: boolean;
-    errorMsg: string;
+    msgName: string;
+    errorMsg?: string;
+    translationContext?: {
+        [key: string]: string | number,
+    };
     changedValue?: T;
 }
 
@@ -66,9 +70,9 @@ export type ArrayValue = Value[];
 export type Value = FlatValue | ObjectValue | ArrayValue;
 
 export type ValueOfValidator<V> = V extends BaseValidator<infer T> ? T : any;
-export type ValueOfObjectValidatorFields<T extends ObjectValidatorFields> = {[K in keyof T]: ValueOfValidator<T[K]>};
+export type ValueOfObjectValidatorFields<T extends ObjectValidatorFields> = { [K in keyof T]: ValueOfValidator<T[K]> };
 
-export type ObjectValidatorFields = {[key: string]: BaseValidator<any>};
+export type ObjectValidatorFields = { [key: string]: BaseValidator<any> };
 
 
 export function isValidatorStepArrayArray(dependent?: Dependent): dependent is Array<Array<ValidatorStep>> {

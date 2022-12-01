@@ -51,14 +51,15 @@ REST backends.
     - [PhoneNumberValidator](#phonenumbervalidator)
 6. [Cross Dependent Fields](#cross-dependent-fields)
 7. [Creating your own Validators](#creating-your-own-validators)
-8. [Tips and tricks](#tips-and-tricks)
+8. [Localization](#localization)
+9. [Tips and tricks](#tips-and-tricks)
     - [Multi step forms](#multi-step-forms)
     - [Handling backend validation errors](#handling-backend-validation-errors)
     - [Too many constructor params?](#too-many-constructor-params)
     - [Creating empty array entries](#creating-empty-array-entries)
     - [Race condition when setting multiple child fields?](#race-condition-when-setting-multiple-child-fields)
     - [Race condition when validating multiple child fields?](#race-condition-when-validating-multiple-child-fields)
-9. [Development](#development)
+10. [Development](#development)
 
 ## Quick Start
 
@@ -1171,6 +1172,7 @@ class NotTrueValidator extends BooleanValidator {
         this.validateFuncs.push(value => ({
             success: value !== 'true' && value !== true,
             errorMsg: defaultErrorMsg,
+            msgName: 'not_true',
             changedValue: Boolean(value),
         }));
     }
@@ -1187,12 +1189,12 @@ We would write that something like this:
 class CustomEmailValidator extends EmailValidator {
     public defaultInputType: InputType = 'email';
 
-    public notFromDomain(domain: string, msg = 'This domain is not allowed'): this {
+    public notFromDomain(domain: string, msg?: string): this {
         this.validateFuncs.push(
             (value) => {
                 const splitString = value.split('@');
-                return {success: splitString[splitString.length - 1] !== domain, errorMsg: msg};
-            }
+                return {success: splitString[splitString.length - 1] !== domain, errorMsg: msg, msgName: 'custom_email_validator'};
+            },
         );
         return this;
     }
@@ -1207,6 +1209,28 @@ This validator does the following things:
   input by sending validation emails.)
 - It adds a function called `notFromDomain`.  
   This function can be used to forbid email addresses hosted on a certain domain.
+- It allows the user to set a custom message in case the notFromDomain validator validates to false
+    - If no error is given, the translation function will be used to look up a localized string with the key `custom_email_validator`
+
+## Localization
+
+By default, all built in validators will return more or less useful error messages in English language, when they are used within a
+FormiflyForm.  
+You can override those on a per validator basis by using the defaultErrorMessage property on the validator and the msg property on
+validator functions.
+Some validator functions even automatically replace the names of their parameters when they are passed a custom string that contains a
+placeholder like `{{num}}`.
+
+However, overriding all of these error messages can get very tedious, which is why since version 2, Formifly makes use of the powerful
+[react-i18next](https://react.i18next.com/) localization library.  
+To automatically localize all included default error messages, you can pass your own translation function to the FormiflyForm.  
+In order for this to work, you will need a `formifly` namespace with all the translation strings included
+in [our custom i18n.ts](./src/js/helpers/i18n.ts) file.
+
+If the validator takes any parameters, such as `min` for `StringValidator.minLength(min)`, these will be given to the translation function
+in an object as the second parameter, to allow automatic replacement of placeholders.
+
+Any custom validators you create must return a msgName that can be used as a translation key on their validation functions.
 
 ## Tips and tricks
 

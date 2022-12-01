@@ -3,7 +3,7 @@ import ObjectValidator from '../../classes/ObjectValidator';
 
 test('Test DateTimeValidator returns false on malformed dates', () => {
     const validator = new DateTimeValidator();
-    expect(validator.validate('banana')).toStrictEqual([false, 'This field must contain a date/time']);
+    expect(validator.validate('banana')).toStrictEqual([false, 'date_time']);
 });
 
 describe.each([
@@ -22,7 +22,7 @@ describe.each([
         '2020-01-01T00:00',
         new Date('2021-01-01'),
         undefined,
-        [false, 'This date must be at least ' + new Date('2021-01-01').toLocaleString()],
+        [false, 'min_date'],
         'returns false on earlier date',
     ],
     [
@@ -45,7 +45,7 @@ describe.each([
         '2020-01-01T00:00',
         new Date('2019-01-01'),
         undefined,
-        [false, 'This date must be ' + new Date('2019-01-01').toLocaleString() + ' at the latest'],
+        [false, 'max_date'],
         'returns false on later date',
     ],
     [
@@ -76,7 +76,7 @@ describe.each([
         new Date('2019-01-01'),
         new Date('2019-06-01'),
         undefined,
-        [false, 'This date must be between ' + new Date('2019-01-01').toLocaleString() + ' and ' + new Date('2019-06-01').toLocaleString()],
+        [false, 'date_range'],
         'returns false on date outside the range',
     ],
     [
@@ -112,7 +112,7 @@ describe('Test DateTimeValidator greaterThanSibling', () => {
         const values = {begin: '2022-01-01T00:00:00Z', end: '2020-01-01T00:00:00Z'};
         expect(validator.validate(values, values, values)).toStrictEqual([false, {
             begin: [true, new Date('2022-01-01T00:00:00Z')],
-            end: [false, 'This value must be greater than the value of its sibling begin'],
+            end: [false, 'greater_than_sibling_date'],
         }]);
     });
 
@@ -120,7 +120,7 @@ describe('Test DateTimeValidator greaterThanSibling', () => {
         const validator = new ObjectValidator({begin: new DateTimeValidator(), end: new DateTimeValidator().greaterThanSibling('begin')});
         const values = {begin: 'banana', end: '2022-01-01T00:00:00Z'};
         expect(validator.validate(values, values, values)).toStrictEqual([false, {
-            begin: [false, 'This field must contain a date/time'],
+            begin: [false, 'date_time'],
             end: [true, new Date('2022-01-01T00:00:00Z')],
         }]);
     });
@@ -159,7 +159,7 @@ describe('Test DateTimeValidator greaterOrEqualToSibling', () => {
         const values = {begin: '2022-01-01T00:00:00Z', end: '2020-01-01T00:00:00Z'};
         expect(validator.validate(values, values, values)).toStrictEqual([false, {
             begin: [true, new Date('2022-01-01T00:00:00Z')],
-            end: [false, 'This value must be greater than or equal to the value of its sibling begin'],
+            end: [false, 'greater_or_equal_to_sibling_date'],
         }]);
     });
 
@@ -170,7 +170,7 @@ describe('Test DateTimeValidator greaterOrEqualToSibling', () => {
         });
         const values = {begin: 'banana', end: '2022-01-01T00:00:00Z'};
         expect(validator.validate(values, values, values)).toStrictEqual([false, {
-            begin: [false, 'This field must contain a date/time'],
+            begin: [false, 'date_time'],
             end: [true, new Date('2022-01-01T00:00:00Z')],
         }]);
     });
@@ -193,7 +193,7 @@ describe('Test DateTimeValidator lessThanSibling', () => {
         const validator = new ObjectValidator({begin: new DateTimeValidator().lessThanSibling('end'), end: new DateTimeValidator()});
         const values = {begin: '2022-01-01T00:00:00Z', end: '2020-01-01T00:00:00Z'};
         expect(validator.validate(values, values, values)).toStrictEqual([false, {
-            begin: [false, 'This value must be less than the value of its sibling end'],
+            begin: [false, 'less_than_sibling_date'],
             end: [true, new Date('2020-01-01T00:00:00Z')],
         }]);
     });
@@ -203,7 +203,7 @@ describe('Test DateTimeValidator lessThanSibling', () => {
         const values = {begin: '2022-01-01T00:00:00Z', end: 'banana'};
         expect(validator.validate(values, values, values)).toStrictEqual([false, {
             begin: [true, new Date('2022-01-01T00:00:00Z')],
-            end: [false, 'This field must contain a date/time'],
+            end: [false, 'date_time'],
         }]);
     });
 });
@@ -225,7 +225,7 @@ describe('Test DateTimeValidator lessOrEqualToSibling', () => {
         const validator = new ObjectValidator({begin: new DateTimeValidator().lessOrEqualToSibling('end'), end: new DateTimeValidator()});
         const values = {begin: '2022-01-01T00:00:00Z', end: '2020-01-01T00:00:00Z'};
         expect(validator.validate(values, values, values)).toStrictEqual([false, {
-            begin: [false, 'This value must be less than or equal to the value of its sibling end'],
+            begin: [false, 'less_or_equal_to_sibling_date'],
             end: [true, new Date('2020-01-01T00:00:00Z')],
         }]);
     });
@@ -247,13 +247,13 @@ describe('Test DateTimeValidator lessOrEqualToSibling', () => {
         const values = {begin: '2022-01-01T00:00:00Z', end: 'banana'};
         expect(validator.validate(values, values, values)).toStrictEqual([false, {
             begin: [true, new Date('2022-01-01T00:00:00Z')],
-            end: [false, 'This field must contain a date/time'],
+            end: [false, 'date_time'],
         }]);
     });
 });
 
 describe('Test DateTimeValidator greaterThan', () => {
-    it('works with a valid smaller ', () => {
+    it('works with a valid smaller field', () => {
         const validator = new ObjectValidator({begin: new DateTimeValidator(), end: new DateTimeValidator().greaterThan('begin', 'bla')});
         const values = {begin: '2020-01-01T00:00:00Z', end: '2022-01-01T00:00:00Z'};
         expect(validator.validate(values, values, values)).toStrictEqual([true, {
@@ -262,20 +262,20 @@ describe('Test DateTimeValidator greaterThan', () => {
         }]);
     });
 
-    it('works with a valid greater ', () => {
+    it('works with a valid greater field', () => {
         const validator = new ObjectValidator({begin: new DateTimeValidator(), end: new DateTimeValidator().greaterThan('begin')});
         const values = {begin: '2022-01-01T00:00:00Z', end: '2020-01-01T00:00:00Z'};
         expect(validator.validate(values, values, values)).toStrictEqual([false, {
             begin: [true, new Date('2022-01-01T00:00:00Z')],
-            end: [false, 'This value must be greater than the value of begin'],
+            end: [false, 'greater_than_date'],
         }]);
     });
 
-    it('works with an invalid ', () => {
+    it('works with an invalid field', () => {
         const validator = new ObjectValidator({begin: new DateTimeValidator(), end: new DateTimeValidator().greaterThan('begin')});
         const values = {begin: 'banana', end: '2022-01-01T00:00:00Z'};
         expect(validator.validate(values, values, values)).toStrictEqual([false, {
-            begin: [false, 'This field must contain a date/time'],
+            begin: [false, 'date_time'],
             end: [true, new Date('2022-01-01T00:00:00Z')],
         }]);
     });
@@ -314,7 +314,7 @@ describe('Test DateTimeValidator greaterOrEqualTo', () => {
         const values = {begin: '2022-01-01T00:00:00Z', end: '2020-01-01T00:00:00Z'};
         expect(validator.validate(values, values, values)).toStrictEqual([false, {
             begin: [true, new Date('2022-01-01T00:00:00Z')],
-            end: [false, 'This value must be greater than or equal to the value of begin'],
+            end: [false, 'greater_or_equal_to_date'],
         }]);
     });
 
@@ -325,7 +325,7 @@ describe('Test DateTimeValidator greaterOrEqualTo', () => {
         });
         const values = {begin: 'banana', end: '2022-01-01T00:00:00Z'};
         expect(validator.validate(values, values, values)).toStrictEqual([false, {
-            begin: [false, 'This field must contain a date/time'],
+            begin: [false, 'date_time'],
             end: [true, new Date('2022-01-01T00:00:00Z')],
         }]);
     });
@@ -345,7 +345,7 @@ describe('Test DateTimeValidator lessThan', () => {
         const validator = new ObjectValidator({begin: new DateTimeValidator().lessThan('end'), end: new DateTimeValidator()});
         const values = {begin: '2022-01-01T00:00:00Z', end: '2020-01-01T00:00:00Z'};
         expect(validator.validate(values, values, values)).toStrictEqual([false, {
-            begin: [false, 'This value must be less than the value of end'],
+            begin: [false, 'less_than_date'],
             end: [true, new Date('2020-01-01T00:00:00Z')],
         }]);
     });
@@ -355,7 +355,7 @@ describe('Test DateTimeValidator lessThan', () => {
         const values = {begin: '2022-01-01T00:00:00Z', end: 'banana'};
         expect(validator.validate(values, values, values)).toStrictEqual([false, {
             begin: [true, new Date('2022-01-01T00:00:00Z')],
-            end: [false, 'This field must contain a date/time'],
+            end: [false, 'date_time'],
         }]);
     });
 });
@@ -374,7 +374,7 @@ describe('Test DateTimeValidator lessOrEqualTo', () => {
         const validator = new ObjectValidator({begin: new DateTimeValidator().lessOrEqualTo('end'), end: new DateTimeValidator()});
         const values = {begin: '2022-01-01T00:00:00Z', end: '2020-01-01T00:00:00Z'};
         expect(validator.validate(values, values, values)).toStrictEqual([false, {
-            begin: [false, 'This value must be less than or equal to the value of end'],
+            begin: [false, 'less_or_equal_to_date'],
             end: [true, new Date('2020-01-01T00:00:00Z')],
         }]);
     });
@@ -396,7 +396,7 @@ describe('Test DateTimeValidator lessOrEqualTo', () => {
         const values = {begin: '2022-01-01T00:00:00Z', end: 'banana'};
         expect(validator.validate(values, values, values)).toStrictEqual([false, {
             begin: [true, new Date('2022-01-01T00:00:00Z')],
-            end: [false, 'This field must contain a date/time'],
+            end: [false, 'date_time'],
         }]);
     });
 });

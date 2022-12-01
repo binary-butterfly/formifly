@@ -14,7 +14,7 @@ import {
     ValidatorStep,
     Value,
 } from '../types';
-
+import {TFunction} from 'i18next';
 
 /**
  * The validator that all validators extend.
@@ -26,7 +26,7 @@ class BaseValidator<T extends Value> {
 
     private requiredError?: string;
     protected validateFuncs: Array<ValidateFunction<T>> = [];
-    protected defaultErrorMsg: string;
+    protected defaultErrorMsg?: string;
     private dependent?: Dependent;
     private defaultValue: T;
     protected propType: PropTypes.Requireable<any> = PropTypes.any;
@@ -45,7 +45,7 @@ class BaseValidator<T extends Value> {
                 mutationFunc?: MutationFunction,
                 onError?: ErrorFunction,
                 dependent?: Dependent) {
-        this.defaultErrorMsg = defaultErrorMsg ?? 'There is an error within this field';
+        this.defaultErrorMsg = defaultErrorMsg;
         this.mutationFunc = mutationFunc;
         this.onError = onError;
         this.dependent = dependent;
@@ -110,7 +110,7 @@ class BaseValidator<T extends Value> {
      * @param [msg] - The error message that is displayed when the value is invalid
      * @return {this}
      */
-    public required(msg: string = 'This field is required'): this {
+    public required(msg?: string): this {
         this._isRequired = true;
         this.requiredError = msg;
         return this;
@@ -126,13 +126,224 @@ class BaseValidator<T extends Value> {
      * @param [msg] - The error message that is displayed
      * @return {this}
      */
-    public alwaysFalse(msg: string = 'This validator will never return true'): this {
-        this.validateFuncs.push(() => ({success: false, errorMsg: msg}));
+    public alwaysFalse(msg?: string): this {
+        this.validateFuncs.push(() => ({success: false, errorMsg: msg, msgName: 'always_false'}));
+        return this;
+    }
+
+    /**
+     * Check if the fields value is greater than another value
+     * @param {String} name
+     * @param {String} [msg]
+     * @return {this}
+     */
+    public greaterThan(name: string, msg?: string): this {
+        this.validateFuncs.push(
+            (value, otherValues) => {
+                const otherVal = getFieldValueFromKeyString(name, otherValues);
+                return {success: value > otherVal, errorMsg: msg, msgName: 'greater_than', translationContext: {name: name}};
+            },
+        );
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is less than another value
+     * @param {String} name
+     * @param {String} [msg]
+     * @return {this}
+     */
+    public lessThan(name: string, msg?: string): this {
+        this.validateFuncs.push(
+            (value, otherValues) => {
+                const otherVal = getFieldValueFromKeyString(name, otherValues);
+                return {success: value < otherVal, errorMsg: msg, msgName: 'less_than', translationContext: {name: name}};
+            },
+        );
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is greater than or equal to another value
+     * @param {String} name
+     * @param {String} [msg]
+     * @return {this}
+     */
+    public greaterOrEqualTo(name: string, msg?: string): this {
+        this.validateFuncs.push(
+            (value, otherValues) => {
+                const otherVal = getFieldValueFromKeyString(name, otherValues);
+                return {success: value >= otherVal, errorMsg: msg, msgName: 'greater_or_equal_to', translationContext: {name: name}};
+            },
+        );
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is less than or equal to another value
+     * @param {String} name
+     * @param {String} [msg]
+     * @return {this}
+     */
+    public lessOrEqualTo(name: string, msg?: string): this {
+        this.validateFuncs.push(
+            (value, otherValues) => {
+                const otherVal = getFieldValueFromKeyString(name, otherValues);
+                return {success: value <= otherVal, errorMsg: msg, msgName: 'less_or_equal_to', translationContext: {name: name}};
+            },
+        );
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is greater than the value of one of its siblings
+     * @param {String|Number} name
+     * @param {String} [msg]
+     * @return {this}
+     */
+    public greaterThanSibling(name: string | number, msg?: string): this {
+        this.validateFuncs.push(
+            (value, otherValues, siblings) => {
+                const otherVal = getFieldValueFromKeyString(name, siblings);
+                return {success: value > otherVal, errorMsg: msg, msgName: 'greater_than_sibling', translationContext: {name: name}};
+            },
+        );
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is less than the value of one of its siblings
+     * @param {String|Number} name
+     * @param {String} [msg]
+     * @return {this}
+     */
+    public lessThanSibling(name: string | number, msg?: string): this {
+        this.validateFuncs.push(
+            (value, otherValues, siblings) => {
+                const otherVal = getFieldValueFromKeyString(name, siblings);
+                return {success: value < otherVal, errorMsg: msg, msgName: 'less_than_sibling', translationContext: {name: name}};
+            },
+        );
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is greater or equal to the value of one of its siblings
+     * @param {String|Number} name
+     * @param {String} [msg]
+     * @return {this}
+     */
+    public greaterOrEqualToSibling(name: string | number, msg?: string): this {
+        this.validateFuncs.push(
+            (value, otherValues, siblings) => {
+                const otherVal = getFieldValueFromKeyString(name, siblings);
+                return {success: value >= otherVal, errorMsg: msg, msgName: 'greater_or_equal_to_sibling'};
+            },
+        );
+
+        return this;
+    }
+
+    /**
+     * Check if the fields value is less than or equal to the value of one of its siblings
+     * @param {String|Number} name
+     * @param {String} [msg]
+     * @return {this}
+     */
+    public lessOrEqualToSibling(name: string | number, msg?: string): this {
+        this.validateFuncs.push(
+            (value, otherValues, siblings) => {
+                const otherVal = getFieldValueFromKeyString(name, siblings);
+                return {success: value <= otherVal, errorMsg: msg, msgName: 'less_or_equal_to_sibling'};
+            },
+        );
+
+        return this;
+    }
+
+    /**
+     * Checks if the field's value is included within the values of an array field
+     * @param {String} key
+     * @param {CheckFunction} [checkFn]
+     * @param {String} [msg]
+     * @return {this}
+     */
+    public oneOfArrayFieldValues(key: string, checkFn?: CheckFunction, msg?: string): this {
+        this.validateFuncs.push(
+            (value, otherValues) => {
+                if (!checkFn) {
+                    checkFn = (compare, val) => compare.includes(val);
+                }
+
+                const compare = getFieldValueFromKeyString(key, otherValues);
+                if (Array.isArray(compare)) {
+                    return {success: checkFn(compare, value), errorMsg: msg, msgName: 'one_of_array_field_values'};
+                } else {
+                    console.warn('Attempted to use oneOfArrayFieldValues validator on a non array field. This is not possible.');
+                    return {success: false, errorMsg: msg, msgName: 'one_of_array_field_values'};
+                }
+            },
+        );
+
+        return this;
+    }
+
+    /**
+     * Checks if the field's value is included within the values of an array field that is a sibling
+     * @param {String} key
+     * @param {CheckFunction} [checkFn]
+     * @param {String} [msg]
+     * @return {this}
+     */
+    public oneOfArraySiblingFieldValues(key: string, checkFn?: CheckFunction, msg?: string): this {
+        this.validateFuncs.push(
+            (value, otherValues, siblings) => {
+                if (!checkFn) {
+                    checkFn = (compare, val) => compare.includes(val);
+                }
+
+                const compare = getFieldValueFromKeyString(key, siblings);
+                if (Array.isArray(compare)) {
+                    return {success: checkFn(compare, value), errorMsg: msg, msgName: 'one_of_array_sibling_field_values'};
+                } else {
+                    console.warn('Attempted to use oneOfArraySiblingFieldValues validator on a non array field. This is not possible.');
+                    return {success: false, errorMsg: msg, msgName: 'one_of_array_sibling_field_values'};
+                }
+            },
+        );
+
+        return this;
+    }
+
+    /**
+     * Checks if the value is one included in the provided array
+     * @param {Array} values
+     * @param {String} [msg]
+     * @return {this}
+     */
+    public oneOf(values: Array<T | string>, msg?: string): this {
+        this.validateFuncs.push(
+            (value) => {
+                return {
+                    success: values.includes(value),
+                    errorMsg: msg,
+                    msgName: 'one_of',
+                    translationContext: {allowed: values.join(', ')},
+                };
+            },
+        );
+
         return this;
     }
 
     private validateDependentStep(
-        step: ValidatorStep, value: T | string | undefined, otherValues: Value, siblings: Value
+        step: ValidatorStep, value: T | string | undefined, otherValues: Value, siblings: Value,
     ): DependentValidationResult<T> {
         const dependentValue = getFieldValueFromKeyString(step[0], otherValues);
         if (step[1](dependentValue, value)) {
@@ -142,7 +353,7 @@ class BaseValidator<T extends Value> {
         }
     }
 
-    private validateDependent(value: T | undefined, otherValues: Value, siblings: Value): ValidationResult<T> {
+    private validateDependent(value: T | undefined, otherValues: Value, siblings: Value, t?: TFunction): ValidationResult<T> {
         if (isValidatorStepArrayArray(this.dependent)) {
             for (const step of this.dependent[0]) {
                 const validated = this.validateDependentStep(step, value, otherValues, siblings);
@@ -160,19 +371,25 @@ class BaseValidator<T extends Value> {
             }
         }
 
-        return this.validateIndependent(value, otherValues, siblings);
+        return this.validateIndependent(value, otherValues, siblings, t);
     }
 
-    private validateIndependent(value: T | undefined, otherValues: Value, siblings: Value): ValidationResult<T> {
+    private validateIndependent(value: T | undefined, otherValues: Value, siblings: Value, t?: TFunction): ValidationResult<T> {
         if (!this.validateRequired(value) || value === undefined) {
             if (this._isRequired) {
-                return [false, this.requiredError ?? this.defaultErrorMsg];
+                if (!this.requiredError && t) {
+                    return [false, t('required') as string];
+                }
+                return [false, this.requiredError ?? this.defaultErrorMsg ?? 'required'];
             }
         } else {
             for (const func of this.validateFuncs) {
                 const test = func(value, otherValues, siblings);
                 if (!test.success) {
-                    return [false, test.errorMsg];
+                    if (!test.errorMsg && t && test.msgName) {
+                        return [false, t(test.msgName, test.translationContext) as string];
+                    }
+                    return [false, test.errorMsg ?? this.defaultErrorMsg ?? test.msgName];
                 } else if (test.changedValue !== undefined) {
                     // Allows validators to modify the value
                     value = test.changedValue;
@@ -184,246 +401,19 @@ class BaseValidator<T extends Value> {
     }
 
     /**
-     * Check if the fields value is greater than another value
-     * @param {String} name
-     * @param {String} [msg]
-     * @return {this}
-     */
-    public greaterThan(name: string, msg?: string): this {
-        const errorMsg = msg ?? 'This value must be greater than the value of ' + name;
-
-        this.validateFuncs.push(
-            (value, otherValues) => {
-                const otherVal = getFieldValueFromKeyString(name, otherValues);
-                return {success: value > otherVal, errorMsg};
-            }
-        );
-
-        return this;
-    }
-
-    /**
-     * Check if the fields value is less than another value
-     * @param {String} name
-     * @param {String} [msg]
-     * @return {this}
-     */
-    public lessThan(name: string, msg?: string): this {
-        const errorMsg = msg ?? 'This value must be less than the value of ' + name;
-
-        this.validateFuncs.push(
-            (value, otherValues) => {
-                const otherVal = getFieldValueFromKeyString(name, otherValues);
-                return {success: value < otherVal, errorMsg};
-            }
-        );
-
-        return this;
-    }
-
-    /**
-     * Check if the fields value is greater than or equal to another value
-     * @param {String} name
-     * @param {String} [msg]
-     * @return {this}
-     */
-    public greaterOrEqualTo(name: string, msg?: string): this {
-        const errorMsg = msg ?? 'This value must be greater than or equal to the value of ' + name;
-
-        this.validateFuncs.push(
-            (value, otherValues) => {
-                const otherVal = getFieldValueFromKeyString(name, otherValues);
-                return {success: value >= otherVal, errorMsg};
-            }
-        );
-
-        return this;
-    }
-
-    /**
-     * Check if the fields value is less than or equal to another value
-     * @param {String} name
-     * @param {String} [msg]
-     * @return {this}
-     */
-    public lessOrEqualTo(name: string, msg?: string): this {
-        const errorMsg = msg ?? 'This value must be less than or equal to the value of ' + name;
-
-        this.validateFuncs.push(
-            (value, otherValues) => {
-                const otherVal = getFieldValueFromKeyString(name, otherValues);
-                return {success: value <= otherVal, errorMsg};
-            }
-        );
-
-        return this;
-    }
-
-    /**
-     * Check if the fields value is greater than the value of one of its siblings
-     * @param {String|Number} key
-     * @param {String} [msg]
-     * @return {this}
-     */
-    public greaterThanSibling(key: string | number, msg?: string): this {
-        const errorMsg = msg ?? 'This value must be greater than the value of its sibling ' + key;
-
-        this.validateFuncs.push(
-            (value, otherValues, siblings) => {
-                const otherVal = getFieldValueFromKeyString(key, siblings);
-                return {success: value > otherVal, errorMsg};
-            }
-        );
-
-        return this;
-    }
-
-    /**
-     * Check if the fields value is less than the value of one of its siblings
-     * @param {String|Number} key
-     * @param {String} [msg]
-     * @return {this}
-     */
-    public lessThanSibling(key: string | number, msg?: string): this {
-        const errorMsg = msg ?? 'This value must be less than the value of its sibling ' + key;
-
-        this.validateFuncs.push(
-            (value, otherValues, siblings) => {
-                const otherVal = getFieldValueFromKeyString(key, siblings);
-                return {success: value < otherVal, errorMsg};
-            }
-        );
-
-        return this;
-    }
-
-    /**
-     * Check if the fields value is greater or equal to the value of one of its siblings
-     * @param {String|Number} key
-     * @param {String} [msg]
-     * @return {this}
-     */
-    public greaterOrEqualToSibling(key: string | number, msg?: string): this {
-        const errorMsg = msg ?? 'This value must be greater than or equal to the value of its sibling ' + key;
-
-        this.validateFuncs.push(
-            (value, otherValues, siblings) => {
-                const otherVal = getFieldValueFromKeyString(key, siblings);
-                return {success: value >= otherVal, errorMsg};
-            }
-        );
-
-        return this;
-    }
-
-    /**
-     * Check if the fields value is less than or equal to the value of one of its siblings
-     * @param {String|Number} key
-     * @param {String} [msg]
-     * @return {this}
-     */
-    public lessOrEqualToSibling(key: string | number, msg?: string): this {
-        const errorMsg = msg ?? 'This value must be less than or equal to the value of its sibling ' + key;
-
-        this.validateFuncs.push(
-            (value, otherValues, siblings) => {
-                const otherVal = getFieldValueFromKeyString(key, siblings);
-                return {success: value <= otherVal, errorMsg};
-            },
-        );
-
-        return this;
-    }
-
-    /**
-     * Checks if the field's value is included within the values of an array field
-     * @param {String} key
-     * @param {CheckFunction} [checkFn]
-     * @param {String} [msg]
-     * @return {this}
-     */
-    public oneOfArrayFieldValues(key: string, checkFn?: CheckFunction, msg?: string): this {
-        const errorMsg = msg ?? 'This value is not allowed.';
-
-        this.validateFuncs.push(
-            (value, otherValues) => {
-                if (!checkFn) {
-                    checkFn = (compare, value) => compare.includes(value);
-                }
-
-                const compare = getFieldValueFromKeyString(key, otherValues);
-                if (Array.isArray(compare)) {
-                    return {success: checkFn(compare, value), errorMsg};
-                } else {
-                    console.warn('Attempted to use oneOfArrayFieldValues validator on a non array field. This is not possible.');
-                    return {success: false, errorMsg};
-                }
-            }
-        );
-
-        return this;
-    }
-
-    /**
-     * Checks if the field's value is included within the values of an array field that is a sibling
-     * @param {String} key
-     * @param {CheckFunction} [checkFn]
-     * @param {String} [msg]
-     * @return {this}
-     */
-    public oneOfArraySiblingFieldValues(key: string, checkFn?: CheckFunction, msg?: string): this {
-        const errorMsg = msg ?? 'This value is not allowed.';
-
-        this.validateFuncs.push(
-            (value, otherValues, siblings) => {
-                if (!checkFn) {
-                    checkFn = (compare, value) => compare.includes(value);
-                }
-
-                const compare = getFieldValueFromKeyString(key, siblings);
-                if (Array.isArray(compare)) {
-                    return {success: checkFn(compare, value), errorMsg};
-                } else {
-                    console.warn('Attempted to use oneOfArraySiblingFieldValues validator on a non array field. This is not possible.');
-                    return {success: false, errorMsg};
-                }
-            }
-        );
-
-        return this;
-    }
-
-    /**
-     * Checks if the value is one included in the provided array
-     * @param {Array} values
-     * @param {String} [msg]
-     * @return {this}
-     */
-    public oneOf(values: Array<T | string>, msg?: string): this {
-        const errorMsg = msg ?? 'This value must be one of these: ' + values.join(', ');
-
-        this.validateFuncs.push(
-            (value) => {
-                return {success: values.includes(value), errorMsg};
-            }
-        );
-
-        return this;
-    }
-
-    /**
      * Validates a value
      * @param {Value} value
      * @param {Value} otherValues
      * @param {Value} siblings
+     * @param {TFunction} t
      * @return {ValidationResult}
      */
-    public validate(value?: T, otherValues: Value = {}, siblings: Value = {}): ValidationResult<T> {
+    public validate(value?: T, otherValues: Value = {}, siblings: Value = {}, t?: TFunction): ValidationResult<T> {
         let ret: ValidationResult<T>;
         if (this.dependent) {
-            ret = this.validateDependent(value, otherValues, siblings);
+            ret = this.validateDependent(value, otherValues, siblings, t);
         } else {
-            ret = this.validateIndependent(value, otherValues, siblings);
+            ret = this.validateIndependent(value, otherValues, siblings, t);
         }
 
         if (!ret[0] && this.onError) {

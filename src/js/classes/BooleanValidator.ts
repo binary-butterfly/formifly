@@ -22,7 +22,7 @@ class BooleanValidator extends BaseValidator<boolean | string> {
      */
     constructor(
         defaultValue: boolean = false,
-        defaultErrorMsg: string = 'This field has to be a boolean',
+        defaultErrorMsg?: string,
         mutationFunc?: MutationFunction,
         onError?: ErrorFunction,
         dependent?: Dependent,
@@ -34,6 +34,7 @@ class BooleanValidator extends BaseValidator<boolean | string> {
                 ({
                     success: (value === true || value === false || value === 'true' || value === 'false'),
                     errorMsg: defaultErrorMsg,
+                    msgName: 'boolean',
                     changedValue: (value === 'true' || value === true),
                 }));
         this.realBool = realBool;

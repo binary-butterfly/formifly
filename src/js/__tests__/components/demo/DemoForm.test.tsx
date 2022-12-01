@@ -100,9 +100,9 @@ describe('DemoForm', () => {
         const currentTime = new Date().getTime();
         changeInputValue(firstDateInput, convertDateObjectToInputString(new Date(currentTime + 60000)));
         changeInputValue(secondDateInput, convertDateObjectToInputString(new Date(currentTime)));
-        expect(screen.getByText('This value must be greater than the value of its sibling date')).not.toBeNull();
+        expect(screen.getByText('This date must be after the value for its sibling date')).not.toBeNull();
         changeInputValue(secondDateInput, convertDateObjectToInputString(new Date(currentTime + 70000)));
-        expect(screen.queryByText('This value must be greater than the value of its sibling date')).toBeNull();
+        expect(screen.queryByText('This date must be after the value for its sibling date')).toBeNull();
     });
 
     it('renders a required select field', () => {
