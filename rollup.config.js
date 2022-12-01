@@ -2,7 +2,6 @@ import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import globals from 'rollup-plugin-node-globals';
-import styles from 'rollup-plugin-styles';
 import babel from '@rollup/plugin-babel';
 import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
@@ -25,7 +24,6 @@ const config = [{
         exports: 'auto',
     },
     plugins: [
-        styles(),
         nodeResolve({
             browser: true,
             preferBuiltins: true,
