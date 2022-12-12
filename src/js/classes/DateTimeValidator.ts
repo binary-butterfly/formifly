@@ -112,19 +112,19 @@ class DateTimeValidator extends BaseValidator<Date | string> {
 
     /**
      * Check if the fields value is greater than another value
-     * @param {String} name
+     * @param {String} key
      * @param {String} [msg]
      * @return {this}
      */
-    public greaterThan(name: string, msg?: string): this {
+    public greaterThan(key: string, msg?: string): this {
         this.validateFuncs.push(
             (value, otherValues) => {
-                const otherVal = new Date(getFieldValueFromKeyString(name, otherValues) as Date | number);
+                const otherVal = new Date(getFieldValueFromKeyString(key, otherValues) as Date | number);
                 return {
                     success: isInvalidDate(otherVal) || value > otherVal,
                     errorMsg: msg,
                     msgName: 'greater_than_date',
-                    translationContext: {name: name},
+                    translationContext: {key: key},
                 };
             },
         );
@@ -134,19 +134,19 @@ class DateTimeValidator extends BaseValidator<Date | string> {
 
     /**
      * Check if the fields value is less than another value
-     * @param {String} name
+     * @param {String} key
      * @param {String} [msg]
      * @return {this}
      */
-    public lessThan(name: string, msg?: string): this {
+    public lessThan(key: string, msg?: string): this {
         this.validateFuncs.push(
             (value, otherValues) => {
-                const otherVal = new Date(getFieldValueFromKeyString(name, otherValues) as Date | number);
+                const otherVal = new Date(getFieldValueFromKeyString(key, otherValues) as Date | number);
                 return {
                     success: isInvalidDate(otherVal) || value < otherVal,
                     errorMsg: msg,
                     msgName: 'less_than_date',
-                    translationContext: {name: name},
+                    translationContext: {key: key},
                 };
             },
         );
@@ -156,19 +156,19 @@ class DateTimeValidator extends BaseValidator<Date | string> {
 
     /**
      * Check if the fields value is greater than or equal to another value
-     * @param {String} name
+     * @param {String} key
      * @param {String} [msg]
      * @return {this}
      */
-    public greaterOrEqualTo(name: string, msg?: string): this {
+    public greaterOrEqualTo(key: string, msg?: string): this {
         this.validateFuncs.push(
             (value, otherValues) => {
-                const otherVal = new Date(getFieldValueFromKeyString(name, otherValues) as Date | number);
+                const otherVal = new Date(getFieldValueFromKeyString(key, otherValues) as Date | number);
                 return {
                     success: isInvalidDate(otherVal) || value >= otherVal,
                     errorMsg: msg,
                     msgName: 'greater_or_equal_to_date',
-                    translationContext: {name: name},
+                    translationContext: {key: key},
                 };
             },
         );
@@ -178,19 +178,19 @@ class DateTimeValidator extends BaseValidator<Date | string> {
 
     /**
      * Check if the fields value is less than or equal to another value
-     * @param {String} name
+     * @param {String} key
      * @param {String} [msg]
      * @return {this}
      */
-    public lessOrEqualTo(name: string, msg?: string): this {
+    public lessOrEqualTo(key: string, msg?: string): this {
         this.validateFuncs.push(
             (value, otherValues) => {
-                const otherVal = new Date(getFieldValueFromKeyString(name, otherValues) as Date | number);
+                const otherVal = new Date(getFieldValueFromKeyString(key, otherValues) as Date | number);
                 return {
                     success: isInvalidDate(otherVal) || value <= otherVal,
                     errorMsg: msg,
                     msgName: 'less_or_equal_to_date',
-                    translationContext: {name: name},
+                    translationContext: {key: key},
                 };
             },
         );
@@ -198,21 +198,21 @@ class DateTimeValidator extends BaseValidator<Date | string> {
         return this;
     }
 
-    /**
+    /**key
      * Check if the fields value is greater than the value of one of its siblings
-     * @param {String|Number} name
+     * @param {String|Number} key
      * @param {String} [msg]
      * @return {this}
      */
-    public greaterThanSibling(name: string | number, msg?: string): this {
+    public greaterThanSibling(key: string | number, msg?: string): this {
         this.validateFuncs.push(
             (value, otherValues, siblings) => {
-                const otherVal = new Date(getFieldValueFromKeyString(name, siblings) as Date | number);
+                const otherVal = new Date(getFieldValueFromKeyString(key, siblings) as Date | number);
                 return {
                     success: isInvalidDate(otherVal) || value > otherVal,
                     errorMsg: msg,
                     msgName: 'greater_than_sibling_date',
-                    translationContext: {name: name},
+                    translationContext: {key: key},
                 };
             },
         );
@@ -222,19 +222,19 @@ class DateTimeValidator extends BaseValidator<Date | string> {
 
     /**
      * Check if the fields value is less than the value of one of its siblings
-     * @param {String|Number} name
+     * @param {String|Number} key
      * @param {String} [msg]
      * @return {this}
      */
-    public lessThanSibling(name: string | number, msg?: string): this {
+    public lessThanSibling(key: string | number, msg?: string): this {
         this.validateFuncs.push(
             (value, otherValues, siblings) => {
-                const otherVal = new Date(getFieldValueFromKeyString(name, siblings) as Date | number);
+                const otherVal = new Date(getFieldValueFromKeyString(key, siblings) as Date | number);
                 return {
                     success: isInvalidDate(otherVal) || value < otherVal,
                     errorMsg: msg,
                     msgName: 'less_than_sibling_date',
-                    translationContext: {name: name},
+                    translationContext: {key: key},
                 };
             },
         );
@@ -244,19 +244,19 @@ class DateTimeValidator extends BaseValidator<Date | string> {
 
     /**
      * Check if the fields value is greater or equal to the value of one of its siblings
-     * @param {String|Number} name
+     * @param {String|Number} key
      * @param {String} [msg]
      * @return {this}
      */
-    public greaterOrEqualToSibling(name: string | number, msg?: string): this {
+    public greaterOrEqualToSibling(key: string | number, msg?: string): this {
         this.validateFuncs.push(
             (value, otherValues, siblings) => {
-                const otherVal = new Date(getFieldValueFromKeyString(name, siblings) as Date | number);
+                const otherVal = new Date(getFieldValueFromKeyString(key, siblings) as Date | number);
                 return {
                     success: isInvalidDate(otherVal) || value >= otherVal,
                     errorMsg: msg,
                     msgName: 'greater_or_equal_to_sibling_date',
-                    translationContext: {name: name},
+                    translationContext: {key: key},
                 };
             },
         );
@@ -266,19 +266,19 @@ class DateTimeValidator extends BaseValidator<Date | string> {
 
     /**
      * Check if the fields value is less than or equal to the value of one of its siblings
-     * @param {String|Number} name
+     * @param {String|Number} key
      * @param {String} [msg]
      * @return {this}
      */
-    public lessOrEqualToSibling(name: string | number, msg?: string): this {
+    public lessOrEqualToSibling(key: string | number, msg?: string): this {
         this.validateFuncs.push(
             (value, otherValues, siblings) => {
-                const otherVal = new Date(getFieldValueFromKeyString(name, siblings) as Date | number);
+                const otherVal = new Date(getFieldValueFromKeyString(key, siblings) as Date | number);
                 return {
                     success: isInvalidDate(otherVal) || value <= otherVal,
                     errorMsg: msg,
                     msgName: 'less_or_equal_to_sibling_date',
-                    translationContext: {name: name},
+                    translationContext: {key: key},
                 };
             },
         );
