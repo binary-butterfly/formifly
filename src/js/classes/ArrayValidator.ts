@@ -2,17 +2,8 @@ import PropTypes from 'prop-types';
 import {ensureValueIsNumeric} from '../helpers/developerInputValidators';
 import BaseValidator from './BaseValidator';
 import ObjectValidator from './ObjectValidator';
-import {
-    Dependent,
-    ErrorFunction,
-    InputType,
-    MutationFunction,
-    ValidationResult,
-    Value,
-    ValueOfValidator,
-} from '../types';
+import {Dependent, ErrorFunction, InputType, MutationFunction, ValidationResult, Value, ValueOfValidator} from '../types';
 import {TFunction} from 'i18next';
-import * as inspector from 'inspector';
 
 /**
  * A validator that allows you to validate array fields.
