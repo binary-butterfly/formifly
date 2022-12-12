@@ -45,6 +45,6 @@ describe('AnyOfValidator', () => {
 
     it('can use a translation function', () => {
         const validator = new AnyOfValidator([new StringValidator().alwaysFalse()]);
-        expect(validator.validate('foo', {}, {}, jest.fn(() => 'bla') as unknown as TFunction)).toStrictEqual([false, 'bla'])
+        expect(validator.validate('foo', {}, {}, jest.fn(() => 'bla') as any as TFunction)).toStrictEqual([false, 'bla']);
     });
 });
