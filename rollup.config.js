@@ -44,18 +44,26 @@ const config = [{
             'process.env.NODE_ENV': JSON.stringify(env === 'production' ? 'production' : 'development'),
             'preventAssignment': true,
         }),
-        typescript({tsconfig: './build.tsconfig.json'}),
     ],
 }, {
-    input: 'dist/src/js/main.d.ts',
+    input: 'src/js/main.ts',
     output: [{
         file: 'dist/index.d.ts',
         format: 'es',
         plugins: [],
     }],
     plugins: [
+        commonjs({
+            exclude: 'src/**',
+        }),
+        babel({
+            extensions: ['.js', '.ts', '.jsx', '.tsx'],
+            babelHelpers: 'runtime',
+            exclude: 'node_modules/**',
+        }),
+        typescript({tsconfig: './build.tsconfig.json'}),
         dts(),
-        del({targets: 'dist/src', hook: 'buildEnd'}),
+        del({targets: ['dist/src'], hook: 'buildEnd'}),
     ],
 }];
 
