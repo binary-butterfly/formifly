@@ -11,14 +11,14 @@ class EmailValidator extends StringValidator {
     public defaultInputType: InputType = 'email';
 
     constructor(defaultValue?: string,
-                defaultErrorMsg = 'This must be a valid email address',
+                defaultErrorMsg?: string,
                 mutationFunc?: MutationFunction,
                 onError?: ErrorFunction,
                 dependent?: Dependent) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
 
         this.validateFuncs.push(
-            value => ({success: emailRegexp.test(value), errorMsg: defaultErrorMsg})
+            value => ({success: emailRegexp.test(value), errorMsg: defaultErrorMsg, msgName: 'email'})
         );
     }
 

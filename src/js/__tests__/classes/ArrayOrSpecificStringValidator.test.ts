@@ -25,7 +25,7 @@ describe('ArrayOrSpecificStringValidator', () => {
         ${'maxLength'}      |${[3, 'hello']}
         ${'lengthRange'}    |${[4, 7, 'please remember to be kind']}
         ${'getDefaultValue'}|${[]}
-        ${'validate'}       |${[['value'], 'other', 'siblings', true]}
+        ${'validate'}       |${[['value'], 'other', 'siblings', undefined, true]}
         `('calls $call on its internal ArrayValidator', ({call, params}) => {
             const validator = new ArrayOrSpecificStringValidator(new StringValidator());
             (validator as any)[call](...params);
@@ -44,6 +44,6 @@ describe('ArrayOrSpecificStringValidator', () => {
 
         validator.validateWithoutRecursion(value, other, siblings);
 
-        expect(validator.validate).toBeCalledWith(value, other, siblings, false);
+        expect(validator.validate).toBeCalledWith(value, other, siblings, undefined, false);
     });
 });

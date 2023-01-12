@@ -2,6 +2,7 @@ import AnyOfValidator from '../../classes/AnyOfValidator';
 import DateTimeValidator from '../../classes/DateTimeValidator';
 import NumberValidator from '../../classes/NumberValidator';
 import StringValidator from '../../classes/StringValidator';
+import {TFunction} from 'i18next';
 
 describe('AnyOfValidator', () => {
     it('validates successfully if any of the validators match', () => {
@@ -11,7 +12,7 @@ describe('AnyOfValidator', () => {
 
     it('does not validate successfully if none of the validators match', () => {
         const validator = new AnyOfValidator([new NumberValidator(), new DateTimeValidator()]);
-        expect(validator.validate('banana')).toStrictEqual([false, 'None of the available validators match']);
+        expect(validator.validate('banana')).toStrictEqual([false, 'any_of']);
     });
 
     it('runs the mutate function if validation is successful', () => {
@@ -40,5 +41,10 @@ describe('AnyOfValidator', () => {
     it('works with alwaysFalse', () => {
         const validator = new AnyOfValidator([new StringValidator()]).alwaysFalse('Test!');
         expect(validator.validate('foo')).toStrictEqual([false, 'Test!']);
+    });
+
+    it('can use a translation function', () => {
+        const validator = new AnyOfValidator([new StringValidator().alwaysFalse()]);
+        expect(validator.validate('foo', {}, {}, jest.fn(() => 'bla') as any as TFunction)).toStrictEqual([false, 'bla']);
     });
 });

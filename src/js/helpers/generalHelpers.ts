@@ -107,11 +107,11 @@ export const completeDefaultValues = <T extends BaseValidator<any>>(
 export const containsValuesThatAreNotFalse = (obj: any): boolean => {
     if (Array.isArray(obj)) {
         return obj.filter((value) => {
-            return containsValuesThatAreNotFalse(value) !== false;
+            return containsValuesThatAreNotFalse(value);
         }).length > 0;
     } else if (typeof (obj) === 'object' && obj !== null) {
         return Object.entries(obj).filter((entry) => {
-            return containsValuesThatAreNotFalse(entry[1]) !== false;
+            return containsValuesThatAreNotFalse(entry[1]);
         }).length > 0;
     }
     return obj !== false;

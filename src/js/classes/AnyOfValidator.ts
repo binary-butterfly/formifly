@@ -1,5 +1,6 @@
 import BaseValidator from './BaseValidator';
 import {Dependent, ErrorFunction, MutationFunction, ValidationResult, Value} from '../types';
+import {TFunction} from 'i18next';
 
 /**
  * A "meta" validator that allows you to check if a value can be successfully validated by any of a given list of validators.
@@ -22,7 +23,7 @@ class AnyOfValidator extends BaseValidator<any> {
     constructor(
         validatorOptions: Array<BaseValidator<any>>,
         defaultValue?: any,
-        defaultErrorMsg: string = 'None of the available validators match',
+        defaultErrorMsg?: string,
         mutationFunc?: MutationFunction,
         onError?: ErrorFunction,
         dependent?: Dependent,
@@ -31,7 +32,7 @@ class AnyOfValidator extends BaseValidator<any> {
         this.validatorOptions = validatorOptions;
     }
 
-    public validate(value: Value, otherValues = {}, siblings = {}): ValidationResult<any> {
+    public validate(value: Value, otherValues = {}, siblings = {}, t?: TFunction): ValidationResult<any> {
         if (!this.isRequired && !this.validateRequired(value)) {
             return [true, value];
         }
@@ -55,7 +56,11 @@ class AnyOfValidator extends BaseValidator<any> {
             this.onError(value, otherValues);
         }
 
-        return [false, this.defaultErrorMsg];
+        if (t) {
+            return [false, t('any_of') as string];
+        }
+
+        return [false, this.defaultErrorMsg ?? 'any_of'];
     }
 }
 

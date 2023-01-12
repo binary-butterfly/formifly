@@ -3,6 +3,8 @@ import {ThemeProvider} from 'styled-components';
 import {FormiflyProvider, useFormiflyContext} from './FormiflyContext';
 import {SubmitFunction, SubmitValidationErrorFunction, ValueOfValidator} from '../../types';
 import BaseValidator from '../../classes/BaseValidator';
+import '../../helpers/i18n';
+import {TFunction} from 'i18next';
 
 const Form = <T extends BaseValidator<any>>(props: FormProps<T>) => {
     const {handleSubmit} = useFormiflyContext<T>();
@@ -23,6 +25,7 @@ const FormiflyForm = <T extends BaseValidator<any>>(props: FormiflyFormProps<T>)
         className,
         disableNativeRequired,
         disableNativeMinMax,
+        t,
     } = props;
     const theme = props.theme ?? {};
 
@@ -33,14 +36,14 @@ const FormiflyForm = <T extends BaseValidator<any>>(props: FormiflyFormProps<T>)
         inputBorderColor: 'black',
         highlightColor: 'lightblue',
         reduceMotion: theme?.reducedMotion ??
-            (typeof window.matchMedia === 'function' && window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true),
-
+            (typeof window.matchMedia === 'function' && window.matchMedia(`(prefers-reduced-motion: reduce)`).matches),
         ...theme,
     };
 
     return <ThemeProvider theme={scTheme}>
         <FormiflyProvider initialValues={defaultValues}
                           shape={shape}
+                          t={t}
                           disableNativeRequired={disableNativeRequired ?? false}
                           disableNativeMinMax={disableNativeMinMax ?? false}>
             <Form onSubmit={onSubmit} className={className} onSubmitValidationError={onSubmitValidationError}>
@@ -62,6 +65,7 @@ export type FormiflyFormProps<T extends BaseValidator<any>> = FormProps<T> & {
     defaultValues?: Partial<ValueOfValidator<T>>;
     disableNativeRequired?: boolean;
     disableNativeMinMax?: boolean;
+    t?: TFunction,
     theme?: {
         inputBackgroundColor?: string;
         errorColor?: string;

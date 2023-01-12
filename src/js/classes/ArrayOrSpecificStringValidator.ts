@@ -1,13 +1,14 @@
 import ArrayValidator from './ArrayValidator';
 import BaseValidator from './BaseValidator';
 import {Dependent, ErrorFunction, MutationFunction, ValidationResult, Value, ValueOfValidator} from '../types';
+import {TFunction} from 'i18next';
 
 /**
  * A validator that allows you to validate array fields that may also contain a string instead of an array value.
  * @extends BaseValidator
  *
  */
-class ArrayOrSpecificStringValidator<T extends BaseValidator<any>> extends BaseValidator<Array<ValueOfValidator<T>>|string> {
+class ArrayOrSpecificStringValidator<T extends BaseValidator<any>> extends BaseValidator<Array<ValueOfValidator<T>> | string> {
     private readonly allowedString: string;
     private readonly internalArrayValidator: ArrayValidator<T>;
 
@@ -32,15 +33,15 @@ class ArrayOrSpecificStringValidator<T extends BaseValidator<any>> extends BaseV
     }
 
     public validate(
-        values: Array<ValueOfValidator<T>>|string, otherValues = {}, siblings = {}, recursion = true
-    ): ValidationResult<Array<ValueOfValidator<T>>|string> {
+        values: Array<ValueOfValidator<T>> | string, otherValues = {}, siblings = {}, t?: TFunction, recursion = true,
+    ): ValidationResult<Array<ValueOfValidator<T>> | string> {
         if (values === this.allowedString) {
             return [true, values];
         }
         if (typeof values === 'string') {
             return [false, 'This field has to be an array'];
         }
-        return this.internalArrayValidator.validate(values, otherValues, siblings, recursion);
+        return this.internalArrayValidator.validate(values, otherValues, siblings, t, recursion);
     }
 
     /**
@@ -93,14 +94,16 @@ class ArrayOrSpecificStringValidator<T extends BaseValidator<any>> extends BaseV
      * @param {Array} values
      * @param {Object} [otherValues]
      * @param {any} [siblings]
+     * @param {TFunction} [t]
      * @return {*|[boolean, *[]]|[boolean, *[]]}
      */
     public validateWithoutRecursion(
-        values: Array<ValueOfValidator<T>>|string,
+        values: Array<ValueOfValidator<T>> | string,
         otherValues?: Value,
-        siblings?: Value
-    ): ValidationResult<Array<ValueOfValidator<T>>|string> {
-        return this.validate(values, otherValues, siblings, false);
+        siblings?: Value,
+        t?: TFunction,
+    ): ValidationResult<Array<ValueOfValidator<T>> | string> {
+        return this.validate(values, otherValues, siblings, t, false);
     }
 }
 

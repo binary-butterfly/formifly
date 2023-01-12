@@ -2,7 +2,7 @@ import CustomEmailValidator from '../../classes/CustomEmailValidator';
 
 describe.each([
     ['returns true for existing domain', 'mail@email.foo', undefined, [true, 'mail@email.foo']],
-    ['returns false for invalid domain', 'mail@competitor.com', undefined, [false, 'This domain is not allowed']],
+    ['returns false for invalid domain', 'mail@competitor.com', undefined, [false, 'custom_email_validator']],
     ['uses correct error msg', 'mail@competitor.com', 'banana', [false, 'banana']],
 ])('Test custom email validator', (name, value, msg, expected) => {
     test(name, () => {

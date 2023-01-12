@@ -3,7 +3,6 @@ import ArrayValidator from '../classes/ArrayValidator';
 import ObjectValidator from '../classes/ObjectValidator';
 import {UnpackedErrors, ValidationResult, Value, ValueOfValidator} from '../types';
 
-
 export const findFieldValidatorFromName = (
     name: string, shape?: ObjectValidator<any> | ArrayValidator<any> | BaseValidator<any>
 ): ObjectValidator<any> | ArrayValidator<any> | BaseValidator<any> | undefined => {

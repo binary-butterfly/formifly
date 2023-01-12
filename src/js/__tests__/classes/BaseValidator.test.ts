@@ -18,8 +18,8 @@ describe.each([
 
 describe.each([
     ['abc', [true, 'abc'], undefined, 'returns true for random value'],
-    ['', [false, 'This field is required'], undefined, 'returns false for empty string'],
-    [null, [false, 'There is an error within this field'], null, 'returns false for null'],
+    ['', [false, 'required'], undefined, 'returns false for empty string'],
+    [null, [false, 'required'], null, 'returns false for null'],
     [undefined, [false, 'banana'], 'banana', 'returns false for undefined'],
 ])('Test BaseValidator required', (value, expected, msg, name) => {
     test(name, () => {
@@ -31,12 +31,12 @@ describe.each([
 
 test('Test always false validator', () => {
     const validator = new BaseValidator(undefined as any).alwaysFalse();
-    expect(validator.validate('banana')).toStrictEqual([false, 'This validator will never return true']);
+    expect(validator.validate('banana')).toStrictEqual([false, 'always_false']);
 });
 
 describe.each([
     ['', {banana: 'food'}, [true, ''], 'uses independent validator if dependent condition is not met'],
-    ['', {banana: 'apple'}, [false, 'This field is required'], 'uses dependent validator when condition is met'],
+    ['', {banana: 'apple'}, [false, 'required'], 'uses dependent validator when condition is met'],
     ['abc', {banana: 'apple'}, [true, 'abc'], 'uses dependent validator and can pass when condition is met'],
 ])('Test dependent validator', (value, otherValues, expected, name) => {
     test(name, () => {
@@ -132,10 +132,7 @@ test('Test mutationFunc', () => {
 
 describe.each([
     [2, {foo: 2, banana: 1}, 'banana', undefined, [true, 2], 'Returns true for greater value'],
-    [1, {
-        foo: 1,
-        banana: 2,
-    }, 'banana', undefined, [false, 'This value must be greater than the value of banana'], 'returns false for smaller value'],
+    [1, {foo: 1, banana: 2}, 'banana', undefined, [false, 'greater_than'], 'returns false for smaller value'],
     [2, {foo: 2, banana: 2}, 'banana', 'apple', [false, 'apple'], 'returns false for same value'],
 ])('Test greaterThan', (value, otherValues, otherName, msg, expected, name) => {
     test(name, () => {
@@ -146,10 +143,7 @@ describe.each([
 
 describe.each([
     [1, {foo: 1, banana: 2}, 'banana', undefined, [true, 1], 'Returns true for smaller value'],
-    [2, {
-        foo: 2,
-        banana: 1,
-    }, 'banana', undefined, [false, 'This value must be less than the value of banana'], 'returns false for greater value'],
+    [2, {foo: 2, banana: 1}, 'banana', undefined, [false, 'less_than'], 'returns false for greater value'],
     [2, {foo: 2, banana: 2}, 'banana', 'apple', [false, 'apple'], 'returns false for same value'],
 ])('Test lessThan', (value, otherValues, otherName, msg, expected, name) => {
     test(name, () => {
@@ -182,13 +176,7 @@ describe.each([
 
 describe.each([
     ['foo', ['foo', 'bar', 'blub'], undefined, [true, 'foo'], 'returns true for included value'],
-    [
-        'foo',
-        ['banana', 'apple'],
-        undefined,
-        [false, 'This value must be one of these: banana, apple'],
-        'returns false for non included value',
-    ],
+    ['foo', ['banana', 'apple'], undefined, [false, 'one_of'], 'returns false for non included value'],
     ['foo', ['fo', 'fooo'], 'banana', [false, 'banana'], 'uses correct error message'],
 ])('Test oneOf', (value, values, msg, expected, name) => {
     test(name, () => {
@@ -274,14 +262,14 @@ describe('Test oneOfArrayFieldValues', () => {
             return false;
         });
 
-        expect(validator.validate('banana', {array: [{id: 'abc'}, {id: 'def'}]})).toStrictEqual([false, 'This value is not allowed.']);
+        expect(validator.validate('banana', {array: [{id: 'abc'}, {id: 'def'}]})).toStrictEqual([false, 'one_of_array_field_values']);
     });
 
     it('Warns the user if the field that is compared against is not an array field', () => {
         const warn = jest.fn();
         global.console.warn = warn;
         const validator = new BaseValidator(undefined as any).oneOfArrayFieldValues('notAnArray');
-        expect(validator.validate('foo', {notAnArray: 'banana'})).toStrictEqual([false, 'This value is not allowed.']);
+        expect(validator.validate('foo', {notAnArray: 'banana'})).toStrictEqual([false, 'one_of_array_field_values']);
         expect(warn).toHaveBeenCalledWith('Attempted to use oneOfArrayFieldValues validator on a non array field. This is not possible.');
         warn.mockRestore();
     });
@@ -325,7 +313,7 @@ describe('Test oneOfArraySiblingFieldValues', () => {
         expect(
             validator.validate('banana', {array: [{id: 'abc'}, {id: 'def'}]}, {array: [{id: 'abc'}, {id: 'def'}]}),
         )
-            .toStrictEqual([false, 'This value is not allowed.']);
+            .toStrictEqual([false, 'one_of_array_sibling_field_values']);
     });
 
     it('Warns the user if the field that is compared against is not an array field', () => {
@@ -333,7 +321,7 @@ describe('Test oneOfArraySiblingFieldValues', () => {
         global.console.warn = warn;
         const validator = new BaseValidator(undefined as any).oneOfArraySiblingFieldValues('notAnArray');
         expect(validator.validate('foo', {notAnArray: 'banana'}, {notAnArray: 'banana'}))
-            .toStrictEqual([false, 'This value is not allowed.']);
+            .toStrictEqual([false, 'one_of_array_sibling_field_values']);
         expect(warn)
             .toHaveBeenCalledWith('Attempted to use oneOfArraySiblingFieldValues validator on a non array field. This is not possible.');
         warn.mockRestore();

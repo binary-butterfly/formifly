@@ -10,6 +10,7 @@ import {
     Value,
     ValueOfObjectValidatorFields,
 } from '../types';
+import {TFunction} from 'i18next';
 
 
 /**
@@ -107,25 +108,28 @@ class ObjectValidator<T extends ObjectValidatorFields> extends BaseValidator<Val
      * @param {Object} value
      * @param {Object} [otherValues]
      * @param {Object} [siblings]
+     * @param {TFunction} t
      * @return {*|[boolean, *]|[boolean, {}]}
      */
     public validateWithoutRecursion(
         value: ValueOfObjectValidatorFields<T>,
         otherValues?: Value,
-        siblings?: Value
+        siblings?: Value,
+        t?: TFunction,
     ): ValidationResult<ValueOfObjectValidatorFields<T>> {
-        return this.validate(value, otherValues, siblings, false);
+        return this.validate(value, otherValues, siblings, t, false);
     }
 
     public validate(value?: ValueOfObjectValidatorFields<T> | Partial<ValueOfObjectValidatorFields<T>>,
                     otherValues?: Value,
                     siblings?: Value,
+                    t?: TFunction,
                     recursion = true): ValidationResult<ValueOfObjectValidatorFields<T>> {
         if (this.reallyNotRequired && !this.validateRequired(value)) {
             return [true, value as ValueOfObjectValidatorFields<T>];
         }
 
-        const preValidate = super.validate(value as ValueOfObjectValidatorFields<T>, otherValues, siblings);
+        const preValidate = super.validate(value as ValueOfObjectValidatorFields<T>, otherValues, siblings, t);
         if (!preValidate[0]) {
             return preValidate;
         }
@@ -141,7 +145,7 @@ class ObjectValidator<T extends ObjectValidatorFields> extends BaseValidator<Val
                 }
             }
 
-            const test = this.fields[fieldName].validate(testValue[fieldName], otherValues, testValue);
+            const test = this.fields[fieldName].validate(testValue[fieldName], otherValues, testValue, t);
             tests[fieldName] = test;
             if (test[0] === false) {
                 allOk = false;

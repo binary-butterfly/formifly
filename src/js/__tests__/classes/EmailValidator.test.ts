@@ -8,7 +8,7 @@ describe('EmailValidator', () => {
 
     it('returns false for something that only has an @ at the start', () => {
         const validator = new EmailValidator();
-        expect(validator.validate('@email')).toStrictEqual([false, 'This must be a valid email address']);
+        expect(validator.validate('@email')).toStrictEqual([false, 'email']);
     });
 
     it('returns false for something that only has an @ at the end', () => {
@@ -18,7 +18,7 @@ describe('EmailValidator', () => {
 
     it('returns false for something that does not contain an @ at all', () => {
         const validator = new EmailValidator();
-        expect(validator.validate('EMAIL')).toStrictEqual([false, 'This must be a valid email address']);
+        expect(validator.validate('EMAIL')).toStrictEqual([false, 'email']);
     });
 
     it('sets the correct default input type', () => {

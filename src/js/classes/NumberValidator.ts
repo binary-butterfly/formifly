@@ -14,7 +14,7 @@ const delocalize = (value: string | number): number => {
  * A validator that allows you to validate numbers.
  * @extends BaseValidator
  */
-class NumberValidator extends BaseValidator<number|string> {
+class NumberValidator extends BaseValidator<number | string> {
     public defaultInputType: InputType = 'number';
     protected propType: PropTypes.Requireable<any> = PropTypes.number;
 
@@ -36,29 +36,24 @@ class NumberValidator extends BaseValidator<number|string> {
         defaultErrorMsg?: string,
         mutationFunc?: MutationFunction,
         onError?: ErrorFunction,
-        dependent?: Dependent
+        dependent?: Dependent,
     ) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
 
         let regexpInUse: RegExp;
-        let errorMsg = defaultErrorMsg ?? '';
+        let msgName = 'number';
         if (wholeNumber) {
-            if (defaultErrorMsg === undefined) {
-                errorMsg = 'This field must be a whole number';
-            }
+            msgName = 'whole_number';
             regexpInUse = wholeNumRegexp;
         } else {
-            if (defaultErrorMsg === undefined) {
-                 errorMsg = 'This field must be a number';
-            }
             regexpInUse = numRegexp;
         }
 
         this.validateFuncs.push(
             (value) => {
                 const success = regexpInUse.test(String(value));
-                return {success, errorMsg, changedValue: success ? delocalize(value) : undefined};
-            }
+                return {success, errorMsg: defaultErrorMsg, changedValue: success ? delocalize(value) : undefined, msgName: msgName};
+            },
         );
     }
 
@@ -71,10 +66,17 @@ class NumberValidator extends BaseValidator<number|string> {
     public min(num: number, msg?: string): this {
         ensureValueIsNumeric(num, 'min', 'NumberValidator', 'num');
 
-        let errorMsg = msg ?? 'This value must be at least ' + num;
-        errorMsg = errorMsg.replace('{{num}}', String(num));
+        let errorMsg: string | undefined;
+        if (msg) {
+            errorMsg = msg.replace('{{num}}', String(num));
+        }
 
-        this.validateFuncs.push(value => ({success: value >= num, errorMsg}));
+        this.validateFuncs.push(value => ({
+            success: value >= num,
+            errorMsg,
+            msgName: 'min_number',
+            translationContext: {num: num},
+        }));
         this._minNum = num;
         return this;
     }
@@ -91,10 +93,18 @@ class NumberValidator extends BaseValidator<number|string> {
      */
     public max(num: number, msg?: string): this {
         ensureValueIsNumeric(num, 'max', 'NumberValidator', 'num');
-        let errorMsg = msg ?? 'This value must be at most ' + num;
-        errorMsg = errorMsg.replace('{{num}}', String(num));
 
-        this.validateFuncs.push(value => ({success: value <= num, errorMsg}));
+        let errorMsg: string | undefined;
+        if (msg) {
+            errorMsg = msg.replace('{{num}}', String(num));
+        }
+
+        this.validateFuncs.push(value => ({
+            success: value <= num,
+            errorMsg,
+            msgName: 'max_number',
+            translationContext: {num: num},
+        }));
         this._maxNum = num;
         return this;
     }
@@ -108,8 +118,8 @@ class NumberValidator extends BaseValidator<number|string> {
      * @param {String} [msg] - The error message that is displayed when the value is invalid
      * @returns {this}
      */
-    public positive(msg = 'This value must be positive'): this {
-        this.validateFuncs.push(value => ({success: value > 0, errorMsg: msg}));
+    public positive(msg?: string): this {
+        this.validateFuncs.push(value => ({success: value > 0, errorMsg: msg, msgName: 'positive'}));
         return this;
     }
 
@@ -118,8 +128,8 @@ class NumberValidator extends BaseValidator<number|string> {
      * @param {String} [msg] - The error message that is displayed when the value is invalid
      * @returns {this}
      */
-    public negative(msg = 'This value must be negative'): this {
-        this.validateFuncs.push(value => ({success: value < 0, errorMsg: msg}));
+    public negative(msg?: string): this {
+        this.validateFuncs.push(value => ({success: value < 0, errorMsg: msg, msgName: 'negative'}));
         return this;
     }
 
@@ -131,14 +141,21 @@ class NumberValidator extends BaseValidator<number|string> {
      * @returns {this}
      */
     public range(min: number, max: number, msg?: string): this {
-
-        let errorMsg = msg ?? 'This value must be between ' + min + ' and ' + max;
-        errorMsg = errorMsg.replace('{{min}}', String(min));
-        errorMsg = errorMsg.replace('{{max}}', String(max));
-
         ensureValueIsNumeric(min, 'range', 'NumberValidator', 'min');
         ensureValueIsNumeric(max, 'range', 'NumberValidator', 'max');
-        this.validateFuncs.push(value => ({success: value >= min && value <= max, errorMsg}));
+
+
+        let errorMsg: string | undefined;
+        if (msg) {
+            errorMsg = msg.replace('{{min}}', String(min)).replace('{{max}}', String(max));
+        }
+
+        this.validateFuncs.push(value => ({
+            success: value >= min && value <= max,
+            errorMsg,
+            msgName: 'number_range',
+            translationContext: {min: min, max: max},
+        }));
         this._minNum = min;
         this._maxNum = max;
         return this;
@@ -156,7 +173,8 @@ class NumberValidator extends BaseValidator<number|string> {
                 success: true,
                 changedValue: Number(value).toFixed(count),
                 errorMsg: 'This is not a validator and should not return false.',
-            })
+                msgName: '',
+            }),
         );
         return this;
     }
