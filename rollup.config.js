@@ -9,61 +9,64 @@ import del from 'rollup-plugin-delete';
 
 const env = process.env.NODE_ENV;
 
-const config = [{
-    input: 'src/js/components/demo/DemoPage.tsx',
-    output: {
-        file: 'dist/formifly.js',
-        format: 'umd',
-        sourcemap: true,
-        globals: {
-            'react': 'React',
-            'react-dom': 'ReactDOM',
+const config = [
+    {
+        input: 'src/js/components/demo/DemoPage.tsx',
+        output: {
+            file: 'dist/formifly.js',
+            format: 'umd',
+            sourcemap: true,
+            globals: {
+                'react': 'React',
+                'react-dom': 'ReactDOM',
+            },
+            name: 'Formifly',
+            inlineDynamicImports: true,
+            exports: 'auto',
         },
-        name: 'Formifly',
-        inlineDynamicImports: true,
-        exports: 'auto',
+        plugins: [
+            nodeResolve({
+                browser: true,
+                preferBuiltins: true,
+                extensions: ['.js', '.ts', '.tsx'],
+            }),
+            commonjs({
+                exclude: 'src/**',
+            }),
+            babel({
+                extensions: ['.js', '.ts', '.jsx', '.tsx'],
+                babelHelpers: 'runtime',
+                exclude: 'node_modules/**',
+            }),
+            globals(),
+            replace({
+                'process.env.NODE_ENV': JSON.stringify(env === 'production' ? 'production' : 'development'),
+                'preventAssignment': true,
+            }),
+        ],
     },
-    plugins: [
-        nodeResolve({
-            browser: true,
-            preferBuiltins: true,
-            extensions: ['.js', '.ts', '.tsx'],
-        }),
-        commonjs({
-            exclude: 'src/**',
-        }),
-        babel({
-            extensions: ['.js', '.ts', '.jsx', '.tsx'],
-            babelHelpers: 'runtime',
-            exclude: 'node_modules/**',
-        }),
-        globals(),
-        replace({
-            'process.env.NODE_ENV': JSON.stringify(env === 'production' ? 'production' : 'development'),
-            'preventAssignment': true,
-        }),
-    ],
-}, {
-    input: 'src/js/main.ts',
-    output: [{
-        file: 'dist/index.d.ts',
-        format: 'es',
-        plugins: [],
-    }],
-    plugins: [
-        commonjs({
-            exclude: 'src/**',
-        }),
-        babel({
-            extensions: ['.js', '.ts', '.jsx', '.tsx'],
-            babelHelpers: 'runtime',
-            exclude: 'node_modules/**',
-        }),
-        typescript({tsconfig: './build.tsconfig.json'}),
-        dts(),
-        del({targets: ['dist/src'], hook: 'buildEnd'}),
-    ],
-}];
+    {
+        input: 'src/js/main.ts',
+        output: [{
+            file: 'dist/index.d.ts',
+            format: 'es',
+            plugins: [],
+        }],
+        plugins: [
+            commonjs({
+                exclude: 'src/**',
+            }),
+            babel({
+                extensions: ['.js', '.ts', '.jsx', '.tsx'],
+                babelHelpers: 'runtime',
+                exclude: 'node_modules/**',
+            }),
+            typescript({tsconfig: './build.tsconfig.json'}),
+            dts(),
+            del({targets: ['dist/src'], hook: 'buildEnd'}),
+        ],
+    },
+];
 
 if (env === 'production') {
     config[0].input = 'src/js/main.ts';
