@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import BaseValidator from './BaseValidator';
 import {Dependent, ErrorFunction, InputType, MutationFunction, ValidationResult, Value} from '../types';
+import {TFunction} from 'i18next';
 
 /**
  * A validator that allows you to validate boolean fields.
@@ -47,9 +48,10 @@ class BooleanValidator extends BaseValidator<boolean | string> {
     public validate(
         value: boolean | string,
         otherValues: Value = {},
-        siblings: Value = {}
+        siblings: Value = {},
+        t?: TFunction,
     ): ValidationResult<boolean | string> {
-        const result = super.validate(value, otherValues, siblings);
+        const result = super.validate(value, otherValues, siblings, t);
         if (result[0] && this.realBool || !result[0]) {
             return result;
         } else {
