@@ -110,7 +110,7 @@ class NumberValidator extends BaseValidator<number | string> {
     }
 
     public get maxNum(): number | undefined {
-        return this._minNum;
+        return this._maxNum;
     }
 
     /**
