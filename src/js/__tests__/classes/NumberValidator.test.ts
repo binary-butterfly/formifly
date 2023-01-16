@@ -106,3 +106,15 @@ describe.each([
         expect(validator.validate(value)).toStrictEqual(expected);
     });
 });
+
+describe('Test NumberValidator', () => {
+    it('has a functioning maxNum getter that returns the correct value', () => {
+        const validator = new NumberValidator().max(1);
+        expect(validator.maxNum).toBe(1);
+    });
+
+    it('has a functioning minNum getter that returns the correct value', () => {
+        const validator = new NumberValidator().min(1);
+        expect(validator.minNum).toBe(1);
+    });
+});
