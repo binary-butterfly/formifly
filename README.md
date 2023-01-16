@@ -51,14 +51,15 @@ REST backends.
     - [PhoneNumberValidator](#phonenumbervalidator)
 6. [Cross Dependent Fields](#cross-dependent-fields)
 7. [Creating your own Validators](#creating-your-own-validators)
-8. [Tips and tricks](#tips-and-tricks)
+8. [Localization](#localization)
+9. [Tips and tricks](#tips-and-tricks)
     - [Multi step forms](#multi-step-forms)
     - [Handling backend validation errors](#handling-backend-validation-errors)
     - [Too many constructor params?](#too-many-constructor-params)
     - [Creating empty array entries](#creating-empty-array-entries)
     - [Race condition when setting multiple child fields?](#race-condition-when-setting-multiple-child-fields)
     - [Race condition when validating multiple child fields?](#race-condition-when-validating-multiple-child-fields)
-9. [Development](#development)
+10. [Development](#development)
 
 ## Quick Start
 
@@ -68,7 +69,7 @@ To install Formifly, simply run `npm install --save formifly` within your projec
 
 ### tl;dr
 
-Head over to the [code of the demo form](src/js/components/demo/DemoForm.js); it contains at least one example for every kind of input
+Head over to the [code of the demo form](src/js/components/demo/DemoForm.tsx); it contains at least one example for every kind of input
 field this library ships.
 
 ### Basic forms
@@ -843,10 +844,9 @@ This will validate any date after the first of february 2020.
 
 This validator is used for boolean values, such as checkbox checked states. It does not have any special functions.
 
-The BooleanValidator will turn any input into a string representation of the correct boolean and fail on values that are not either a
-string representation of true or false or a real boolean.  
-You can also set the `realBool` param, either during construction or using the `setRealBool` function to make the validator return an
-actual boolean instead of a string representation.
+The BooleanValidator will fail on values that are not either a string representation of true or false or a real boolean.  
+You can also set the `realBool` param, either during construction or using the `setRealBool` function to make the validator return a
+string representation of the boolean instead.
 
 Example:
 
@@ -854,11 +854,11 @@ Example:
 const validator = new BooleanValidator();
 
 validator.validate(false);
-// returns [true, 'false']
-
-validator.setRealBool(true);
-validator.validate(false);
 // returns [true, false]
+
+validator.setRealBool(false);
+validator.validate(false);
+// returns [true, 'false']
 ```
 
 This example will validate to true for `true`, `false`, `"true"` and `"false"` and return an error message for everything else.
@@ -1159,11 +1159,22 @@ most cases.
 
 Creating your own validator is really easy. This is a quick "tl;dr" example for a very simple one:
 
-```js
+```ts
 class NotTrueValidator extends BooleanValidator {
-    constructor(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent) {
+    constructor(
+        defaultValue: boolean | undefined,
+        defaultErrorMsg: string,
+        mutationFunc?: MutationFunction,
+        onError?: ErrorFunction,
+        dependent?: Dependent
+    ) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
-        this.validateFuncs.push([(value) => value !== 'true' && value !== true, defaultErrorMsg]);
+        this.validateFuncs.push(value => ({
+            success: value !== 'true' && value !== true,
+            errorMsg: defaultErrorMsg,
+            msgName: 'not_true',
+            changedValue: Boolean(value),
+        }));
     }
 }
 ```
@@ -1174,31 +1185,17 @@ However, your validators can be a bit more complex.
 Let's imagine an email validator that does not allow email addresses hosted from some specific domain.  
 We would write that something like this:
 
-```js
-const emailRegexp = /.+@.+/;
+```ts
+class CustomEmailValidator extends EmailValidator {
+    public defaultInputType: InputType = 'email';
 
-class CustomEmailValidator extends StringValidator {
-    defaultInputType = 'email';
-
-    constructor(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent) {
-        super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
-
-        this.validateFuncs.push([
-            value => {
-                return emailRegexp.test(value);
-            },
-            defaultErrorMsg,
-        ]);
-    }
-
-    notFromDomain(domain, msg = 'This domain is not allowed') {
-        this.validateFuncs.push([
-            value => {
+    public notFromDomain(domain: string, msg?: string): this {
+        this.validateFuncs.push(
+            (value) => {
                 const splitString = value.split('@');
-                return splitString[splitString.length - 1] !== domain;
+                return {success: splitString[splitString.length - 1] !== domain, errorMsg: msg, msgName: 'custom_email_validator'};
             },
-            msg
-        ])
+        );
         return this;
     }
 }
@@ -1212,6 +1209,28 @@ This validator does the following things:
   input by sending validation emails.)
 - It adds a function called `notFromDomain`.  
   This function can be used to forbid email addresses hosted on a certain domain.
+- It allows the user to set a custom message in case the notFromDomain validator validates to false
+    - If no error is given, the translation function will be used to look up a localized string with the key `custom_email_validator`
+
+## Localization
+
+By default, all built in validators will return more or less useful error messages in English language, when they are used within a
+FormiflyForm.  
+You can override those on a per validator basis by using the defaultErrorMessage property on the validator and the msg property on
+validator functions.
+Some validator functions even automatically replace the names of their parameters when they are passed a custom string that contains a
+placeholder like `{{num}}`.
+
+However, overriding all of these error messages can get very tedious, which is why since version 2, Formifly makes use of the powerful
+[react-i18next](https://react.i18next.com/) localization library.  
+To automatically localize all included default error messages, you can pass your own translation function to the FormiflyForm.  
+In order for this to work, you will need a `formifly` namespace with all the translation strings included
+in [our custom i18n.ts](./src/js/helpers/i18n.ts) file.
+
+If the validator takes any parameters, such as `min` for `StringValidator.minLength(min)`, these will be given to the translation function
+in an object as the second parameter, to allow automatic replacement of placeholders.
+
+Any custom validators you create must return a msgName that can be used as a translation key on their validation functions.
 
 ## Tips and tricks
 
