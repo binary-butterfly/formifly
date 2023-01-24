@@ -177,8 +177,8 @@ export const FormiflyProvider = <T extends BaseValidator<any>>(props: FormiflyPr
     const validateMultipleFields = (pairs: [string, Value?][]): Promise<boolean> => {
         return new Promise((resolve) => {
             let allValid = true;
-            let newTouched = touched;
-            let newErrors = errors;
+            let newTouched = {};
+            let newErrors = {};
             for (const pair of pairs) {
                 const name = pair[0];
                 const value = pair[1] ?? getFieldValueFromKeyString(name, values);
@@ -192,8 +192,13 @@ export const FormiflyProvider = <T extends BaseValidator<any>>(props: FormiflyPr
                 }
                 newTouched = setFieldValueFromKeyString(name, true, newTouched);
             }
-            setTouched(newTouched);
-            setErrors(newErrors);
+
+            setTouched((oldTouched) => {
+                return {...oldTouched as any, ...newTouched};
+            });
+            setErrors((oldErrors) => {
+                return {...oldErrors as any, ...newErrors};
+            });
             resolve(allValid);
         });
     };
