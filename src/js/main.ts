@@ -21,6 +21,7 @@ import {
     convertDateObjectToInputString,
     getFieldValueFromKeyString,
     setFieldValueFromKeyString,
+    containsValuesThatAreNotFalse,
 } from './helpers/generalHelpers';
 import {ensureValueIsDateObject, ensureValueIsNumeric, ensureValueIsRegexp} from './helpers/developerInputValidators';
 import withLabelErrorsAndHelp, {
@@ -64,6 +65,7 @@ export {
     convertDateObjectToInputString,
     getFieldValueFromKeyString,
     setFieldValueFromKeyString,
+    containsValuesThatAreNotFalse,
     ensureValueIsRegexp,
     ensureValueIsNumeric,
     ensureValueIsDateObject,
