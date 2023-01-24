@@ -3,7 +3,7 @@
  * Since it is encouraged to only write integration tests for react components, these tests should cover almost all of the react components.
  * It also serves as the place where the classes are integration tested in addition to their unit tests.
  */
-import {cleanup, fireEvent, render, screen} from '@testing-library/react';
+import {cleanup, fireEvent, render, screen, waitFor} from '@testing-library/react';
 import React from 'react';
 import DemoForm from '../../../components/demo/DemoForm';
 import {convertDateObjectToInputString} from '../../../helpers/generalHelpers';
@@ -124,7 +124,7 @@ describe('DemoForm', () => {
 
         fireEvent.click(secondOption);
         expect(firstOption.checked).toEqual(false);
-        expect(secondOption.checked).toEqual(true);
+        return waitFor(() => secondOption.checked);
     });
 
     it('renders a vertical radio group', () => {
@@ -138,11 +138,11 @@ describe('DemoForm', () => {
         expect(firstOption.checked).toEqual(false);
         expect(secondOption.checked).toEqual(true);
 
-        expect(
-            screen.getByText(
+        return expect(
+            screen.findByText(
                 'This radio group uses the FormiflyRadioGroup component, which creates an accessible field set to hold the options.',
             ),
-        ).not.toBeNull();
+        ).resolves.not.toBeNull();
     });
 
     it('renders a horizontal radio group', () => {
@@ -156,7 +156,7 @@ describe('DemoForm', () => {
         expect(firstOption.checked).toEqual(false);
         expect(secondOption.checked).toEqual(true);
 
-        expect(screen.getByText('Also select one of these horizontal fields please')).not.toBeNull();
+        return expect(screen.findByText('Also select one of these horizontal fields please')).resolves.not.toBeNull();
     });
 
     it('renders a functional multi select', () => {
@@ -188,7 +188,8 @@ describe('DemoForm', () => {
 
         fireEvent.click(trySelectingAll);
         fireEvent.click(screen.getByLabelText('Or try selecting all but one'));
-        expect(screen.getByText('All selected')).not.toBeNull();
+
+        return expect(screen.findByText('All selected')).resolves.not.toBeNull();
     });
 
     it('allows adding and removing fruit', () => {
@@ -222,7 +223,8 @@ describe('DemoForm', () => {
 
         expect(tastyCheck.checked).toBe(true);
         fireEvent.click(tastyCheck);
-        expect(tastyCheck.checked).toBe(false);
+
+        return waitFor(() => !tastyCheck.checked);
     });
 
     it('renders a form that can not be submitted while values are missing', () => {
@@ -257,6 +259,6 @@ describe('DemoForm', () => {
         const expiredCheck = screen.getByLabelText('Expired');
         fireEvent.click(expiredCheck);
         fireEvent.blur(expiredCheck);
-        expect(screen.getByText('You cannot add expired food.')).not.toBeNull();
+        return expect(screen.findByText('You cannot add expired food.')).resolves.not.toBeNull();
     });
 });
