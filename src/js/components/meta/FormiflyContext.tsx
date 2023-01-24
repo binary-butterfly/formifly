@@ -127,23 +127,23 @@ export const FormiflyProvider = <T extends BaseValidator<any>>(props: FormiflyPr
         }
     };
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        setFieldValue(event.target.name, event.target.value);
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>): Promise<ValueOfValidator<T>> => {
+        return setFieldValue(event.target.name, event.target.value);
     };
 
     const handleCheckChange = (event: React.ChangeEvent<HTMLInputElement>): Promise<boolean> => {
-        setFieldValue(event.target.name, Boolean(event.target.checked));
-        return validateField(event.target.name, event.target.checked);
+        return setFieldValue(event.target.name, Boolean(event.target.checked))
+            .then(() => validateField(event.target.name, event.target.checked));
     };
 
     const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>): Promise<boolean> => {
-        setFieldValue(event.target.name, event.target.value);
-        return validateField(event.target.name, event.target.value);
+        return setFieldValue(event.target.name, event.target.value)
+            .then(() => validateField(event.target.name, event.target.value));
     };
 
     const handleMultiSelectChange = (name: string, newVal: Value): Promise<boolean> => {
-        setFieldValue(name, newVal);
-        return validateField(name, newVal);
+        return setFieldValue(name, newVal)
+            .then(() => validateField(name, newVal));
     };
 
     const handleBlur = (event: React.ChangeEvent<HTMLInputElement>): Promise<boolean> => {
