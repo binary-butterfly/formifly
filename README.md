@@ -59,6 +59,7 @@ REST backends.
     - [Creating empty array entries](#creating-empty-array-entries)
     - [Race condition when setting multiple child fields?](#race-condition-when-setting-multiple-child-fields)
     - [Race condition when validating multiple child fields?](#race-condition-when-validating-multiple-child-fields)
+    - [Helper functions exported by Formifly](#helper-functions-exported-by-formifly)
 10. [Development](#development)
 
 ## Quick Start
@@ -1395,6 +1396,21 @@ validateMultipleFields([['field1', 'valueOfField1'], ['field2']]);
 
 As you can see, the value is optional, but passing it improves performance of the function.  
 In any case, you will have to pass an array of arrays that contain at least the field names as their respective first entries.
+
+### Helper functions exported by Formifly
+
+Formifly exports some helper functions to help you work with it:
+
+- `convertDateObjectToInputString(date: Date)` Converts a date object to a string that can be used as the value for a datetime-local input
+  field.
+- `getFieldValueFromKeyString(keyString: string|number, values: Value|UnpackedErrors<any>)` Finds a field's value inside the formifly
+  values object by the key string.
+- `setFieldValueFromKeyString(keyString: string, value: Value, oldValues: T)` Sets a value within an object by its key string.
+- `containsValuesThatAreNotFalse(obj: any)` Checks to see if there is a value that is not false inside an object, checking all sub objects
+  and arrays. Useful for working with the Formifly `errors` object.
+- `findFieldValidatorFromName(name: string, shape?: ObjectValidator<any> | ArrayValidator<any> | BaseValidator<any>)` Finds the validator
+  for a specific key string within a shape
+- `unpackErrors(currentResult: ValidationResult<ValueOfValidator<T>>)` Turns a validation result into a valid Formifly `errors` object
 
 ## Development
 
