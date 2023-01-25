@@ -1,7 +1,8 @@
-import BaseValidator from './classes/BaseValidator';
-import ObjectValidator from './classes/ObjectValidator';
-import ArrayValidator from './classes/ArrayValidator';
+import type BaseValidator from './classes/BaseValidator';
+import type ObjectValidator from './classes/ObjectValidator';
+import type ArrayValidator from './classes/ArrayValidator';
 
+export type DeepPartial<T> = T extends object ? {[K in keyof T]?: DeepPartial<T[K]>} : T;
 
 export type SubmitFunction = (_: Value | undefined, __: (___: any) => void) => Promise<void> | void;
 export type SubmitValidationErrorFunction<T extends BaseValidator<any>> =
@@ -24,12 +25,19 @@ export type ValidationResult<T extends Value | ErrorType> = |
     [false, Record<string, ValidationResult<Value | ErrorType>>] |
     [false, ValidationResult<Value | ErrorType>[]];
 
-export type UnpackedErrors<V extends BaseValidator<any>> =
+/**
+ * The ValidatorShapeType is a generic type, that copies the shape of Validator V and allows for values of type T in
+ * the leaf nodes of the shape.
+ */
+export type ValidatorShapeType<V extends BaseValidator<any>, T extends any> =
     V extends ObjectValidator<infer O> ?
-        { [K in keyof O]: UnpackedErrors<O[K]> } :
+        { [K in keyof O]: ValidatorShapeType<O[K], T> } :
         V extends ArrayValidator<infer A> ?
-            UnpackedErrors<A>[] :
-            string | false;
+            ValidatorShapeType<A, T>[] :
+            T;
+
+export type UnpackedErrors<V extends BaseValidator<any>> = ValidatorShapeType<V, string|false>;
+export type TouchedValues<V extends BaseValidator<any>> = ValidatorShapeType<V, boolean>;
 
 export type ErrorType = string | false | { [key: string]: ValidationResult<ErrorType> } | ValidationResult<ErrorType>[];
 
@@ -69,7 +77,7 @@ export type ArrayValue = Value[];
 
 export type Value = FlatValue | ObjectValue | ArrayValue;
 
-export type ValueOfValidator<V> = V extends BaseValidator<infer T> ? T : any;
+export type ValueOfValidator<V extends BaseValidator<any>> = V['defaultValue'];
 export type ValueOfObjectValidatorFields<T extends ObjectValidatorFields> = { [K in keyof T]: ValueOfValidator<T[K]> };
 
 export type ObjectValidatorFields = { [key: string]: BaseValidator<any> };

@@ -1,7 +1,7 @@
 import BaseValidator from '../classes/BaseValidator';
 import ArrayValidator from '../classes/ArrayValidator';
 import ObjectValidator from '../classes/ObjectValidator';
-import {UnpackedErrors, ValidationResult, Value, ValueOfValidator} from '../types';
+import {UnpackedErrors, ValidationResult, ValueOfValidator} from '../types';
 
 export const findFieldValidatorFromName = (
     name: string, shape?: ObjectValidator<any> | ArrayValidator<any> | BaseValidator<any>
@@ -33,13 +33,17 @@ export const findFieldValidatorFromName = (
     return dependentValue;
 };
 
-export const findFieldValidatorAndSiblingsFromName = <T extends BaseValidator<any>|ArrayValidator<any>|ObjectValidator<any>>(
+export const findFieldValidatorAndSiblingsFromName =
+    <
+        T extends BaseValidator<any>|ArrayValidator<any>|ObjectValidator<any>,
+        R extends BaseValidator<any>|ArrayValidator<any>|ObjectValidator<any>
+    >(
     name: string,
     shape: T,
     values: ValueOfValidator<T>
-): [T, Value] => {
+): [R, ValueOfValidator<R>] => {
     const fieldNames = name.split('.');
-    let validator = shape;
+    let validator: any = shape;
 
     let siblings = values;
     let lastSiblings = siblings;

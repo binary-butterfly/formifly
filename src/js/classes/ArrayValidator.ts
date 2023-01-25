@@ -2,7 +2,15 @@ import PropTypes from 'prop-types';
 import {ensureValueIsNumeric} from '../helpers/developerInputValidators';
 import BaseValidator from './BaseValidator';
 import ObjectValidator from './ObjectValidator';
-import {Dependent, ErrorFunction, InputType, MutationFunction, ValidationResult, Value, ValueOfValidator} from '../types';
+import {
+    Dependent,
+    ErrorFunction,
+    InputType,
+    MutationFunction,
+    ValidationResult,
+    Value,
+    ValueOfValidator,
+} from '../types';
 import {TFunction} from 'i18next';
 
 /**
@@ -151,7 +159,7 @@ class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOf
     }
 
     public validate(
-        values: Array<ValueOfValidator<T>>,
+        values?: Array<ValueOfValidator<T>>,
         otherValues = {},
         siblings = {},
         t?: TFunction,
@@ -182,7 +190,7 @@ class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOf
         }
 
         // Unpack to avoid mutations
-        const testValues = [...values];
+        const testValues = values ? [...values] : [];
         let allOk = true;
         for (const index in testValues) {
             const value = testValues[index];

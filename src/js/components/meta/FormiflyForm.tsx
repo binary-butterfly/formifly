@@ -1,12 +1,12 @@
 import React from 'react';
 import {ThemeProvider} from 'styled-components';
 import {FormiflyProvider, useFormiflyContext} from './FormiflyContext';
-import {SubmitFunction, SubmitValidationErrorFunction, ValueOfValidator} from '../../types';
-import BaseValidator from '../../classes/BaseValidator';
+import {DeepPartial, SubmitFunction, SubmitValidationErrorFunction, ValueOfValidator} from '../../types';
 import '../../helpers/i18n';
 import {TFunction} from 'i18next';
+import ObjectValidator from '../../classes/ObjectValidator';
 
-const Form = <T extends BaseValidator<any>>(props: FormProps<T>) => {
+const Form = <T extends ObjectValidator<any>>(props: FormProps<T>) => {
     const {handleSubmit} = useFormiflyContext<T>();
     return <form onSubmit={e =>
         handleSubmit(props.onSubmit, props.onSubmitValidationError, e)}
@@ -15,7 +15,7 @@ const Form = <T extends BaseValidator<any>>(props: FormProps<T>) => {
     </form>;
 };
 
-const FormiflyForm = <T extends BaseValidator<any>>(props: FormiflyFormProps<T>) => {
+const FormiflyForm = <T extends ObjectValidator<any>>(props: FormiflyFormProps<T>) => {
     const {
         shape,
         defaultValues,
@@ -53,16 +53,16 @@ const FormiflyForm = <T extends BaseValidator<any>>(props: FormiflyFormProps<T>)
     </ThemeProvider>;
 };
 
-export type FormProps<T extends BaseValidator<any>> = {
+export type FormProps<T extends ObjectValidator<any>> = {
     onSubmit: SubmitFunction;
     onSubmitValidationError?: SubmitValidationErrorFunction<T>;
     className?: string;
     children: (JSX.Element | false)[] | JSX.Element | false;
 }
 
-export type FormiflyFormProps<T extends BaseValidator<any>> = FormProps<T> & {
+export type FormiflyFormProps<T extends ObjectValidator<any>> = FormProps<T> & {
     shape: T;
-    defaultValues?: Partial<ValueOfValidator<T>>;
+    defaultValues?: DeepPartial<ValueOfValidator<T>>;
     disableNativeRequired?: boolean;
     disableNativeMinMax?: boolean;
     t?: TFunction,
