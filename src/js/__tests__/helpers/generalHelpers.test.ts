@@ -95,9 +95,27 @@ describe.each([
     });
 });
 
-it('throws if oldValues is not an array or object', () => {
-    expect(() => setFieldValueFromKeyString('field.name', 'newValue', 'oldValues'))
-        .toThrowErrorMatchingInlineSnapshot(`"Could not find value for field.name"`);
+describe('Test setFieldValueFromKeyString', () => {
+    it('allows old value child fields that are not arrays or objects and can return an array', () => {
+        expect(setFieldValueFromKeyString('foo.0', true, {foo: false})).toStrictEqual({foo: [true]});
+    });
+
+    it('allows old value child fields that are not arrays or objects and can return an object', () => {
+        expect(setFieldValueFromKeyString('foo.bar', true, {foo: false})).toStrictEqual({foo: {bar: true}});
+    });
+
+    it('allows old values that are not arrays or objects and can return an array', () => {
+        expect(setFieldValueFromKeyString('0', true, 'banana')).toStrictEqual([true]);
+    });
+
+    it('allows old values that are not arrays or objects and can return an object', () => {
+        expect(setFieldValueFromKeyString('foo', true, 'banana')).toStrictEqual({foo: true});
+    });
+
+    it('allows old values that do not contain the new key', () => {
+        expect(setFieldValueFromKeyString('foo.bar', true, {foo: {baz: false}}))
+            .toStrictEqual({foo: {bar: true, baz: false}});
+    });
 });
 
 describe.each([
