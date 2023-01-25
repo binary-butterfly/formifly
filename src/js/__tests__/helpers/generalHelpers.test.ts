@@ -96,20 +96,25 @@ describe.each([
 });
 
 describe('Test setFieldValueFromKeyString', () => {
-    it('Allows old value child fields that are not arrays or objects and can return an array', () => {
+    it('allows old value child fields that are not arrays or objects and can return an array', () => {
         expect(setFieldValueFromKeyString('foo.0', true, {foo: false})).toStrictEqual({foo: [true]});
     });
 
-    it('Allows old value child fields that are not arrays or objects and can return an object', () => {
+    it('allows old value child fields that are not arrays or objects and can return an object', () => {
         expect(setFieldValueFromKeyString('foo.bar', true, {foo: false})).toStrictEqual({foo: {bar: true}});
     });
 
-    it('Allows old values that are not arrays or objects and can return an array', () => {
+    it('allows old values that are not arrays or objects and can return an array', () => {
         expect(setFieldValueFromKeyString('0', true, 'banana')).toStrictEqual([true]);
     });
 
-    it('Allows old values that are not arrays or objects and can return an object', () => {
+    it('allows old values that are not arrays or objects and can return an object', () => {
         expect(setFieldValueFromKeyString('foo', true, 'banana')).toStrictEqual({foo: true});
+    });
+
+    it('allows old values that do not contain the new key', () => {
+        expect(setFieldValueFromKeyString('foo.bar', true, {foo: {baz: false}}))
+            .toStrictEqual({foo: {bar: true, baz: false}});
     });
 });
 
