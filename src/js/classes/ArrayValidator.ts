@@ -171,7 +171,7 @@ class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOf
             return preValidate;
         }
 
-        if (Array.isArray(values) === false) {
+        if (values === undefined || Array.isArray(values) === false) {
             if (t) {
                 return [false, t('array') as string];
             }
@@ -190,7 +190,7 @@ class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOf
         }
 
         // Unpack to avoid mutations
-        const testValues = values ? [...values] : [];
+        const testValues = [...values];
         let allOk = true;
         for (const index in testValues) {
             const value = testValues[index];
