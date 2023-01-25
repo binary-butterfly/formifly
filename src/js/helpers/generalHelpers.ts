@@ -4,7 +4,7 @@ import {DeepPartial, ObjectValue, Value, ValueOfValidator} from '../types';
 import BaseValidator from '../classes/BaseValidator';
 
 export const getFieldValueFromKeyString = <T extends Value>(
-    keyString: string|number, values: T
+    keyString: string | number, values: T,
 ): Value => {
     const fieldNames = String(keyString).split('.');
     let dependentValue = values;
@@ -18,30 +18,35 @@ export const getFieldValueFromKeyString = <T extends Value>(
 };
 
 const setDeepValue = <T extends Value>(
-    value: Value, fieldNames: string[], currentIndex: number, oldValues: Value
+    value: Value, fieldNames: string[], currentIndex: number, oldValues: Value,
 ): T => {
-    if (typeof oldValues !== 'object' && !Array.isArray(oldValues)) {
-        throw new Error('Could not find value for ' + fieldNames.join('.'));
+    let ret;
+    if (typeof oldValues !== 'object') {
+        ret = Number.isNaN(Number(fieldNames[currentIndex])) ? {} : [];
+    } else {
+        ret = Array.isArray(oldValues) ? [...oldValues] : {...oldValues};
     }
-
-    const ret = Array.isArray(oldValues) ? [...oldValues] : {...oldValues};
 
     // any casts because we either index a record with a string or an array with a string that is implicitly cast to an int.
     // this is hard to teach ts
     if (currentIndex === fieldNames.length - 1) {
         (ret as any)[fieldNames[currentIndex]] = value;
-    } else if ((oldValues as any)[fieldNames[currentIndex]] === undefined) {
-        (ret as any)[fieldNames[currentIndex]] = setDeepValue(value, fieldNames, currentIndex + 1, {});
+    } else if (typeof (oldValues as any)[fieldNames[currentIndex]] !== 'object') {
+        if (Number.isNaN(Number(fieldNames[currentIndex + 1]))) {
+            (ret as any)[fieldNames[currentIndex]] = setDeepValue(value, fieldNames, currentIndex + 1, {});
+        } else {
+            (ret as any)[fieldNames[currentIndex]] = setDeepValue(value, fieldNames, currentIndex + 1, []);
+        }
     } else {
         (ret as any)[fieldNames[currentIndex]] = setDeepValue(
-            value, fieldNames, currentIndex + 1, (oldValues as any)[fieldNames[currentIndex]]
+            value, fieldNames, currentIndex + 1, (oldValues as any)[fieldNames[currentIndex]],
         );
     }
     return ret as T;
 };
 
 export const setFieldValueFromKeyString = <T extends Value>(
-    keyString: string, value: Value, oldValues: T
+    keyString: string, value: Value, oldValues: T,
 ): T => {
     const fieldNames = keyString.split('.');
 
@@ -70,9 +75,9 @@ export const completeDefaultValues = <T extends BaseValidator<any>>(
     validatorDefaults: ValueOfValidator<T>,
     userDefaults: DeepPartial<ValueOfValidator<T>>,
     shape?: T,
-    keyText?: string
+    keyText?: string,
 ): ValueOfValidator<T> => {
-    Object.entries(userDefaults).map(([keyInternal, value]: [string|number, any]) => {
+    Object.entries(userDefaults).map(([keyInternal, value]: [string | number, any]) => {
         const key = keyInternal as keyof ValueOfValidator<T>;
         const thisKeyText = keyText === undefined ? String(key) : keyText + '.' + String(key);
         if (value !== null) {
