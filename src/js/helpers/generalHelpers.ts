@@ -1,10 +1,10 @@
 import {findFieldValidatorFromName} from './validationHelpers';
 import ArrayValidator from '../classes/ArrayValidator';
-import {ObjectValue, UnpackedErrors, Value, ValueOfValidator} from '../types';
+import {DeepPartial, ObjectValue, Value, ValueOfValidator} from '../types';
 import BaseValidator from '../classes/BaseValidator';
 
-export const getFieldValueFromKeyString = (
-    keyString: string|number, values: Value|UnpackedErrors<any>
+export const getFieldValueFromKeyString = <T extends Value>(
+    keyString: string|number, values: T
 ): Value => {
     const fieldNames = String(keyString).split('.');
     let dependentValue = values;
@@ -12,7 +12,7 @@ export const getFieldValueFromKeyString = (
         if ((dependentValue as ObjectValue)[fieldName] === undefined) {
             throw new Error('Could not find value for ' + keyString);
         }
-        dependentValue = (dependentValue as ObjectValue)[fieldName];
+        dependentValue = (dependentValue as any)[fieldName];
     }
     return dependentValue;
 };
@@ -68,7 +68,7 @@ export const convertDateObjectToInputString = (date: Date) => {
 // but as all casts are internally only and the interface is well typed, I don't think this is urgent.
 export const completeDefaultValues = <T extends BaseValidator<any>>(
     validatorDefaults: ValueOfValidator<T>,
-    userDefaults: Partial<ValueOfValidator<T>>,
+    userDefaults: DeepPartial<ValueOfValidator<T>>,
     shape?: T,
     keyText?: string
 ): ValueOfValidator<T> => {

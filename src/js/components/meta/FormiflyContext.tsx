@@ -11,14 +11,26 @@ import {
     getFieldValueFromKeyString,
     setFieldValueFromKeyString,
 } from '../../helpers/generalHelpers';
-import {findFieldValidatorAndSiblingsFromName, findFieldValidatorFromName, unpackErrors} from '../../helpers/validationHelpers';
+import {
+    findFieldValidatorAndSiblingsFromName,
+    findFieldValidatorFromName,
+    unpackErrors,
+} from '../../helpers/validationHelpers';
 import BaseValidator from '../../classes/BaseValidator';
 import {FormiflyFieldProps} from '../input/FormiflyField';
-import {SubmitFunction, SubmitValidationErrorFunction, UnpackedErrors, Value, ValueOfValidator} from '../../types';
+import {
+    DeepPartial,
+    SubmitFunction,
+    SubmitValidationErrorFunction,
+    TouchedValues,
+    UnpackedErrors,
+    Value,
+    ValueOfValidator,
+} from '../../types';
 import {TFunction} from 'i18next';
 import {useTranslation} from 'react-i18next';
 
-export type FormiflyContextType<T extends BaseValidator<any>> = {
+export type FormiflyContextType<T extends ObjectValidator<any>> = {
     setSubmitting: (value: (((prevState: boolean) => boolean) | boolean)) => void;
     handleBlur: (event: React.ChangeEvent<HTMLInputElement>) => Promise<boolean>;
     submitting: boolean;
@@ -62,7 +74,7 @@ export type FormiflyContextType<T extends BaseValidator<any>> = {
 export const Context = React.createContext<FormiflyContextType<any>>(undefined as any);
 Context.displayName = 'FormiflyContext';
 
-export const FormiflyProvider = <T extends BaseValidator<any>>(props: FormiflyProviderProps<T>) => {
+export const FormiflyProvider = <T extends ObjectValidator<any>>(props: FormiflyProviderProps<T>) => {
     const {shape, initialValues, children, disableNativeRequired, disableNativeMinMax} = props;
     const builtInTranslation = useTranslation(['formifly']);
     const t = props.t ?? builtInTranslation.t;
@@ -77,7 +89,7 @@ export const FormiflyProvider = <T extends BaseValidator<any>>(props: FormiflyPr
     });
 
     const [errors, setErrors] = React.useState<UnpackedErrors<T>>({} as any);
-    const [touched, setTouched] = React.useState<Value>({});
+    const [touched, setTouched] = React.useState<TouchedValues<T>>({} as any);
     const [submitting, setSubmitting] = React.useState(false);
     const [submitSuccess, setSubmitSuccess] = React.useState(false);
     const [submitFailureReason, setSubmitFailureReason] = React.useState<any>(null);
@@ -163,7 +175,10 @@ export const FormiflyProvider = <T extends BaseValidator<any>>(props: FormiflyPr
             setTouched(setFieldValueFromKeyString(name, true, touched));
 
             const [fieldValidator, siblings] = findFieldValidatorAndSiblingsFromName(name, shape, values);
-            const validated = fieldValidator.validate(value, values, siblings, t);
+
+            // cast needed for now, because while `value` does contain the value the `fieldValidator` is expecting, the type system
+            // does not know this for now.
+            const validated = fieldValidator.validate(value as ValueOfValidator<typeof fieldValidator>, values, siblings, t);
             if (validated[0]) {
                 setErrors(setFieldValueFromKeyString(name, false, errors));
                 return resolve(true);
@@ -183,7 +198,10 @@ export const FormiflyProvider = <T extends BaseValidator<any>>(props: FormiflyPr
                 const name = pair[0];
                 const value = pair[1] ?? getFieldValueFromKeyString(name, values);
                 const [fieldValidator, siblings] = findFieldValidatorAndSiblingsFromName(name, shape, values);
-                const validated = fieldValidator.validate(value, values, siblings, t);
+
+                // cast needed for now, because while `value` does contain the value the `fieldValidator` is expecting, the type system
+                // does not know this for now.
+                const validated = fieldValidator.validate(value as ValueOfValidator<typeof fieldValidator>, values, siblings, t);
                 if (validated[0]) {
                     newErrors = setFieldValueFromKeyString(name, false, newErrors);
                 } else {
@@ -194,10 +212,10 @@ export const FormiflyProvider = <T extends BaseValidator<any>>(props: FormiflyPr
             }
 
             setTouched((oldTouched) => {
-                return {...oldTouched as any, ...newTouched};
+                return {...oldTouched, ...newTouched};
             });
             setErrors((oldErrors) => {
-                return {...oldErrors as any, ...newErrors};
+                return {...oldErrors, ...newErrors};
             });
             resolve(allValid);
         });
@@ -378,16 +396,16 @@ export const FormiflyProvider = <T extends BaseValidator<any>>(props: FormiflyPr
     return <Context.Provider value={FormiflyContext}>{children}</Context.Provider>;
 };
 
-type FormiflyProviderProps<T extends BaseValidator<any>> = {
+type FormiflyProviderProps<T extends ObjectValidator<any>> = {
     shape: T;
-    initialValues?: Partial<ValueOfValidator<T>>;
+    initialValues?: DeepPartial<ValueOfValidator<T>>;
     disableNativeMinMax?: boolean;
     disableNativeRequired?: boolean;
     children: JSX.Element[] | JSX.Element;
     t?: TFunction,
 }
 
-export const useFormiflyContext = <T extends BaseValidator<any>>(): FormiflyContextType<T> => {
+export const useFormiflyContext = <T extends ObjectValidator<any>>(): FormiflyContextType<T> => {
     const context = React.useContext<FormiflyContextType<T>>(Context);
     if (!context || Object.keys(context).length === 0) {
         throw new Error(

@@ -22,16 +22,17 @@ import {TFunction} from 'i18next';
  */
 class BaseValidator<T extends Value> {
     public defaultInputType: InputType = 'text';
-    protected _isRequired: boolean = false;
+    public defaultValue: T;
 
-    private requiredError?: string;
+    protected _isRequired: boolean = false;
     protected validateFuncs: Array<ValidateFunction<T>> = [];
     protected defaultErrorMsg?: string;
-    private dependent?: Dependent;
-    private defaultValue: T;
     protected propType: PropTypes.Requireable<any> = PropTypes.any;
     protected onError?: ErrorFunction;
     protected mutationFunc?: MutationFunction;
+
+    private requiredError?: string;
+    private dependent?: Dependent;
 
     /**
      * @param [defaultValue]
