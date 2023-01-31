@@ -344,11 +344,11 @@ class BaseValidator<T extends Value> {
     }
 
     private validateDependentStep(
-        step: ValidatorStep, value: T | string | undefined, otherValues: Value, siblings: Value,
+        step: ValidatorStep, value: T | string | undefined, otherValues: Value, siblings: Value, t?: TFunction,
     ): DependentValidationResult<T> {
         const dependentValue = getFieldValueFromKeyString(step[0], otherValues);
         if (step[1](dependentValue, value)) {
-            return [true, step[2].validate(value, otherValues, siblings)];
+            return [true, step[2].validate(value, otherValues, siblings, t)];
         } else {
             return [false];
         }
@@ -357,7 +357,7 @@ class BaseValidator<T extends Value> {
     private validateDependent(value: T | undefined, otherValues: Value, siblings: Value, t?: TFunction): ValidationResult<T> {
         if (isValidatorStepArrayArray(this.dependent)) {
             for (const step of this.dependent[0]) {
-                const validated = this.validateDependentStep(step, value, otherValues, siblings);
+                const validated = this.validateDependentStep(step, value, otherValues, siblings, t);
                 if (validated[0]) {
                     return (validated[1]);
                 }
@@ -365,7 +365,7 @@ class BaseValidator<T extends Value> {
         } else {
             // istanbul ignore else: else part is unreachable because when this method is called, this.dependent is not undefined
             if (isValidatorStep(this.dependent)) {
-                const validated = this.validateDependentStep(this.dependent, value, otherValues, siblings);
+                const validated = this.validateDependentStep(this.dependent, value, otherValues, siblings, t);
                 if (validated[0]) {
                     return validated[1];
                 }
@@ -379,7 +379,7 @@ class BaseValidator<T extends Value> {
         if (!this.validateRequired(value) || value === undefined) {
             if (this._isRequired) {
                 if (!this.requiredError && t) {
-                    return [false, t('required') as string];
+                    return [false, t('formifly:required') as string];
                 }
                 return [false, this.requiredError ?? this.defaultErrorMsg ?? 'required'];
             }
@@ -388,7 +388,7 @@ class BaseValidator<T extends Value> {
                 const test = func(value, otherValues, siblings);
                 if (!test.success) {
                     if (!test.errorMsg && t && test.msgName) {
-                        return [false, t(test.msgName, test.translationContext) as string];
+                        return [false, t('formifly:' + test.msgName, test.translationContext) as string];
                     }
                     return [false, test.errorMsg ?? this.defaultErrorMsg ?? test.msgName];
                 } else if (test.changedValue !== undefined) {

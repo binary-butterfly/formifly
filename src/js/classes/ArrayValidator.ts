@@ -173,7 +173,7 @@ class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOf
 
         if (values === undefined || Array.isArray(values) === false) {
             if (t) {
-                return [false, t('array') as string];
+                return [false, t('formifly:array') as string];
             }
 
             return [false, this.defaultErrorMsg ?? 'array'];

@@ -57,7 +57,7 @@ class AnyOfValidator extends BaseValidator<any> {
         }
 
         if (t) {
-            return [false, t('any_of') as string];
+            return [false, t('formifly:any_of') as string];
         }
 
         return [false, this.defaultErrorMsg ?? 'any_of'];
