@@ -139,3 +139,11 @@ test('Test ArrayValidator can use translation functions', () => {
 
     expect(validator.validate('string' as any, {}, {}, jest.fn(() => 'That ain\'t no array') as unknown as TFunction)).toStrictEqual([false, 'That ain\'t no array']);
 });
+
+test('Test ArrayValidator uses correct translation namespace', () => {
+    const validator = new ArrayValidator(new StringValidator());
+    const t = jest.fn();
+
+    validator.validate('string' as any, {}, {}, t as unknown as TFunction);
+    expect(t).toHaveBeenCalledWith('formifly:array');
+});

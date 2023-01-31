@@ -6,6 +6,9 @@ import FormiflyForm from '../../../components/meta/FormiflyForm';
 import i18n from 'i18next';
 import {initReactI18next, useTranslation} from 'react-i18next';
 import AutomagicFormiflyField from '../../../components/input/AutomagicFormiflyField';
+import NumberValidator from '../../../classes/NumberValidator';
+import AnyOfValidator from '../../../classes/AnyOfValidator';
+import {changeInputValue} from '../demo/DemoForm.test';
 
 describe('FormiflyForm', () => {
     it('checks if user prefers reduced motion when no override is set', () => {
@@ -56,5 +59,58 @@ describe('FormiflyForm', () => {
         fireEvent.click(screen.getByText('Submit!'));
 
         return expect(screen.findByText('Custom required string')).resolves.toBeTruthy();
+    });
+
+    it('Uses the translation correct namespace when given a translation function', () => {
+        const resources = {
+            en: {
+                banana: {
+                    whole_number: 'This is incorrect!',
+                    any_of: 'This is also incorrect!',
+                },
+                formifly: {
+                    whole_number: 'This must be a number!',
+                    any_of: 'This must be any of!',
+                },
+            },
+        };
+
+        i18n.use(initReactI18next).init({
+            resources,
+            lng: 'en',
+            interpolation: {
+                escapeValue: false,
+            },
+        });
+
+        const TestComponent = () => {
+            const {t} = useTranslation(['banana', 'formifly']);
+
+            const shape = new ObjectValidator({
+                number: new NumberValidator(true),
+                any_of: new AnyOfValidator([
+                    new StringValidator()
+                        .minLength(2)
+                        .required(),
+                    new NumberValidator().required(),
+                ], 'a'),
+            });
+
+            return <FormiflyForm t={t} shape={shape} onSubmit={jest.fn()}>
+                <AutomagicFormiflyField label="Number" name="number"/>
+                <AutomagicFormiflyField label="AnyOf" name="any_of"/>
+                <button type="submit">Submit</button>
+            </FormiflyForm>;
+        };
+
+        render(<TestComponent/>);
+        changeInputValue(screen.getByLabelText('Number'), '1.23');
+
+        return expect(
+            screen.findByText('This must be a number!').then(() => {
+                changeInputValue(screen.getByLabelText('AnyOf'), 'a');
+                return screen.findByText('This must be any of!');
+            }),
+        ).resolves.toBeTruthy();
     });
 });

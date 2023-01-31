@@ -379,7 +379,7 @@ class BaseValidator<T extends Value> {
         if (!this.validateRequired(value) || value === undefined) {
             if (this._isRequired) {
                 if (!this.requiredError && t) {
-                    return [false, t('required') as string];
+                    return [false, t('formifly:required') as string];
                 }
                 return [false, this.requiredError ?? this.defaultErrorMsg ?? 'required'];
             }
@@ -388,7 +388,7 @@ class BaseValidator<T extends Value> {
                 const test = func(value, otherValues, siblings);
                 if (!test.success) {
                     if (!test.errorMsg && t && test.msgName) {
-                        return [false, t(test.msgName, test.translationContext) as string];
+                        return [false, t('formifly:' + test.msgName, test.translationContext) as string];
                     }
                     return [false, test.errorMsg ?? this.defaultErrorMsg ?? test.msgName];
                 } else if (test.changedValue !== undefined) {

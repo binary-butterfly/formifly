@@ -14,7 +14,7 @@ import {convertDateObjectToInputString} from '../../../helpers/generalHelpers';
  * @param element
  * @param newValue
  */
-const changeInputValue = (element: HTMLElement, newValue: any) => {
+export const changeInputValue = (element: HTMLElement, newValue: any) => {
     fireEvent.change(element, {target: {value: newValue}});
     fireEvent.blur(element);
 };
