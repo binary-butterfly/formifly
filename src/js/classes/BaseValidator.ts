@@ -388,7 +388,7 @@ class BaseValidator<T extends Value> {
                 const test = func(value, otherValues, siblings);
                 if (!test.success) {
                     if (!test.errorMsg && t && test.msgName) {
-                        return [false, t('formifly:' + test.msgName, test.translationContext) as string];
+                        return [false, t('formifly:' + test.msgName, test.translationContext as any) as any as string];
                     }
                     return [false, test.errorMsg ?? this.defaultErrorMsg ?? test.msgName];
                 } else if (test.changedValue !== undefined) {
