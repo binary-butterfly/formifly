@@ -2,7 +2,7 @@ import type BaseValidator from './classes/BaseValidator';
 import type ObjectValidator from './classes/ObjectValidator';
 import type ArrayValidator from './classes/ArrayValidator';
 
-export type DeepPartial<T> = T extends object ? {[K in keyof T]?: DeepPartial<T[K]>} : T;
+export type DeepPartial<T> = T extends object ? { [K in keyof T]?: DeepPartial<T[K]> } : T;
 
 export type SubmitFunction = (_: Value | undefined, __: (___: any) => void) => Promise<void> | void;
 export type SubmitValidationErrorFunction<T extends BaseValidator<any>> =
@@ -36,7 +36,7 @@ export type ValidatorShapeType<V extends BaseValidator<any>, T extends any> =
             ValidatorShapeType<A, T>[] :
             T;
 
-export type UnpackedErrors<V extends BaseValidator<any>> = ValidatorShapeType<V, string|false>;
+export type UnpackedErrors<V extends BaseValidator<any>> = ValidatorShapeType<V, string | false>;
 export type TouchedValues<V extends BaseValidator<any>> = ValidatorShapeType<V, boolean>;
 
 export type ErrorType = string | false | { [key: string]: ValidationResult<ErrorType> } | ValidationResult<ErrorType>[];
@@ -68,7 +68,8 @@ export type InputType =
     | 'select'
     | 'datetime-local'
     | 'tel'
-    | 'email';
+    | 'email'
+    | 'date';
 
 
 export type FlatValue = string | boolean | number | Date;

@@ -42,6 +42,7 @@ REST backends.
     - [NumberValidator](#numbervalidator)
     - [StringValidator](#stringvalidator)
     - [DateTimeValidator](#datetimevalidator)
+    - [DateValidator](#datevalidator)
     - [BooleanValidator](#booleanvalidator)
     - [ObjectValidator](#objectvalidator)
     - [ArrayValidator](#arrayvalidator)
@@ -840,6 +841,28 @@ new DateTimeValidator().minDate(new Date(2020, 1, 1));
 ```
 
 This will validate any date after the first of february 2020.
+
+### DateValidator
+
+This Validator is used for date strings - especially those returned by date input fields.
+
+Available methods:
+
+- `minDate(date: string, msg: [string])` Enforce a minimum date.  
+  Use `{{date}}` in your custom error message to include the minimum date in it.
+- `maxDate(date: string, msg: [string]` Enforce a maximum date.  
+  Use `{{date}}` in your custom error message to include the maximum date in it.
+- `dateRange(min: Date, max: string, msg: [string])` Enforce a date within an inclusive range.  
+  Use `{{minDate}}` and/ or `{{maxDate}}` to include the minimum or maximum date in your custom string respectively.
+
+Example:
+
+```js
+new DateValidator().minDate('2020-01-01');
+```
+
+This will validate any date after the first of january 2020.  
+Note that unlike the DateTimeValidator, it can only be used for date strings formatted as YYYY-mm-dd.
 
 ### BooleanValidator
 

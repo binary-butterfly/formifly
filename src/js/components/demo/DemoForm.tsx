@@ -10,6 +10,7 @@ import AutomagicFormiflyField from '../input/AutomagicFormiflyField';
 import {useFormiflyContext} from '../meta/FormiflyContext';
 import FormiflyForm from '../meta/FormiflyForm';
 import {Dependent, ErrorFunction, MutationFunction, Value} from '../../types';
+import DateValidator from '../../classes/DateValidator';
 
 const Button = styled.button`
   background-color: transparent;
@@ -37,7 +38,7 @@ const FruitError = styled.p`
   color: red;
 `;
 
-const DemoFormContent = (props: {shape: typeof validator}) => {
+const DemoFormContent = (props: { shape: typeof validator }) => {
     const {shape} = props;
     const {values, setFieldValue, errors, validateField} = useFormiflyContext<typeof shape>();
 
@@ -62,6 +63,7 @@ const DemoFormContent = (props: {shape: typeof validator}) => {
         <AutomagicFormiflyField name="string" label="Enter a string" help="Only lowercase characters are allowed here."/>
         <AutomagicFormiflyField label="This input does not have the fancy label effect" labelNoMove={true} name="foo"/>
         <AutomagicFormiflyField name="date" help="Only dates in the future are allowed here." label="Select a date/time"/>
+        <AutomagicFormiflyField label="Select a date" name="onlyDate"/>
         <AutomagicFormiflyField name="laterDate" label="Select a later date/time"/>
         <AutomagicFormiflyField label="Select something" name="select" options={[
             {label: 'Option 1', value: 'option1'},
@@ -136,7 +138,7 @@ class NotTrueValidator extends BooleanValidator {
         defaultErrorMsg: string,
         mutationFunc?: MutationFunction,
         onError?: ErrorFunction,
-        dependent?: Dependent
+        dependent?: Dependent,
     ) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
         this.validateFuncs.push(value => ({
@@ -159,6 +161,7 @@ const validator = new ObjectValidator({
         .regex(/^[a-z]+$/),
     foo: new StringValidator(),
     date: new DateTimeValidator().minDate(new Date()),
+    onlyDate: new DateValidator(),
     laterDate: new DateTimeValidator().greaterThanSibling('date'),
     select: new StringValidator().required(),
     selectTwo: new StringValidator(),
