@@ -15,3 +15,16 @@ export const ensureValueIsDateObject = (value: any, validatorName: string, class
         throw Error('Cannot add ' + validatorName + ' to ' + className + ': ' + paramName + ' has to be an instance of Date.');
     }
 };
+
+export const ensureRegexMatches = (
+    value: any,
+    regex: RegExp,
+    validatorName: string,
+    className: string,
+    paramName: string,
+    description: string,
+) => {
+    if (!regex.test(value)) {
+        throw Error('Cannot add ' + validatorName + ' to ' + className + ': ' + paramName + ' has to ' + description);
+    }
+};
