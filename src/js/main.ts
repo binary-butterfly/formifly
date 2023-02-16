@@ -14,6 +14,7 @@ import ObjectValidator from './classes/ObjectValidator';
 import BooleanValidator from './classes/BooleanValidator';
 import NumberValidator from './classes/NumberValidator';
 import DateTimeValidator from './classes/DateTimeValidator';
+import DateValidator from './classes/DateValidator';
 import EmailValidator from './classes/EmailValidator';
 import PhoneNumberValidator from './classes/PhoneNumberValidator';
 import {findFieldValidatorFromName, unpackErrors} from './helpers/validationHelpers';
@@ -57,6 +58,7 @@ export {
     ObjectValidator,
     BooleanValidator,
     NumberValidator,
+    DateValidator,
     DateTimeValidator,
     EmailValidator,
     PhoneNumberValidator,
