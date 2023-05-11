@@ -19,10 +19,10 @@ import EmailValidator from './classes/EmailValidator';
 import PhoneNumberValidator from './classes/PhoneNumberValidator';
 import {findFieldValidatorFromName, unpackErrors} from './helpers/validationHelpers';
 import {
+    containsValuesThatAreNotFalse,
     convertDateObjectToInputString,
     getFieldValueFromKeyString,
     setFieldValueFromKeyString,
-    containsValuesThatAreNotFalse,
 } from './helpers/generalHelpers';
 import {ensureValueIsDateObject, ensureValueIsNumeric, ensureValueIsRegexp} from './helpers/developerInputValidators';
 import withLabelErrorsAndHelp, {
@@ -38,6 +38,30 @@ import FormiflyMultiSelectField, {
     OptionsMenu,
     SelectContainer,
 } from './components/input/FormiflyMultiSelectField';
+import {
+    ArrayValue,
+    CheckFunction,
+    Dependent,
+    DependentValidationResult,
+    ErrorFunction,
+    ErrorType,
+    FlatValue,
+    IndividualValidationResult,
+    InputType,
+    MutationFunction,
+    ObjectValidatorFields,
+    ObjectValue,
+    SubmitFunction,
+    SubmitValidationErrorFunction,
+    TouchedValues,
+    UnpackedErrors,
+    ValidateFunction,
+    ValidationResult,
+    ValidatorStep,
+    Value,
+    ValueOfObjectValidatorFields,
+    ValueOfValidator,
+} from './types';
 
 export {
     FormiflyField,
@@ -82,4 +106,26 @@ export {
     OptionsMenu as FormiflyMultiSelectOptionsMenu,
     OptionsAnchor as FormiflyMultiSelectOptionsAnchor,
     SelectContainer as FormiflyMultiSelectContainer,
+    SubmitFunction,
+    SubmitValidationErrorFunction,
+    MutationFunction,
+    ValidateFunction,
+    ErrorFunction,
+    CheckFunction,
+    ValidationResult,
+    UnpackedErrors,
+    TouchedValues,
+    ErrorType,
+    DependentValidationResult,
+    IndividualValidationResult,
+    ValidatorStep,
+    Dependent,
+    InputType,
+    FlatValue,
+    ObjectValue,
+    ArrayValue,
+    Value,
+    ValueOfValidator,
+    ValueOfObjectValidatorFields,
+    ObjectValidatorFields,
 };
