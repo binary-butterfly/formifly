@@ -38,7 +38,7 @@ import FormiflyMultiSelectField, {
     OptionsMenu,
     SelectContainer,
 } from './components/input/FormiflyMultiSelectField';
-import {
+import type {
     ArrayValue,
     CheckFunction,
     Dependent,
