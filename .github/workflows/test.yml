@@ -19,6 +19,7 @@ jobs:
           node-version: 18
           cache: 'npm'
       - run: npm install
+      - run: npm run build:prod
       - run: npm run typecheck
       - run: npm run coverage
 
