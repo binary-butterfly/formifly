@@ -3,6 +3,7 @@ import DateTimeValidator from '../../classes/DateTimeValidator';
 import NumberValidator from '../../classes/NumberValidator';
 import StringValidator from '../../classes/StringValidator';
 import {TFunction} from 'i18next';
+import ObjectValidator from '../../classes/ObjectValidator';
 
 describe('AnyOfValidator', () => {
     it('validates successfully if any of the validators match', () => {
@@ -46,5 +47,18 @@ describe('AnyOfValidator', () => {
     it('can use a translation function', () => {
         const validator = new AnyOfValidator([new StringValidator().alwaysFalse()]);
         expect(validator.validate('foo', {}, {}, jest.fn(() => 'bla') as any as TFunction)).toStrictEqual([false, 'bla']);
+    });
+
+    it('returns the correct default value when none is set explicitly', () => {
+        const validator = new AnyOfValidator(
+            [new ObjectValidator({foo: new StringValidator('banana')}), new StringValidator('banana')]
+        );
+
+        expect(validator.getDefaultValue()).toStrictEqual({foo: 'banana'});
+    });
+
+    it('can set an explicit default value', () => {
+        const validator = new AnyOfValidator([new StringValidator('banana'), new NumberValidator()], 'apple');
+        expect(validator.getDefaultValue()).toBe('apple');
     });
 });
