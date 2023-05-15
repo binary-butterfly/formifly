@@ -33,7 +33,7 @@ class AnyOfValidator extends BaseValidator<any> {
     }
 
     public getDefaultValue(): any {
-        if (!this.defaultValue) {
+        if (this.defaultValue === undefined) {
             return this.validatorOptions[0].getDefaultValue();
         }
         return this.defaultValue;
