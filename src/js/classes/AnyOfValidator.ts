@@ -10,6 +10,7 @@ import {TFunction} from 'i18next';
  */
 class AnyOfValidator extends BaseValidator<any> {
     private readonly validatorOptions: Array<BaseValidator<any>>;
+    private passThroughErrorIndex?: Number;
 
     /**
      * Validates something against an array of different validators and returns true if any of them match.
@@ -19,6 +20,7 @@ class AnyOfValidator extends BaseValidator<any> {
      * @param {MutationFunction} [mutationFunc]
      * @param {ErrorFunction} [onError]
      * @param {Dependent} [dependent]
+     * @param {Number} [passThroughErrorIndex] - Set this to return the errors of a specific validatorOption rather than a generic one
      */
     constructor(
         validatorOptions: Array<BaseValidator<any>>,
@@ -27,9 +29,11 @@ class AnyOfValidator extends BaseValidator<any> {
         mutationFunc?: MutationFunction,
         onError?: ErrorFunction,
         dependent?: Dependent,
+        passThroughErrorIndex?: Number,
     ) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
         this.validatorOptions = validatorOptions;
+        this.passThroughErrorIndex = passThroughErrorIndex;
     }
 
     public getDefaultValue(): any {
@@ -37,6 +41,10 @@ class AnyOfValidator extends BaseValidator<any> {
             return this.validatorOptions[0].getDefaultValue();
         }
         return this.defaultValue;
+    }
+
+    public setPassThroughErrorIndex(newIndex: Number): void {
+        this.passThroughErrorIndex = newIndex;
     }
 
     public validate(value: Value, otherValues = {}, siblings = {}, t?: TFunction): ValidationResult<any> {
@@ -49,18 +57,26 @@ class AnyOfValidator extends BaseValidator<any> {
             return preValidate;
         }
 
-        for (const validatorOption of this.validatorOptions) {
+        let passedThroughError;
+        for (let c = 0; c < this.validatorOptions.length; c++) {
+            const validatorOption = this.validatorOptions[c];
             const test = validatorOption.validate(value, otherValues, siblings);
             if (test[0]) {
                 if (typeof this.mutationFunc === 'function') {
                     return [true, this.mutationFunc(test[1], otherValues, siblings)];
                 }
                 return test;
+            } else if (c === this.passThroughErrorIndex) {
+                passedThroughError = test;
             }
         }
 
         if (typeof this.onError === 'function') {
             this.onError(value, otherValues);
+        }
+
+        if (passedThroughError !== undefined) {
+            return passedThroughError;
         }
 
         if (t) {

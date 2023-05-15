@@ -61,4 +61,25 @@ describe('AnyOfValidator', () => {
         const validator = new AnyOfValidator([new StringValidator('banana'), new NumberValidator()], 'apple');
         expect(validator.getDefaultValue()).toBe('apple');
     });
+
+    it('can pass through a specific error', () => {
+        const validator = new AnyOfValidator(
+            [new NumberValidator(), new ObjectValidator({bla: new NumberValidator()})],
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            1
+        );
+
+        expect(validator.validate({bla: 'banana'})).toStrictEqual([false, {bla: [false, 'number']}]);
+    });
+
+    it('can set the passed through error index using a setter function', () => {
+        const validator = new AnyOfValidator([new ObjectValidator({foo: new NumberValidator()}), new NumberValidator()]);
+        validator.setPassThroughErrorIndex(0);
+
+        expect(validator.validate({foo: 'NaN'})).toStrictEqual([false, {foo: [false, 'number']}]);
+    });
 });
