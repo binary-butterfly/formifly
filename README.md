@@ -985,6 +985,9 @@ param.
 Another thing to keep in mind is that this validator will validate successfully if either it or any of its validators is not required and
 the value is empty, so for a required field you will have to set each validator required.
 
+If you do not set a default value for the AnyOfValidator itself, the default value of it's first allowed validator will be returned 
+on `getDefaultValue()` calls.
+
 Example:
 
 ```js

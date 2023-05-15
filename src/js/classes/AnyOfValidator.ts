@@ -32,6 +32,13 @@ class AnyOfValidator extends BaseValidator<any> {
         this.validatorOptions = validatorOptions;
     }
 
+    public getDefaultValue(): any {
+        if (!this.defaultValue) {
+            return this.validatorOptions[0].getDefaultValue();
+        }
+        return this.defaultValue;
+    }
+
     public validate(value: Value, otherValues = {}, siblings = {}, t?: TFunction): ValidationResult<any> {
         if (!this.isRequired && !this.validateRequired(value)) {
             return [true, value];
