@@ -4,6 +4,8 @@ import NumberValidator from '../../classes/NumberValidator';
 import StringValidator from '../../classes/StringValidator';
 import {TFunction} from 'i18next';
 import ObjectValidator from '../../classes/ObjectValidator';
+import {findFieldValidatorFromName} from "../../helpers/validationHelpers";
+import ArrayValidator from "../../classes/ArrayValidator";
 
 describe('AnyOfValidator', () => {
     it('validates successfully if any of the validators match', () => {
@@ -81,5 +83,81 @@ describe('AnyOfValidator', () => {
         validator.setPassThroughErrorIndex(0);
 
         expect(validator.validate({foo: 'NaN'})).toStrictEqual([false, {foo: [false, 'number']}]);
+    });
+
+    it('can pass through a validator option\'s of value', () => {
+        const validator = new ObjectValidator(
+            {
+                foo:
+                    new AnyOfValidator(
+                        [new ArrayValidator(new ObjectValidator({bar: new StringValidator()}))],
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        0,
+                    ),
+            }
+        );
+
+        expect(findFieldValidatorFromName('foo.0.bar', validator)).toBeInstanceOf(StringValidator);
+    });
+
+    it('throws an error when trying to set passThroughOfIndex to the index of a validator that is not an array validator', () => {
+        const testFunc = () => {
+            return new AnyOfValidator(
+                [new StringValidator()],
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                0,
+            );
+        };
+
+        expect(testFunc).toThrowError('Attempted to access of value of a validator that is not an array validator.');
+    });
+
+    it('can pass through a validator option\'s fields value', () => {
+        const validator = new ObjectValidator(
+            {
+                foo:
+                    new AnyOfValidator(
+                        [new ObjectValidator({bar: new StringValidator()})],
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        0
+                    ),
+            }
+        );
+
+        expect(findFieldValidatorFromName('foo.bar', validator)).toBeInstanceOf(StringValidator);
+    });
+
+    it('throws an error when trying to set passThroughFieldsIndex on the index of a validator that is not an ObjectValidator', () => {
+        const testFunc = () => {
+            return new AnyOfValidator(
+                [new StringValidator()],
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                0
+            );
+        };
+
+        expect(testFunc).toThrowError('Attempted to access fields value of a validator that is not an object validator.');
     });
 });
