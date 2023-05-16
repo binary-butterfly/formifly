@@ -990,7 +990,7 @@ You can change this to pass through the validation error of a specific validator
 constructor param or by calling `setPassThroughErrorIndex`.
 
 Since the AnyOfValidator complicates the whole validation process, it makes some features less intuitive to use.  
-If you are using an operator option that has child fields, those cannot by default be used within forms since internal functions
+If you are using a validator option that has child fields, those cannot by default be used within forms since internal functions
 cannot find them.  
 To work around this, there are the `passThroughOfIndex` and `passThroughFieldsIndex` constructor params. These will clone
 a validator option's of (in the case of ArrayValidators) or fields (in the case of ObjectValidators) into the respective
