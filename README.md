@@ -973,7 +973,7 @@ new ArrayOrSpecifcStringValidator(new StringValidator(), undefined, undefined, u
 This validator tries to validate the field value against an array of other validators and validates successfully if any of those match.
 
 It will run all given validators in the order that they have been passed and stop as soon as the first one has matched.  
-Keep this in mind when using mutation functions, since those will only run if either they are set on the validator that matches or if they
+Keep this in mind when using mutation functions, since those will only run if either they are set on the first validator that matches or if they
 are set on the AnyOfValidator itself.
 
 Also keep in mind that any onError callbacks for validators that are run and don't match will still be triggered, so make sure those don't
@@ -988,6 +988,15 @@ the value is empty, so for a required field you will have to set each validator 
 By default, the AnyOfValidator will return a generic error if none of the given validators match.  
 You can change this to pass through the validation error of a specific validator by passing its index either as the passThroughErrorIndex 
 constructor param or by calling `setPassThroughErrorIndex`.
+
+Since the AnyOfValidator complicates the whole validation process, it makes some features less intuitive to use.  
+If you are using an operator option that has child fields, those cannot by default be used within forms since internal functions
+cannot find them.  
+To work around this, there are the `passThroughOfIndex` and `passThroughFieldsIndex` constructor params. These will clone
+a validator option's of (in the case of ArrayValidators) or fields (in the case of ObjectValidators) into the respective
+property of the AnyOfValidator.  
+You can theoretically combine both if you allow either an array or an object, but you cannot have multiple passed through
+of or fields indices.
 
 If you do not set a default value for the AnyOfValidator itself, the default value of it's first allowed validator will be returned 
 on `getDefaultValue()` calls.
@@ -1011,12 +1020,15 @@ class WeirdPasswordValidator extends AnyOfValidator {
     defaultInputType = 'password';
 
     constructor(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent) {
-        super([new NumberValidator().required(), new StringValidator().required()], defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
+        super([new NumberValidator().required(), new StringValidator().required()], defaultValue, defaultErrorMsg, mutationFunc, onError, dependent, 1);
     }
 }
 ```
 
-This has the added benefit that you can hardcode the validator options if you use the validator in multiple places like shown above.
+This has the added benefit that you can hardcode the validator options if you use the validator in multiple places like shown above.  
+Note that this example foregoes the passThroughErrorIndex, passThroughOfIndex and passThroughFieldsIndex constructor params as they 
+are not needed (or in the case of passThroughErrorIndex static) for this specific AnyOfValidator.  
+This may not be the case for your custom validator.
 
 ### EmailValidator
 

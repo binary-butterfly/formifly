@@ -1,6 +1,8 @@
 import BaseValidator from './BaseValidator';
-import {Dependent, ErrorFunction, MutationFunction, ValidationResult, Value} from '../types';
+import {Dependent, ErrorFunction, MutationFunction, ObjectValidatorFields, ValidationResult, Value} from '../types';
 import {TFunction} from 'i18next';
+import ObjectValidator from './ObjectValidator';
+import ArrayValidator from './ArrayValidator';
 
 /**
  * A "meta" validator that allows you to check if a value can be successfully validated by any of a given list of validators.
@@ -8,8 +10,10 @@ import {TFunction} from 'i18next';
  *
  * @property {Array<BaseValidator|AnyOfValidator|ArrayValidator|BooleanValidator|EmailValidator|NumberValidator|ObjectValidator|PhoneNumberValidator|StringValidator>} validatorOptions - The validators that the value is checked against
  */
-class AnyOfValidator extends BaseValidator<any> {
-    private readonly validatorOptions: Array<BaseValidator<any>>;
+class AnyOfValidator<T extends ObjectValidatorFields> extends BaseValidator<any> {
+    public readonly validatorOptions: Array<BaseValidator<any>>;
+    public readonly fields?: T;
+    public readonly of?: BaseValidator<any>;
     private passThroughErrorIndex?: Number;
 
     /**
@@ -21,6 +25,8 @@ class AnyOfValidator extends BaseValidator<any> {
      * @param {ErrorFunction} [onError]
      * @param {Dependent} [dependent]
      * @param {Number} [passThroughErrorIndex] - Set this to return the errors of a specific validatorOption rather than a generic one
+     * @param {Number} passThroughOfIndex - Set this to make the validator's of prop take the value of an option ArrayValidator's
+     * @param {Number} passThroughFieldsIndex - Set this to make the validator's fields prop take the value of an option ObjectValidator's
      */
     constructor(
         validatorOptions: Array<BaseValidator<any>>,
@@ -29,11 +35,31 @@ class AnyOfValidator extends BaseValidator<any> {
         mutationFunc?: MutationFunction,
         onError?: ErrorFunction,
         dependent?: Dependent,
-        passThroughErrorIndex?: Number,
+        passThroughErrorIndex?: number,
+        passThroughOfIndex?: number,
+        passThroughFieldsIndex?: number,
     ) {
         super(defaultValue, defaultErrorMsg, mutationFunc, onError, dependent);
         this.validatorOptions = validatorOptions;
         this.passThroughErrorIndex = passThroughErrorIndex;
+
+        if (passThroughOfIndex !== undefined) {
+            const validator = this.validatorOptions[passThroughOfIndex];
+            if (validator instanceof ArrayValidator) {
+                this.of = validator.of;
+            } else {
+                throw new Error('Attempted to access of value of a validator that is not an array validator.');
+            }
+        }
+
+        if (passThroughFieldsIndex !== undefined) {
+            const validator = this.validatorOptions[passThroughFieldsIndex];
+            if (validator instanceof ObjectValidator) {
+                this.fields = validator.fields;
+            } else {
+                throw new Error('Attempted to access fields value of a validator that is not an object validator.');
+            }
+        }
     }
 
     public getDefaultValue(): any {
