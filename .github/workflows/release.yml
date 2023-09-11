@@ -16,6 +16,7 @@ jobs:
           node-version: 18
           cache: 'npm'
       - run: npm install
+      - run: npm run prepublishOnly
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
