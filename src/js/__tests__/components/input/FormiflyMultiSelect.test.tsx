@@ -1,4 +1,4 @@
-import {render} from '@testing-library/react';
+import {render, waitFor} from '@testing-library/react';
 import React from 'react';
 import ArrayValidator from '../../../classes/ArrayValidator';
 import ObjectValidator from '../../../classes/ObjectValidator';
@@ -15,12 +15,13 @@ describe.each([
 ])('Test FormiflyMultiSelect', (reducedMotion, expectedStyle, name) => {
     test(name, async () => {
         const shape = new ObjectValidator({foo: new ArrayValidator(new StringValidator())});
-        const wrapper = render(<FormiflyForm shape={shape} onSubmit={() => {}} theme={{reducedMotion: reducedMotion}}>
+        render(<FormiflyForm shape={shape} onSubmit={() => {}} theme={{reducedMotion: reducedMotion}}>
             <AutomagicFormiflyField label="test" name="foo" options={[{value: 'bla', label: 'blub'}]}/>
         </FormiflyForm>);
-        await wrapper.findByText('blub');
 
-        const options = document.getElementsByClassName('formifly-multi-select-container');
+        const options: HTMLCollectionOf<Element> = await waitFor(
+            () => document.getElementsByClassName('formifly-multi-select-container')
+        );
 
         expect(options[0]).toHaveStyleRule('transition', expectedStyle, {
             modifier: css`menu li`,
