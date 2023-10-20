@@ -54,7 +54,7 @@ const FormiflyForm = <T extends ObjectValidator<any>>(props: FormiflyFormProps<T
 };
 
 export type FormProps<T extends ObjectValidator<any>> = {
-    onSubmit: SubmitFunction;
+    onSubmit: SubmitFunction<T>;
     onSubmitValidationError?: SubmitValidationErrorFunction<T>;
     className?: string;
     children: (JSX.Element | false)[] | JSX.Element | false;
