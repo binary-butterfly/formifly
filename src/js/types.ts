@@ -2,7 +2,7 @@ import type BaseValidator from './classes/BaseValidator';
 import type ObjectValidator from './classes/ObjectValidator';
 import type ArrayValidator from './classes/ArrayValidator';
 
-export type DeepPartial<T> = T extends object ? { [K in keyof T]?: DeepPartial<T[K]> } : T;
+export type DeepPartial<T> = { [K in keyof T]?: DeepPartial<T[K]> };
 
 export type SubmitFunction<Validator extends BaseValidator<any>> = (
     // todo: ideally only non-required values should be allowed to be undefined, but as that's harder to type,

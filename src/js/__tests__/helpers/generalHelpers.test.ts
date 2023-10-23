@@ -165,7 +165,7 @@ describe.each([
     [{fruit: []}, {fruit: null}, {fruit: []}, 'skips null values'],
 ])('Test completeDefaultValues', (validatorDefaults, userDefaults, expected, name) => {
     test(name, () => {
-        expect(completeDefaultValues(validatorDefaults, userDefaults)).toStrictEqual(expected);
+        expect(completeDefaultValues(validatorDefaults, userDefaults as any)).toStrictEqual(expected);
     });
 });
 

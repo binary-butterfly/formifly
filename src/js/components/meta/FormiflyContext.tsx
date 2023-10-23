@@ -318,15 +318,7 @@ export const FormiflyProvider = <T extends ObjectValidator<any>>(props: Formifly
         return new Promise((resolve, reject) => {
             const result = shape.validate(values, values, values, t);
             if (result[0]) {
-                resolve(result[1] as DeepPartial<ValueOfValidator<T>> | undefined);
-                // I believe this cast is necessary because TypeScript doesn't support higher kinded types
-                // What that means is that the entire FormiflyProvider is defined with a generic extending
-                // BaseValidator<any>, when actually at runtime that any is a known type - but at compile time, it is
-                // treated as any, leading to the assumption that `result[1]` would be typed as
-                // ValueOfObjectValidatorFields<any>, which doesn't necessarily assignable to
-                // DeepPartial<ValueOfValidator<T>>.
-                // In this case, we do know that result[1] will be assignable to DeepPartial<ValueOfValidator<T>>,
-                // therefor we need the cast.
+                resolve(result[1]);
 
             } else {
                 reject(unpackErrors(result));
