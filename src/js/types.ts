@@ -42,7 +42,7 @@ export type ValidatorShapeType<V extends BaseValidator<any>, T extends any> =
             ValidatorShapeType<A, T>[] :
             T;
 
-export type UnpackedErrors<V extends BaseValidator<any>> = ValidatorShapeType<V, string | false>;
+export type UnpackedErrors<V extends BaseValidator<any>> = DeepPartial<ValidatorShapeType<V, string | false>>;
 export type TouchedValues<V extends BaseValidator<any>> = ValidatorShapeType<V, boolean>;
 
 export type ErrorType = string | false | { [key: string]: ValidationResult<ErrorType> } | ValidationResult<ErrorType>[];
