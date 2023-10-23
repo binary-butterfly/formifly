@@ -55,12 +55,12 @@ export type FormiflyContextType<T extends ObjectValidator<any>> = {
     submitSuccess: boolean;
     validateField: (name: string, value?: Value) => Promise<boolean>;
     handleSubmit: (
-        onSubmit: SubmitFunction,
+        onSubmit: SubmitFunction<T>,
         onSubmitValidationError: SubmitValidationErrorFunction<T>,
         e: React.FormEvent<HTMLFormElement>,
     ) => void;
     handleFocus: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    validateAll: () => Promise<string | ValueOfValidator<T> | undefined>;
+    validateAll: () => Promise<DeepPartial<ValueOfValidator<T>> | undefined>;
     handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     submitFailureReason: any;
     setMultipleFieldValues: <V extends Value>(
@@ -314,11 +314,12 @@ export const FormiflyProvider = <T extends ObjectValidator<any>>(props: Formifly
      * Validates all fields
      * @return {Promise<unknown>}
      */
-    const validateAll = (): Promise<string | ValueOfValidator<T> | undefined> => {
+    const validateAll = (): Promise<DeepPartial<ValueOfValidator<T>> | undefined> => {
         return new Promise((resolve, reject) => {
             const result = shape.validate(values, values, values, t);
             if (result[0]) {
                 resolve(result[1]);
+
             } else {
                 reject(unpackErrors(result));
             }
@@ -326,7 +327,7 @@ export const FormiflyProvider = <T extends ObjectValidator<any>>(props: Formifly
     };
 
     const handleSubmit = (
-        onSubmit: SubmitFunction,
+        onSubmit: SubmitFunction<T>,
         onSubmitValidationError: SubmitValidationErrorFunction<T>,
         e: React.FormEvent<HTMLFormElement>,
     ) => {

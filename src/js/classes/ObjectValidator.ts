@@ -40,8 +40,8 @@ class ObjectValidator<T extends ObjectValidatorFields> extends BaseValidator<Val
         mutationFunc?: MutationFunction,
         onError?: ErrorFunction,
         dependent?: Dependent,
-        dropEmpty = true,
-        dropNotInShape = false
+        dropEmpty: boolean = true,
+        dropNotInShape: boolean = false
     ) {
         const defaultValues = Object.fromEntries(
             Object.entries(fields).map(

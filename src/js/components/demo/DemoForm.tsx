@@ -9,7 +9,7 @@ import StringValidator from '../../classes/StringValidator';
 import AutomagicFormiflyField from '../input/AutomagicFormiflyField';
 import {useFormiflyContext} from '../meta/FormiflyContext';
 import FormiflyForm from '../meta/FormiflyForm';
-import {Dependent, ErrorFunction, MutationFunction, Value} from '../../types';
+import {DeepPartial, Dependent, ErrorFunction, MutationFunction, ValueOfValidator} from '../../types';
 import DateValidator from '../../classes/DateValidator';
 
 const Button = styled.button`
@@ -181,7 +181,7 @@ const DemoForm = () => {
 
     const [successText, setSuccessText] = React.useState('');
 
-    const onSubmit = (values?: Value) => {
+    const onSubmit = (values: DeepPartial<ValueOfValidator<typeof validator>> | undefined) => {
         return new Promise<void>((resolve) => {
             setSuccessText(JSON.stringify(values));
             resolve();
