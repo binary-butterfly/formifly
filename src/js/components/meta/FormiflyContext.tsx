@@ -88,7 +88,7 @@ export const FormiflyProvider = <T extends ObjectValidator<any>>(props: Formifly
         return completeDefaultValues(defaultValues, initialValues, shape);
     });
 
-    const [errors, setErrors] = React.useState<UnpackedErrors<T>>({} as any);
+    const [errors, setErrors] = React.useState<UnpackedErrors<T>>({});
     const [touched, setTouched] = React.useState<TouchedValues<T>>({} as any);
     const [submitting, setSubmitting] = React.useState(false);
     const [submitSuccess, setSubmitSuccess] = React.useState(false);
@@ -119,7 +119,7 @@ export const FormiflyProvider = <T extends ObjectValidator<any>>(props: Formifly
 
     const hasErrors = (fieldName: string): string | false => {
         try {
-            const errorsRes = getFieldValueFromKeyString(fieldName, errors) as false | string;
+            const errorsRes = getFieldValueFromKeyString(fieldName, errors as any) as false | string;
             if (Array.isArray(errorsRes) || (typeof errorsRes === 'object' && errorsRes !== null)) {
                 if (!containsValuesThatAreNotFalse(errorsRes)) {
                     return false;
@@ -180,10 +180,10 @@ export const FormiflyProvider = <T extends ObjectValidator<any>>(props: Formifly
             // does not know this for now.
             const validated = fieldValidator.validate(value as ValueOfValidator<typeof fieldValidator>, values, siblings, t);
             if (validated[0]) {
-                setErrors(setFieldValueFromKeyString(name, false, errors));
+                setErrors(setFieldValueFromKeyString(name, false, errors as any));
                 return resolve(true);
             } else {
-                setErrors(setFieldValueFromKeyString(name, validated[1] as string, errors));
+                setErrors(setFieldValueFromKeyString(name, validated[1] as string, errors as any));
                 return resolve(false);
             }
         });
@@ -222,7 +222,7 @@ export const FormiflyProvider = <T extends ObjectValidator<any>>(props: Formifly
     };
 
     const handleFocus = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        setErrors(setFieldValueFromKeyString(event.target.name, false, errors));
+        setErrors(setFieldValueFromKeyString(event.target.name, false, errors as any));
     };
 
     /**
