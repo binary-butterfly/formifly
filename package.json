@@ -53,7 +53,7 @@
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
     "babel-plugin-styled-components": "^2.0.2",
-    "browser-sync": "^2.27.7",
+    "browser-sync": "^3.0.2",
     "eslint": "^8.27.0",
     "i18next": "^22.0.6",
     "jest": "^27.4.7",
