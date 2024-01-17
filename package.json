@@ -39,6 +39,7 @@
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
     "@vitejs/plugin-react": "^4.2.1",
+    "@vitest/coverage-v8": "^1.2.1",
     "eslint": "^8.27.0",
     "i18next": "^22.0.6",
     "jest-styled-components": "^7.2.0",
