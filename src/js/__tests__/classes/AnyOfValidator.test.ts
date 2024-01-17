@@ -4,8 +4,8 @@ import NumberValidator from '../../classes/NumberValidator';
 import StringValidator from '../../classes/StringValidator';
 import {TFunction} from 'i18next';
 import ObjectValidator from '../../classes/ObjectValidator';
-import {findFieldValidatorFromName} from "../../helpers/validationHelpers";
-import ArrayValidator from "../../classes/ArrayValidator";
+import {findFieldValidatorFromName} from '../../helpers/validationHelpers';
+import ArrayValidator from '../../classes/ArrayValidator';
 
 describe('AnyOfValidator', () => {
     it('validates successfully if any of the validators match', () => {
@@ -28,7 +28,7 @@ describe('AnyOfValidator', () => {
     });
 
     it('runs the onError callback if the validation fails', () => {
-        const onError = jest.fn();
+        const onError = vitest.fn();
 
         const validator = new AnyOfValidator([new NumberValidator()], undefined, undefined, undefined, onError);
         const otherValues = {};
@@ -48,7 +48,7 @@ describe('AnyOfValidator', () => {
 
     it('can use a translation function', () => {
         const validator = new AnyOfValidator([new StringValidator().alwaysFalse()]);
-        expect(validator.validate('foo', {}, {}, jest.fn(() => 'bla') as any as TFunction)).toStrictEqual([false, 'bla']);
+        expect(validator.validate('foo', {}, {}, vitest.fn(() => 'bla') as any as TFunction)).toStrictEqual([false, 'bla']);
     });
 
     it('returns the correct default value when none is set explicitly', () => {

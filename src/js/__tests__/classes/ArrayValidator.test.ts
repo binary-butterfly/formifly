@@ -137,12 +137,12 @@ test('Test ArrayValidator has a default return value for non array values', () =
 test('Test ArrayValidator can use translation functions', () => {
     const validator = new ArrayValidator(new StringValidator());
 
-    expect(validator.validate('string' as any, {}, {}, jest.fn(() => 'That ain\'t no array') as unknown as TFunction)).toStrictEqual([false, 'That ain\'t no array']);
+    expect(validator.validate('string' as any, {}, {}, vitest.fn(() => 'That ain\'t no array') as unknown as TFunction)).toStrictEqual([false, 'That ain\'t no array']);
 });
 
 test('Test ArrayValidator uses correct translation namespace', () => {
     const validator = new ArrayValidator(new StringValidator());
-    const t = jest.fn();
+    const t = vitest.fn();
 
     validator.validate('string' as any, {}, {}, t as unknown as TFunction);
     expect(t).toHaveBeenCalledWith('formifly:array');

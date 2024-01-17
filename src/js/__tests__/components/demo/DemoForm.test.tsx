@@ -230,7 +230,7 @@ describe('DemoForm', () => {
     it('renders a form that can not be submitted while values are missing', () => {
         const submitButton = screen.getByText('Submit Form');
 
-        fireEvent.click(submitButton);
+        fireEvent.submit(submitButton);
         return findAllAlertsWithContent().then((result) => {
             expect(result).not.toStrictEqual([]);
         });

@@ -37,7 +37,7 @@ describe('FormiflyContext', () => {
                 <ObjectComponent/>
             </FormiflyForm>);
         };
-        const error = jest.fn();
+        const error = vitest.fn();
         global.console.error = error;
         expect(failingFunc).toThrowError('Object validators must not be used for input fields directly');
         expect(error).toHaveBeenCalledTimes(2);
@@ -47,7 +47,7 @@ describe('FormiflyContext', () => {
         const failingFunc = () => {
             render(<NotInProviderComponent/>);
         };
-        const error = jest.fn();
+        const error = vitest.fn();
         global.console.error = error;
         expect(failingFunc)
             .toThrowError(
@@ -407,8 +407,8 @@ describe('FormiflyContext', () => {
     });
 
     it('Does not call on onSubmitValidationError if a user supplied synchronous onSubmit function throws an error', () => {
-        const onSubmitValidationError = jest.fn();
-        const handleSubmit = jest.fn().mockImplementation(() => {
+        const onSubmitValidationError = vitest.fn();
+        const handleSubmit = vitest.fn().mockImplementation(() => {
             throw 'Test error';
         });
 
@@ -434,8 +434,8 @@ describe('FormiflyContext', () => {
     });
 
     it('Does not call on onSubmitValidationError if a user supplied async onSubmit function throws an error', () => {
-        const onSubmitValidationError = jest.fn();
-        const handleSubmit = jest.fn().mockImplementation(() => {
+        const onSubmitValidationError = vitest.fn();
+        const handleSubmit = vitest.fn().mockImplementation(() => {
             return new Promise((resolve, reject) => {
                 reject('Test error');
             });
@@ -463,7 +463,7 @@ describe('FormiflyContext', () => {
     });
 
     it('Sets submitting to false if onSubmit function is synchronous', () => {
-        const handleSubmit = jest.fn().mockImplementation(() => true);
+        const handleSubmit = vitest.fn().mockImplementation(() => true);
 
         const NotARealForm = withFormifly((props) => {
             const {submitSuccess} = props;

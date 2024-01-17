@@ -1,7 +1,7 @@
 import ArrayOrSpecificStringValidator from '../../classes/ArrayOrSpecificStringValidator';
 import StringValidator from '../../classes/StringValidator';
 
-jest.mock('../../classes/ArrayValidator');
+vitest.mock('../../classes/ArrayValidator');
 
 describe('ArrayOrSpecificStringValidator', () => {
     it('allows the specific string', () => {
@@ -40,7 +40,7 @@ describe('ArrayOrSpecificStringValidator', () => {
         const siblings = 'siblings';
 
         const validator = new ArrayOrSpecificStringValidator(new StringValidator());
-        validator.validate = jest.fn();
+        validator.validate = vitest.fn();
 
         validator.validateWithoutRecursion(value, other, siblings);
 

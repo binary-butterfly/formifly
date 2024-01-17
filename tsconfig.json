@@ -12,6 +12,7 @@
     "moduleResolution": "Node"
   },
   "include": [
-    "./src/**/*"
+    "./src/**/*",
+    "node_modules/vitest/globals.d.ts"
   ]
 }

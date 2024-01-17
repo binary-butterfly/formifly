@@ -9,20 +9,20 @@ import AutomagicFormiflyField from '../../../components/input/AutomagicFormiflyF
 import NumberValidator from '../../../classes/NumberValidator';
 import AnyOfValidator from '../../../classes/AnyOfValidator';
 import {changeInputValue} from '../demo/DemoForm.test';
+import {vitest} from 'vitest';
 
 describe('FormiflyForm', () => {
     it('checks if user prefers reduced motion when no override is set', () => {
-        const matchFn = jest.fn().mockImplementation(() => {
-            return {matches: true};
+        vitest.spyOn(window, 'matchMedia').mockImplementation(() => {
+            return {matches: true} as Partial<MediaQueryList> as MediaQueryList;
         });
-        global.window.matchMedia = matchFn;
 
         render(<FormiflyForm shape={new ObjectValidator({foo: new StringValidator()})} onSubmit={() => {
         }}>
             <b>Test</b>
         </FormiflyForm>);
 
-        expect(matchFn).toHaveBeenCalled();
+        expect(window.matchMedia).toHaveBeenCalled();
     });
 
     it('can make use of a custom translation function', () => {
@@ -49,14 +49,14 @@ describe('FormiflyForm', () => {
                 test: new StringValidator().required(),
             });
 
-            return <FormiflyForm onSubmit={jest.fn()} shape={shape} t={t}>
+            return <FormiflyForm onSubmit={vitest.fn()} shape={shape} t={t}>
                 <AutomagicFormiflyField label="Test!" name="test"/>
                 <button type="submit">Submit!</button>
             </FormiflyForm>;
         };
 
         render(<TestComponent/>);
-        fireEvent.click(screen.getByText('Submit!'));
+        fireEvent.submit(screen.getByText('Submit!'));
 
         return expect(screen.findByText('Custom required string')).resolves.toBeTruthy();
     });
@@ -96,7 +96,7 @@ describe('FormiflyForm', () => {
                 ], 'a'),
             });
 
-            return <FormiflyForm t={t} shape={shape} onSubmit={jest.fn()}>
+            return <FormiflyForm t={t} shape={shape} onSubmit={vitest.fn()}>
                 <AutomagicFormiflyField label="Number" name="number"/>
                 <AutomagicFormiflyField label="AnyOf" name="any_of"/>
                 <button type="submit">Submit</button>

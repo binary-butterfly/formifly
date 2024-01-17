@@ -105,7 +105,7 @@ describe.each([
 });
 
 test('Test onError callback is called on error', () => {
-    const callback = jest.fn();
+    const callback = vitest.fn();
     const validator = new BaseValidator<boolean>(true, undefined, undefined, callback).alwaysFalse();
     validator.validate(false, {foo: 'bar'});
     expect(callback).toHaveBeenCalledWith(false, {foo: 'bar'});
@@ -198,7 +198,7 @@ test('Test set default value', () => {
 });
 
 test('Test set onError', () => {
-    const handler = jest.fn();
+    const handler = vitest.fn();
     const validator = new BaseValidator(undefined as any);
     validator.setOnError(handler);
 
@@ -219,7 +219,7 @@ test('Test setDefaultErrorMsg', () => {
 });
 
 test('Test setMutationFunc', () => {
-    const mutationFunc = jest.fn();
+    const mutationFunc = vitest.fn();
     const validator = new BaseValidator(undefined as any);
 
     validator.setMutationFunc(mutationFunc);
@@ -266,7 +266,7 @@ describe('Test oneOfArrayFieldValues', () => {
     });
 
     it('Warns the user if the field that is compared against is not an array field', () => {
-        const warn = jest.fn();
+        const warn = vitest.fn();
         global.console.warn = warn;
         const validator = new BaseValidator(undefined as any).oneOfArrayFieldValues('notAnArray');
         expect(validator.validate('foo', {notAnArray: 'banana'})).toStrictEqual([false, 'one_of_array_field_values']);
@@ -317,7 +317,7 @@ describe('Test oneOfArraySiblingFieldValues', () => {
     });
 
     it('Warns the user if the field that is compared against is not an array field', () => {
-        const warn = jest.fn();
+        const warn = vitest.fn();
         global.console.warn = warn;
         const validator = new BaseValidator(undefined as any).oneOfArraySiblingFieldValues('notAnArray');
         expect(validator.validate('foo', {notAnArray: 'banana'}, {notAnArray: 'banana'}))
