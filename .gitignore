@@ -9,3 +9,5 @@ build/
 
 coverage/
 reports/
+
+**/tsconfig.vitest-temp.json

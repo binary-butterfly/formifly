@@ -54,11 +54,15 @@ export default ({mode}: ConfigEnv): UserConfigExport => {
             coverage: {
                 reporter: ['text', 'html', 'clover', 'json', 'cobertura'],
                 all: true,
-                include: ['src/js/**'],
+                include: ['src/js/__tests__/**'],
                 exclude: ['src/js/components/demo/DemoPage.tsx', 'src/js/main.ts'],
                 provider: 'v8',
             },
             restoreMocks: true,
+            typecheck: {
+                enabled: true,
+                include: ['**/__tests__/types/**'],
+            },
         },
     });
 };

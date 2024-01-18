@@ -150,7 +150,7 @@ class NotTrueValidator extends BooleanValidator {
     }
 }
 
-const validator = new ObjectValidator({
+export const validator = new ObjectValidator({
     number: new NumberValidator()
         .min(2)
         .required()
