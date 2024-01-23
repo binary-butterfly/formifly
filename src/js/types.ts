@@ -12,7 +12,7 @@ export type SubmitFunction<Validator extends BaseValidator<any>> = (
 ) => Promise<void> | void;
 
 export type SubmitValidationErrorFunction<T extends BaseValidator<any>> =
-    undefined | ((errors: UnpackedErrors<T>, reason: UnpackedErrors<T>) => void);
+    ((errors: UnpackedErrors<T>) => void);
 
 
 export type MutationFunction<T extends Value = any> = (value?: T, values?: Value, siblings?: Value) => T;

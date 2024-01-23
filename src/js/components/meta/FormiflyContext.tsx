@@ -56,7 +56,7 @@ export type FormiflyContextType<T extends ObjectValidator<any>> = {
     validateField: (name: string, value?: Value) => Promise<boolean>;
     handleSubmit: (
         onSubmit: SubmitFunction<T>,
-        onSubmitValidationError: SubmitValidationErrorFunction<T>,
+        onSubmitValidationError: SubmitValidationErrorFunction<T> | undefined,
         e: React.FormEvent<HTMLFormElement>,
     ) => void;
     handleFocus: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -328,7 +328,7 @@ export const FormiflyProvider = <T extends ObjectValidator<any>>(props: Formifly
 
     const handleSubmit = (
         onSubmit: SubmitFunction<T>,
-        onSubmitValidationError: SubmitValidationErrorFunction<T>,
+        onSubmitValidationError: SubmitValidationErrorFunction<T> | undefined,
         e: React.FormEvent<HTMLFormElement>,
     ) => {
         e.preventDefault();
@@ -364,7 +364,7 @@ export const FormiflyProvider = <T extends ObjectValidator<any>>(props: Formifly
                 setSubmitting(false);
 
                 if (typeof onSubmitValidationError === 'function') {
-                    onSubmitValidationError(reason, reason);
+                    onSubmitValidationError(reason);
                 }
             });
     };
