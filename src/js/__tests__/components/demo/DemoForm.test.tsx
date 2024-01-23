@@ -7,6 +7,7 @@ import {cleanup, fireEvent, render, screen, waitFor} from '@testing-library/reac
 import React from 'react';
 import DemoForm from '../../../components/demo/DemoForm';
 import {convertDateObjectToInputString} from '../../../helpers/generalHelpers';
+import {expect} from 'vitest';
 
 /**
  * Changes an element value and triggers the blur event.
@@ -211,11 +212,11 @@ describe('DemoForm', () => {
         expect(addButton.disabled).toBe(false);
     });
 
-    it('shows an error message when not enough fruit are created', () => {
-        fireEvent.click(screen.getByText('Remove this fruit'));
-        screen.findByText('You must create at least one fruit').then((result) => {
-            expect(result).toBeTruthy();
-        });
+    it('shows an error message when not enough fruit are created', async () => {
+        fireEvent.click(await screen.findByText('Remove this fruit'));
+
+        const result = await screen.findByText('You must create at least one fruit.');
+        expect(result).toBeTruthy();
     });
 
     it('renders a checkbox that can be interacted with', () => {
@@ -230,7 +231,7 @@ describe('DemoForm', () => {
     it('renders a form that can not be submitted while values are missing', () => {
         const submitButton = screen.getByText('Submit Form');
 
-        fireEvent.click(submitButton);
+        fireEvent.submit(submitButton);
         return findAllAlertsWithContent().then((result) => {
             expect(result).not.toStrictEqual([]);
         });

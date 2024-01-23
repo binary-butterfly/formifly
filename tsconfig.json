@@ -9,9 +9,12 @@
     "outDir": "dist",
     "strict": true,
     "noImplicitReturns": true,
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "types": ["vitest/globals"],
+    "skipLibCheck": true
   },
   "include": [
-    "./src/**/*"
+    "./src/**/*",
+    "./vite.config.ts"
   ]
 }

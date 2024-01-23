@@ -57,7 +57,7 @@ const withLabelErrorsAndHelp = (WrappedComponent: React.ComponentType<any>) => {
         const ErrorComponent = props.errorComponent ?? ErrorSpan;
         const HelpComponent = props.helpComponent ?? HelpSpan;
 
-        // istanbul ignore next
+        /* c8 ignore next */
         const labelNoMove = props.labelNoMove ?? ['range', 'checkbox', 'radio'].includes(type ?? '');
 
         return <ContainerComponent className={'formifly-field-container formifly-' + type + '-field-container ' + (className ?? '')}>
