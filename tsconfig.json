@@ -10,11 +10,14 @@
     "strict": true,
     "noImplicitReturns": true,
     "moduleResolution": "Node",
-    "types": ["vitest/globals"],
+    "types": [
+      "vitest/globals"
+    ],
     "skipLibCheck": true
   },
   "include": [
     "./src/**/*",
-    "./vite.config.ts"
+    "./vite.config.ts",
+    "./test.setup.ts"
   ]
 }
