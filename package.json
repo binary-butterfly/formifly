@@ -8,7 +8,8 @@
   "exports": {
     ".": {
       "import": "./dist/formifly.js",
-      "require": "./dist/formifly.umd.js"
+      "require": "./dist/formifly.umd.js",
+      "types": "./dist/src/main.d.ts"
     }
   },
   "files": [
