@@ -1,6 +1,6 @@
 {
   "name": "formifly",
-  "version": "2.8.1",
+  "version": "2.8.2",
   "description": "React form handling as light as a butterfly",
   "main": "dist/formifly.umd.js",
   "module": "dist/formifly.js",
@@ -8,7 +8,8 @@
   "exports": {
     ".": {
       "import": "./dist/formifly.js",
-      "require": "./dist/formifly.umd.js"
+      "require": "./dist/formifly.umd.js",
+      "types": "./dist/src/main.d.ts"
     }
   },
   "files": [
