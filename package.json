@@ -3,11 +3,11 @@
   "version": "2.8.0",
   "description": "React form handling as light as a butterfly",
   "main": "dist/formifly.umd.js",
-  "module": "dist/formifly.mjs",
+  "module": "dist/formifly.js",
   "types": "dist/src/main.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/formifly.mjs",
+      "import": "./dist/formifly.js",
       "require": "./dist/formifly.umd.js"
     }
   },
