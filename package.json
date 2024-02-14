@@ -5,6 +5,12 @@
   "main": "dist/formifly.umd.js",
   "module": "dist/formifly.mjs",
   "types": "dist/src/main.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/formifly.mjs",
+      "require": "./dist/formifly.umd.js"
+    }
+  },
   "files": [
     "dist/*"
   ],
@@ -19,6 +25,7 @@
     "start": "vite",
     "prepublishOnly": "npm run build:prod"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/binary-butterfly/formifly.git"
