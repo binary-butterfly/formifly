@@ -484,4 +484,60 @@ describe('FormiflyContext', () => {
                 return expect(handleSubmit).toHaveBeenCalledTimes(1);
             });
     });
+
+    it('provides a setMultipleFieldValuesAndValidate function that can validate correct values', async () => {
+        const TestForm = () => {
+            const {setMultipleFieldValuesAndValidate, values} = useFormiflyContext();
+            const [validationSuccess, setValidationSuccess] = React.useState(false);
+            const setAndValidate = () => {
+                setMultipleFieldValuesAndValidate([['foo', 'bar'], ['bla', 'blub']]).then(() => setValidationSuccess(true));
+            };
+
+            return <div>
+                <p>Foo: {values.foo}</p>
+                <p>Bla: {values.bla}</p>
+                <p>Validation success: {validationSuccess ? 'true' : 'false'}</p>
+                <button onClick={setAndValidate}>Set and validate</button>
+            </div>;
+        };
+        const shape = new ObjectValidator({foo: new StringValidator(), bla: new StringValidator()});
+        const renderResult = render(<FormiflyForm onSubmit={vi.fn()} shape={shape}>
+            <TestForm/>
+        </FormiflyForm>);
+
+        fireEvent.click(renderResult.getByText('Set and validate'));
+        const success = await renderResult.findByText('Validation success: true');
+        expect(success).toBeInTheDocument();
+        expect(renderResult.getByText('Foo: bar')).toBeInTheDocument();
+        expect(renderResult.getByText('Bla: blub')).toBeInTheDocument();
+    });
+
+    it('provides a setMultipleFieldValuesAndValidate function that can validate incorrect values', async () => {
+        const TestForm = () => {
+            const {setMultipleFieldValuesAndValidate, values} = useFormiflyContext();
+            const [validationSuccess, setValidationSuccess] = React.useState(true);
+            const setAndValidate = () => {
+                setMultipleFieldValuesAndValidate([['foo', 'bar'], ['bla', '']])
+                    .then(() => setValidationSuccess(true))
+                    .catch(() => setValidationSuccess(false));
+            };
+
+            return <div>
+                <p>Validation success: {validationSuccess ? 'true' : 'false'}</p>
+                <p>Foo: {values.foo}</p>
+                <p>Bla: {values.bla === '' ? 'empty string' : values.bla}</p>
+                <button onClick={setAndValidate}>Set and validate</button>
+            </div>;
+        };
+        const shape = new ObjectValidator({foo: new StringValidator(), bla: new StringValidator().required()});
+        const renderResult = render(<FormiflyForm onSubmit={vi.fn()} shape={shape}>
+            <TestForm/>
+        </FormiflyForm>);
+
+        fireEvent.click(renderResult.getByText('Set and validate'));
+        const success = await renderResult.findByText('Validation success: false');
+        expect(success).toBeInTheDocument();
+        expect(renderResult.getByText('Foo: bar')).toBeInTheDocument();
+        expect(renderResult.getByText('Bla: empty string')).toBeInTheDocument();
+    });
 });

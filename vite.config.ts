@@ -49,6 +49,9 @@ export default ({mode}: ConfigEnv): UserConfigExport => {
         },
 
         test: {
+            setupFiles: [
+                './test.setup.ts',
+            ],
             environment: 'jsdom',
             globals: true,
             coverage: {

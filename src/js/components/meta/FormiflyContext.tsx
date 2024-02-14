@@ -60,7 +60,7 @@ export type FormiflyContextType<T extends ObjectValidator<any>> = {
         e: React.FormEvent<HTMLFormElement>,
     ) => void;
     handleFocus: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    validateAll: () => Promise<DeepPartial<ValueOfValidator<T>> | undefined>;
+    validateAll: (overrideValues?: ValueOfValidator<T>) => Promise<DeepPartial<ValueOfValidator<T>> | undefined>;
     handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     submitFailureReason: any;
     setMultipleFieldValues: <V extends Value>(
@@ -68,6 +68,9 @@ export type FormiflyContextType<T extends ObjectValidator<any>> = {
     ) => Promise<ValueOfValidator<T>>;
     handleCheckChange: (event: React.ChangeEvent<HTMLInputElement>) => Promise<boolean>;
     errors: UnpackedErrors<T>;
+    setMultipleFieldValuesAndValidate: <V extends Value>(
+        pairs: [string, V][], oldValues?: ValueOfValidator<T>,
+    ) => Promise<DeepPartial<ValueOfValidator<T>> | undefined>;
 };
 
 // see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/24509#issuecomment-382213106 for why we need to cast here
@@ -114,6 +117,14 @@ export const FormiflyProvider = <T extends ObjectValidator<any>>(props: Formifly
             }
             setValues(newValues);
             resolve(newValues);
+        });
+    };
+
+    const setMultipleFieldValuesAndValidate = <V extends Value>(
+        pairs: [string, V][], oldValues: ValueOfValidator<T> = values,
+    ): Promise<DeepPartial<ValueOfValidator<T>> | undefined> => {
+        return setMultipleFieldValues(pairs, oldValues).then((newValues) => {
+            return validateAll(newValues);
         });
     };
 
@@ -314,9 +325,9 @@ export const FormiflyProvider = <T extends ObjectValidator<any>>(props: Formifly
      * Validates all fields
      * @return {Promise<unknown>}
      */
-    const validateAll = (): Promise<DeepPartial<ValueOfValidator<T>> | undefined> => {
+    const validateAll = (valuesToValidate = values): Promise<DeepPartial<ValueOfValidator<T>> | undefined> => {
         return new Promise((resolve, reject) => {
-            const result = shape.validate(values, values, values, t);
+            const result = shape.validate(valuesToValidate, valuesToValidate, valuesToValidate, t);
             if (result[0]) {
                 resolve(result[1]);
 
@@ -392,6 +403,7 @@ export const FormiflyProvider = <T extends ObjectValidator<any>>(props: Formifly
         validateAll,
         setMultipleFieldValues,
         validateMultipleFields,
+        setMultipleFieldValuesAndValidate,
     };
 
     return <Context.Provider value={FormiflyContext}>{children}</Context.Provider>;

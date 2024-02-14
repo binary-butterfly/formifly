@@ -1,10 +1,16 @@
 {
   "name": "formifly",
-  "version": "2.7.0",
+  "version": "2.8.0",
   "description": "React form handling as light as a butterfly",
   "main": "dist/formifly.umd.js",
   "module": "dist/formifly.mjs",
   "types": "dist/src/main.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/formifly.mjs",
+      "require": "./dist/formifly.umd.js"
+    }
+  },
   "files": [
     "dist/*"
   ],
@@ -19,6 +25,7 @@
     "start": "vite",
     "prepublishOnly": "npm run build:prod"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/binary-butterfly/formifly.git"
@@ -38,6 +45,7 @@
     "@testing-library/react": "^12.1.2",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
+    "@testing-library/jest-dom": "^6.4.2",
     "@vitejs/plugin-react": "^4.2.1",
     "@vitest/coverage-v8": "^1.2.1",
     "eslint": "^8.27.0",
