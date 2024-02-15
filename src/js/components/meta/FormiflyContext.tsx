@@ -124,7 +124,15 @@ export const FormiflyProvider = <T extends ObjectValidator<any>>(props: Formifly
         pairs: [string, V][], oldValues: ValueOfValidator<T> = values,
     ): Promise<DeepPartial<ValueOfValidator<T>> | undefined> => {
         return setMultipleFieldValues(pairs, oldValues).then((newValues) => {
-            return validateAll(newValues);
+            return validateAll(newValues)
+                .then(() => {
+                    setErrors({});
+                    return Promise.resolve(newValues);
+                })
+                .catch((validationErrors: UnpackedErrors<T>) => {
+                    setErrors(validationErrors);
+                    return Promise.reject(validationErrors);
+                });
         });
     };
 
@@ -330,7 +338,6 @@ export const FormiflyProvider = <T extends ObjectValidator<any>>(props: Formifly
             const result = shape.validate(valuesToValidate, valuesToValidate, valuesToValidate, t);
             if (result[0]) {
                 resolve(result[1]);
-
             } else {
                 reject(unpackErrors(result));
             }
