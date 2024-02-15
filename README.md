@@ -593,7 +593,7 @@ They will return an object containing/ add the following props:
   You can also optionally call this function with an object to override the previous field values as second parameter.  
   This function returns a promise that resolves with all values after the change.  
   Note that this does not trigger validation.
-- `setMultipleFieldValuesAndValidate` Exactly the same as `setMultipleFieldValues` but it does trigger validation and returns a promise with the validation result
+- `setMultipleFieldValuesAndValidate` Exactly the same as `setMultipleFieldValues` but it does trigger validation of all fields, sets the errors and returns a promise with the validation result
 - `validateField` A function that allows you to trigger validation for a specific field by passing its name and optionally, to improve
   performance, the field's value.  
   This function returns a promise that will be resolved with either `true` or `false` depending on if the value is valid.

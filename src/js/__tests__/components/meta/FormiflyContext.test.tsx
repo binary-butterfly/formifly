@@ -88,7 +88,8 @@ describe('FormiflyContext', () => {
             foo: new StringValidator('bar'),
         });
 
-        render(<FormiflyForm shape={shape} onSubmit={() => {}} defaultValues={{fruit: [{name: 'banana', tasty: true}]}}>
+        render(<FormiflyForm shape={shape} onSubmit={() => {
+        }} defaultValues={{fruit: [{name: 'banana', tasty: true}]}}>
             <AutomagicFormiflyField label="Name" name="fruit.0.name"/>
             <AutomagicFormiflyField label="Tasty" name="fruit.0.tasty"/>
             <AutomagicFormiflyField label="Foo" name="foo"/>
@@ -487,7 +488,7 @@ describe('FormiflyContext', () => {
 
     it('provides a setMultipleFieldValuesAndValidate function that can validate correct values', async () => {
         const TestForm = () => {
-            const {setMultipleFieldValuesAndValidate, values} = useFormiflyContext();
+            const {setMultipleFieldValuesAndValidate, values, errors} = useFormiflyContext();
             const [validationSuccess, setValidationSuccess] = React.useState(false);
             const setAndValidate = () => {
                 setMultipleFieldValuesAndValidate([['foo', 'bar'], ['bla', 'blub']]).then(() => setValidationSuccess(true));
@@ -495,26 +496,32 @@ describe('FormiflyContext', () => {
 
             return <div>
                 <p>Foo: {values.foo}</p>
+                <p>Foo error: {errors.foo}</p>
                 <p>Bla: {values.bla}</p>
+                <AutomagicFormiflyField label="Foo input" name="foo"/>
                 <p>Validation success: {validationSuccess ? 'true' : 'false'}</p>
                 <button onClick={setAndValidate}>Set and validate</button>
             </div>;
         };
-        const shape = new ObjectValidator({foo: new StringValidator(), bla: new StringValidator()});
+        const shape = new ObjectValidator({foo: new StringValidator().required(), bla: new StringValidator()});
         const renderResult = render(<FormiflyForm onSubmit={vi.fn()} shape={shape}>
             <TestForm/>
         </FormiflyForm>);
 
+        fireEvent.blur(renderResult.getByLabelText('Foo input'));
+        const errorMsg = await renderResult.findByText('Foo error: This field is required');
+        expect(errorMsg).toBeInTheDocument();
         fireEvent.click(renderResult.getByText('Set and validate'));
         const success = await renderResult.findByText('Validation success: true');
         expect(success).toBeInTheDocument();
         expect(renderResult.getByText('Foo: bar')).toBeInTheDocument();
         expect(renderResult.getByText('Bla: blub')).toBeInTheDocument();
+        expect(renderResult.queryByText('Foo error: This field is required')).not.toBeInTheDocument();
     });
 
     it('provides a setMultipleFieldValuesAndValidate function that can validate incorrect values', async () => {
         const TestForm = () => {
-            const {setMultipleFieldValuesAndValidate, values} = useFormiflyContext();
+            const {setMultipleFieldValuesAndValidate, values, errors} = useFormiflyContext();
             const [validationSuccess, setValidationSuccess] = React.useState(true);
             const setAndValidate = () => {
                 setMultipleFieldValuesAndValidate([['foo', 'bar'], ['bla', '']])
@@ -526,6 +533,7 @@ describe('FormiflyContext', () => {
                 <p>Validation success: {validationSuccess ? 'true' : 'false'}</p>
                 <p>Foo: {values.foo}</p>
                 <p>Bla: {values.bla === '' ? 'empty string' : values.bla}</p>
+                <p>Bla error: {errors.bla}</p>
                 <button onClick={setAndValidate}>Set and validate</button>
             </div>;
         };
@@ -539,5 +547,6 @@ describe('FormiflyContext', () => {
         expect(success).toBeInTheDocument();
         expect(renderResult.getByText('Foo: bar')).toBeInTheDocument();
         expect(renderResult.getByText('Bla: empty string')).toBeInTheDocument();
+        expect(renderResult.getByText('Bla error: This field is required')).toBeInTheDocument();
     });
 });
