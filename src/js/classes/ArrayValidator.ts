@@ -204,6 +204,10 @@ class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOf
             }
         }
 
+        if (!allOk && this.onError) {
+            this.onError(values, otherValues);
+        }
+
         return allOk ? [true, testValues] : [false, tests];
     }
 }
