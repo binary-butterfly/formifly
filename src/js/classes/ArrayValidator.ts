@@ -24,23 +24,23 @@ class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOf
     public minChildCount: number = 0;
     public maxChildCount: number = Number.POSITIVE_INFINITY;
     public defaultInputType: InputType = 'select';
+    public recursiveOnError: boolean = false;
 
-    /**
-     * Validate an array of fields
-     * @param {BaseValidator} of
-     * @param {String} [defaultMessage]
-     * @param {MutationFunction} [mutationFunc]
-     * @param {ErrorFunction} [onError]
-     * @param {Dependent} [dependent]
-     */
     constructor(of: T,
                 defaultMessage?: string,
                 mutationFunc?: MutationFunction,
                 onError?: ErrorFunction,
-                dependent?: Dependent) {
+                dependent?: Dependent,
+                recursiveOnError = false
+    ) {
         super([], defaultMessage, mutationFunc, onError, dependent);
         this.of = of;
         this.propType = PropTypes.arrayOf(of.getPropType());
+        this.recursiveOnError = recursiveOnError;
+    }
+
+    public setRecursiveOnError(newRecursiveOnError: boolean): void {
+        this.recursiveOnError = newRecursiveOnError;
     }
 
     /**
@@ -202,6 +202,10 @@ class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOf
             } else if (allOk) {
                 testValues[index] = test[1]!;
             }
+        }
+
+        if (!allOk && this.recursiveOnError && this.onError) {
+            this.onError(values, otherValues);
         }
 
         return allOk ? [true, testValues] : [false, tests];

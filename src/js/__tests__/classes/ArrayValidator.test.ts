@@ -147,3 +147,15 @@ test('Test ArrayValidator uses correct translation namespace', () => {
     validator.validate('string' as any, {}, {}, t as unknown as TFunction);
     expect(t).toHaveBeenCalledWith('formifly:array');
 });
+
+test('Test ArrayValidator calls onError function if contained element does not validate', () => {
+    const onError = vi.fn();
+    const validator = new ArrayValidator(new StringValidator().maxLength(1), undefined, undefined, onError, undefined, true);
+
+    validator.validate(['bla', '1', 'abc']);
+    expect(onError).toHaveBeenCalledOnce();
+
+    validator.setRecursiveOnError(false);
+    validator.validate(['bla', '1', 'abc']);
+    expect(onError).toHaveBeenCalledOnce(); // Make sure it still was only called once
+});

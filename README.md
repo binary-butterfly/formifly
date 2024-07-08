@@ -934,7 +934,10 @@ This will validate the child fields `foo` and `number` with a String- and Number
 This validator is used when your data model contains multiple of the same fields. When the validation fails, it will return an array with
 all the tests results for its children in it.
 
-It has to be constructed with Validator that is used for the field's children as the first param.
+It has to be constructed with Validator that is used for the field's children as the first param.  
+In addition to the default params, there is an additional `recursiveOnError` constructor param that lets you control if
+the `onError` function should be called if contained fields have an error. This is false by default as it is a newly added
+feature and enabling it by default would be a breaking API change.
 
 Available methods:
 
@@ -948,6 +951,7 @@ Available methods:
   Use `{{min}}` and/ or `{{max}}` to include the minimum and/ or maximum amount of children in your custom error string respectively.
 - `validateWithoutRecursion(values, otherValues, siblings)` This function allows you to validate the array entries non recursively.  
   Note that it only works on Array and ObjectValidators since other validators are not recursive by design.
+- `setRecursiveOnError(newRecursiveOnError)` This function allows you to control if the onError function should be called if contained fields have an error.
 
 Example:
 
