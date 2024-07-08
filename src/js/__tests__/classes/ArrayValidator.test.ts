@@ -159,3 +159,13 @@ test('Test ArrayValidator calls onError function if contained element does not v
     validator.validate(['bla', '1', 'abc']);
     expect(onError).toHaveBeenCalledOnce(); // Make sure it still was only called once
 });
+
+test('Test ArrayValidator recursiveOnError also works with object fields', () => {
+    const onError = vi.fn();
+    const validator = new ArrayValidator(new ObjectValidator({bla: new StringValidator().maxLength(1)}));
+    validator.setOnError(onError);
+    validator.setRecursiveOnError(true);
+
+    validator.validate([{bla: 'abc'}, {bla: 'a'}, {bla: 'foo'}]);
+    expect(onError).toHaveBeenCalledOnce();
+});
