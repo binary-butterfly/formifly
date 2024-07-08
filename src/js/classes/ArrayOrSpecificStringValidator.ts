@@ -12,24 +12,25 @@ class ArrayOrSpecificStringValidator<T extends BaseValidator<any>> extends BaseV
     private readonly allowedString: string;
     private readonly internalArrayValidator: ArrayValidator<T>;
 
-    /**
-     * Validate an array of fields
-     * @param {BaseValidator} of
-     * @param {String} [defaultMessage]
-     * @param {MutationFunction} [mutationFunc]
-     * @param {ErrorFunction} [onError]
-     * @param {Dependent} [dependent]
-     * @param {String} [allowedString
-     */
     constructor(of: T,
                 defaultMessage: string = 'This field has to be an array',
                 mutationFunc?: MutationFunction,
                 onError?: ErrorFunction,
                 dependent?: Dependent,
-                allowedString: string = '_any') {
+                allowedString: string = '_any',
+                recursiveOnError = false) {
         super([], defaultMessage, mutationFunc, onError, dependent);
-        this.internalArrayValidator = new ArrayValidator<T>(of, defaultMessage, mutationFunc, onError, dependent);
+        this.internalArrayValidator = new ArrayValidator<T>(of, defaultMessage, mutationFunc, onError, dependent, recursiveOnError);
         this.allowedString = allowedString;
+    }
+
+    public setRecursiveOnError(newRecursiveOnError: boolean): void {
+        this.internalArrayValidator.setRecursiveOnError(newRecursiveOnError);
+    }
+
+    public setOnError(newOnError: ErrorFunction): void {
+        this.onError = newOnError;
+        this.internalArrayValidator.setOnError(newOnError);
     }
 
     public validate(
@@ -39,6 +40,9 @@ class ArrayOrSpecificStringValidator<T extends BaseValidator<any>> extends BaseV
             return [true, values];
         }
         if (typeof values === 'string') {
+            if (this.onError) {
+                this.onError(values, otherValues);
+            }
             return [false, 'This field has to be an array'];
         }
         return this.internalArrayValidator.validate(values, otherValues, siblings, t, recursion);

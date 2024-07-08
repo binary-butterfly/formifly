@@ -31,7 +31,7 @@ class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<ValueOf
                 mutationFunc?: MutationFunction,
                 onError?: ErrorFunction,
                 dependent?: Dependent,
-                recursiveOnError = false
+                recursiveOnError = false,
     ) {
         super([], defaultMessage, mutationFunc, onError, dependent);
         this.of = of;
