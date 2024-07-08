@@ -149,10 +149,13 @@ test('Test ArrayValidator uses correct translation namespace', () => {
 });
 
 test('Test ArrayValidator calls onError function if contained element does not validate', () => {
-    const validator = new ArrayValidator(new StringValidator().maxLength(1));
     const onError = vi.fn();
-    validator.setOnError(onError);
+    const validator = new ArrayValidator(new StringValidator().maxLength(1), undefined, undefined, onError, undefined, true);
 
     validator.validate(['bla', '1', 'abc']);
     expect(onError).toHaveBeenCalledOnce();
+
+    validator.setRecursiveOnError(false);
+    validator.validate(['bla', '1', 'abc']);
+    expect(onError).toHaveBeenCalledOnce(); // Make sure it still was only called once
 });
