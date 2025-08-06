@@ -900,17 +900,17 @@ This value can also be set after constructing using the `setDropEmpty` function 
 This param defines whether empty values will be dropped before handing them to the forms submit handler.  
 It only works on direct children of the specific ObjectValidator so if your data structure contains multiple objects, each ObjectValidator
 must have this param set.  
-If `setDropEmpty` is called with `true`, `emptyToUndefined` will be set to `false` since they cannot be true at the same time.
+If `setDropEmpty` is called with `true`, `emptyToNull` will be set to `false` since they cannot be true at the same time.
 Similarly, there is also the `dropNotInShape` param, which defaults to `false` and can also be set using `setDropNotInShape`.  
 If this value is set to true, the validated result will only contain child fields that have been defined.  
 This is useful when using data that came from an API to pre-fill an edit form if said data contains fields (like edited timestamps) that
 are not allowed to be set by a `PATCH` request.  
 Like `dropEmpty`, this param only works for direct children and not recursively.
-If you do not want empty values to be dropped, but instead set to `null` explicitly, you can set the param `emptyToUndefined` to `true`.
-This can be done using the constructor or the `setEmptyToUndefined` function.  
-If `setEmptyToUndefined` is called with `true` `dropEmpty` is set to `false` since these fields cannot be true at the same time.
+If you do not want empty values to be dropped, but instead set to `null` explicitly, you can set the param `emptyToNull` to `true`.
+This can be done using the constructor or the `setEmptyToNull` function.  
+If `setEmptyToNull` is called with `true` `dropEmpty` is set to `false` since these fields cannot be true at the same time.
 
-When constructing the `ObjectValidator`, ensure that you never set `dropEmpty` and `emptyToUndefined` to `true` at the same time, since 
+When constructing the `ObjectValidator`, ensure that you never set `dropEmpty` and `emptyToNull` to `true` at the same time, since 
 these fields are mutually exclusive and attempting to do so will cause an error.
 
 The ObjectValidator accepts an additional parameter for its `getPropType` function.  
