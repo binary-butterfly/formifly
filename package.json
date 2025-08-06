@@ -1,6 +1,6 @@
 {
   "name": "formifly",
-  "version": "2.9.1",
+  "version": "2.10.0",
   "description": "React form handling as light as a butterfly",
   "main": "dist/formifly.umd.js",
   "module": "dist/formifly.js",
