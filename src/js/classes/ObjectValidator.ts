@@ -24,6 +24,7 @@ class ObjectValidator<T extends ObjectValidatorFields> extends BaseValidator<Val
     private dropEmpty: boolean;
     private dropNotInShape: boolean;
     private reallyNotRequired: boolean = false;
+    private emptyToNull: boolean = false;
 
     /**
      * @param {Object} fields
@@ -33,6 +34,7 @@ class ObjectValidator<T extends ObjectValidatorFields> extends BaseValidator<Val
      * @param {Dependent} [dependent]
      * @param {Boolean} [dropEmpty]
      * @param {Boolean} [dropNotInShape]
+     * @param {Boolean} [emptyToNull]
      */
     constructor(
         fields: T,
@@ -41,18 +43,24 @@ class ObjectValidator<T extends ObjectValidatorFields> extends BaseValidator<Val
         onError?: ErrorFunction,
         dependent?: Dependent,
         dropEmpty: boolean = true,
-        dropNotInShape: boolean = false
+        dropNotInShape: boolean = false,
+        emptyToNull: boolean = false,
     ) {
         const defaultValues = Object.fromEntries(
             Object.entries(fields).map(
-                ([k, v]) => [k, v.getDefaultValue()]
-            )
+                ([k, v]) => [k, v.getDefaultValue()],
+            ),
         ) as ValueOfObjectValidatorFields<T>;
         super(defaultValues, defaultMessage, mutationFunc, onError, dependent);
+
+        if (dropEmpty && emptyToNull) {
+            throw new Error('dropEmpty and emptyToNull cannot both be true at the same time');
+        }
 
         this.fields = fields;
         this.dropEmpty = dropEmpty;
         this.dropNotInShape = dropNotInShape;
+        this.emptyToNull = emptyToNull;
     }
 
     /**
@@ -66,15 +74,32 @@ class ObjectValidator<T extends ObjectValidatorFields> extends BaseValidator<Val
     }
 
     /**
-     * Make the validator drop empty keys
+     * Make the validator drop empty keys.
+     * This also sets emptyToNull false if newDropEmpty is true, since both cannot be true at the same time.
      * @param {Boolean} newDropEmpty
      */
     public setDropEmpty(newDropEmpty: boolean): void {
         this.dropEmpty = newDropEmpty;
+        if (newDropEmpty) {
+            this.emptyToNull = false;
+        }
     }
 
     /**
-     * Make the validator drop values that are not defined as a child field
+     * Make the validator return null for empty values.
+     * This also sets dropEmpty to false if newEmptyToNull is true, since both cannot be true at the same time.
+     * @param {Boolean} newEmptyToNull
+     */
+    public setEmptyToNull(newEmptyToNull: boolean): void {
+        this.emptyToNull = newEmptyToNull;
+
+        if (newEmptyToNull) {
+            this.dropEmpty = false;
+        }
+    }
+
+    /**
+     * Make the validator drop values that are not defined as a child field.
      * @param {Boolean} newDropNotInShape
      */
     public setDropNotInShape(newDropNotInShape: boolean): void {
@@ -88,8 +113,8 @@ class ObjectValidator<T extends ObjectValidatorFields> extends BaseValidator<Val
 
         const ret = Object.fromEntries(
             Object.entries(this.fields).map(
-                ([k, v]) => [k, v.getDefaultValue()]
-            )
+                ([k, v]) => [k, v.getDefaultValue()],
+            ),
         );
 
         return ret as ValueOfObjectValidatorFields<T>;
@@ -150,18 +175,39 @@ class ObjectValidator<T extends ObjectValidatorFields> extends BaseValidator<Val
             if (test[0] === false) {
                 allOk = false;
             } else if (allOk) {
-                if (this.dropEmpty) {
+                if (this.emptyToNull || this.dropEmpty) {
                     if (Array.isArray(test[1])) {
-                        const filtered = test[1].filter(val => val !== '');
-                        if (filtered.length > 0) {
-                            testValue[fieldName] = filtered as any;
-                            continue;
+                        if (this.dropEmpty) {
+                            const filtered = test[1].filter(val => val !== '');
+                            if (filtered.length > 0) {
+                                testValue[fieldName] = filtered;
+                                continue;
+                            }
+                        } else {
+                            const filtered: Array<any> = [];
+                            let foundNotEmpty = false;
+                            test[1].forEach((val) => {
+                                if (val !== '') {
+                                    filtered.push(val);
+                                    foundNotEmpty = true;
+                                } else {
+                                    filtered.push(null);
+                                }
+                            });
+                            if (foundNotEmpty) {
+                                testValue[fieldName] = filtered;
+                                continue;
+                            }
                         }
                     } else if (test[1] !== '') {
                         testValue[fieldName] = test[1]!;
                         continue;
                     }
-                    delete testValue[fieldName];
+                    if (this.dropEmpty) {
+                        delete testValue[fieldName];
+                    } else {
+                        testValue[fieldName] = null;
+                    }
                 } else {
                     testValue[fieldName] = test[1]!;
                 }
