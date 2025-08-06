@@ -223,6 +223,25 @@ test('Test setDropEmpty', () => {
     expect(validator.validate(values)).toStrictEqual([true, {}]);
 });
 
+test('Test emptyToNull works as intended', () => {
+    const validator = new ObjectValidator({
+        bla: new NumberValidator(),
+        arr: new ArrayValidator(new StringValidator()),
+        anotherArr: new ArrayValidator(new StringValidator()),
+    });
+    const values = {bla: '', arr: [''], anotherArr: ['', 'abc']};
+
+    expect(validator.validate(values)).toStrictEqual([true, {anotherArr: ['abc']}]);
+
+    validator.setEmptyToNull(true);
+    expect(validator.validate(values)).toStrictEqual([true, {bla: null, arr: null, anotherArr: [null, 'abc']}]);
+});
+
+test('Test error thrown if emptyToNull and dropEmpty set to true at the same time', () => {
+    const errFunc = () => new ObjectValidator({}, undefined, undefined, undefined, undefined, true, false, true);
+    expect(errFunc).toThrowErrorMatchingInlineSnapshot(`[Error: dropEmpty and emptyToNull cannot both be true at the same time]`);
+});
+
 test('Test dropNotInShape', () => {
     const validator = new ObjectValidator({foo: new StringValidator()}, undefined, undefined, undefined, undefined, undefined, true);
     const values = {foo: 'bar', banana: 'tasty!'};
