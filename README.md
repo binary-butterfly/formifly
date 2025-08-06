@@ -893,7 +893,7 @@ This example will validate to true for `true`, `false`, `"true"` and `"false"` a
 This validator is used when your data model is not flat and has objects with keys in it.  
 When the validation fails, it will return a dictionary with all the test results for its children in it.
 
-The object validator does only have three special methods, which you are unlikely to need. (See below)
+The object validator has three special methods. (See below)
 However, it has to be constructed with the field's children as the first param.  
 It also accepts an additional param `dropEmpty`, which defaults to `true`.  
 This value can also be set after constructing using the `setDropEmpty` function on the validator.  
