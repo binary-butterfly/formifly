@@ -31,8 +31,8 @@ describe.each([
 
 test('Test setRequired', () => {
     const validator = new BaseValidator(undefined as any);
-    validator.setRequired(true);
-    expect(validator.validate('')).toStrictEqual([false, 'required']);
+    validator.setRequired(true, 'bananas');
+    expect(validator.validate('')).toStrictEqual([false, 'bananas']);
     validator.setRequired(false);
     expect(validator.validate('')).toStrictEqual([true, '']);
 });
