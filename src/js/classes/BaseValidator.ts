@@ -117,6 +117,14 @@ class BaseValidator<T extends Value> {
         return this;
     }
 
+    public setRequired(newRequired: boolean, msg?: string): this {
+        this._isRequired = newRequired;
+        if (msg) {
+            this.requiredError = msg;
+        }
+        return this;
+    }
+
     public get isRequired(): boolean {
         return this._isRequired;
     }

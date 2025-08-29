@@ -733,6 +733,7 @@ Please read [Cross Dependent Fields](#cross-dependent-fields) before using any o
 Available methods:
 
 - `required(msg: [String])` Make the field required. A field that is not required will pass all validators if it is empty.
+- `setRequired(newRequired: boolean, msg: [String])` Set if a field should be required. Useful if a field was set to required but should no longer be.
 - `oneOf(valuues: Array, msg: [String)` Only allow an array of values for this field.
 - `greaterThan(name: String, msg: [String])` Enforce this fields value to be greater than the value of another field.
 - `lessThan(name: String, msg: [String])` Enforce this fields value to be less than the value of another field.

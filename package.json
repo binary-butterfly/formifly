@@ -1,17 +1,17 @@
 {
   "name": "formifly",
-  "version": "2.10.0",
+  "version": "2.11.0",
   "description": "React form handling as light as a butterfly",
+  "exports": {
+    ".": {
+      "types": "./dist/src/js/main.d.ts",
+      "import": "./dist/formifly.js",
+      "require": "./dist/formifly.umd.cjs"
+    }
+  },
   "main": "dist/formifly.umd.js",
   "module": "dist/formifly.js",
   "types": "dist/src/js/main.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/formifly.js",
-      "require": "./dist/formifly.umd.cjs",
-      "types": "./dist/src/js/main.d.ts"
-    }
-  },
   "files": [
     "dist/*"
   ],
@@ -43,10 +43,11 @@
   "homepage": "https://github.com/binary-butterfly/formifly#readme",
   "devDependencies": {
     "@binary-butterfly/eslint-config": "^0.0.6",
+    "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^12.1.2",
+    "@types/node": "^24.3.0",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
-    "@testing-library/jest-dom": "^6.4.2",
     "@vitejs/plugin-react": "^4.2.1",
     "@vitest/coverage-v8": "^3.2.4",
     "eslint": "^8.27.0",

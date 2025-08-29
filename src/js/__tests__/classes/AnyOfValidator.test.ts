@@ -135,7 +135,7 @@ describe('AnyOfValidator', () => {
                         undefined,
                         undefined,
                         undefined,
-                        0
+                        0,
                     ),
             }
         );

@@ -58,7 +58,7 @@ export default ({mode}: ConfigEnv): UserConfigExport => {
                 reporter: ['text', 'html', 'clover', 'json', 'cobertura'],
                 all: true,
                 include: ['src/js/**'],
-                exclude: ['src/js/components/demo/DemoPage.tsx', 'src/js/main.ts'],
+                exclude: ['src/js/components/demo/DemoPage.tsx', 'src/js/main.ts', 'src/js/styled.d.ts'],
                 provider: 'v8',
             },
             restoreMocks: true,

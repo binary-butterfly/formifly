@@ -10,14 +10,14 @@ export const findFieldValidatorFromName = (
     let dependentValue = shape;
     for (const index in fieldNames) {
         const fieldName = fieldNames[index];
-        if (dependentValue && 'of' in dependentValue) {
+        if (dependentValue && 'of' in dependentValue && dependentValue.of !== undefined) {
             // This is an array validator
             if (!isNaN(Number(fieldName))) {
                 // Since the name is numeric, we work with it directly
                 dependentValue = dependentValue.of;
             } else {
                 const of = dependentValue.of as BaseValidator<any> | ObjectValidator<any>;
-                // If the name is non numeric, we check if this may be an array of objects where an object has the given name
+                // If the name is non-numeric, we check if this may be an array of objects where an object has the given name
                 if (!('fields' in of) || of.fields[fieldName] === undefined) {
                     throw new Error('Could not find validator for ' + name);
                 }
