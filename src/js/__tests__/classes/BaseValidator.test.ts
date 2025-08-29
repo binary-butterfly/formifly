@@ -29,6 +29,14 @@ describe.each([
     });
 });
 
+test('Test setRequired', () => {
+    const validator = new BaseValidator(undefined as any);
+    validator.setRequired(true);
+    expect(validator.validate('')).toStrictEqual([false, 'required']);
+    validator.setRequired(false);
+    expect(validator.validate('')).toStrictEqual([true, '']);
+});
+
 test('Test always false validator', () => {
     const validator = new BaseValidator(undefined as any).alwaysFalse();
     expect(validator.validate('banana')).toStrictEqual([false, 'always_false']);
