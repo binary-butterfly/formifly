@@ -43,10 +43,11 @@
   "homepage": "https://github.com/binary-butterfly/formifly#readme",
   "devDependencies": {
     "@binary-butterfly/eslint-config": "^0.0.6",
+    "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^12.1.2",
+    "@types/node": "^24.3.0",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
-    "@testing-library/jest-dom": "^6.4.2",
     "@vitejs/plugin-react": "^4.2.1",
     "@vitest/coverage-v8": "^3.2.4",
     "eslint": "^8.27.0",
