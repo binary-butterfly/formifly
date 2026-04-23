@@ -895,7 +895,7 @@ When the validation fails, it will return a dictionary with all the test results
 
 The object validator has three special methods. (See below)
 However, it has to be constructed with the field's children as the first param.  
-It also accepts an additional param `dropEmpty`, which defaults to `true`.  
+It also accepts an additional param `dropEmpty`, which defaults to `false`.  
 This value can also be set after constructing using the `setDropEmpty` function on the validator.  
 This param defines whether empty values will be dropped before handing them to the forms submit handler.  
 It only works on direct children of the specific ObjectValidator so if your data structure contains multiple objects, each ObjectValidator
