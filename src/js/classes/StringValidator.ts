@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import {ensureValueIsNumeric, ensureValueIsRegexp} from '../helpers/developerInputValidators';
 import BaseValidator from './BaseValidator';
 import {Dependent, ErrorFunction, InputType, MutationFunction} from '../types';
@@ -9,8 +8,6 @@ import {Dependent, ErrorFunction, InputType, MutationFunction} from '../types';
  */
 class StringValidator extends BaseValidator<string> {
     public defaultInputType: InputType = 'text';
-    protected propType = PropTypes.string;
-
 
     /**
      * @param {String} defaultValue

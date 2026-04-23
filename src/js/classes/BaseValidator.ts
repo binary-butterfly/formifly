@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import {getFieldValueFromKeyString} from '../helpers/generalHelpers';
 import {
     CheckFunction,
@@ -27,7 +26,6 @@ class BaseValidator<T extends Value> {
     protected _isRequired: boolean = false;
     protected validateFuncs: Array<ValidateFunction<T>> = [];
     protected defaultErrorMsg?: string;
-    protected propType: PropTypes.Requireable<any> = PropTypes.any;
     protected onError?: ErrorFunction;
     protected mutationFunc?: MutationFunction;
 
@@ -440,14 +438,6 @@ class BaseValidator<T extends Value> {
      */
     public getDefaultValue(): T {
         return this.defaultValue;
-    }
-
-    /**
-     * Returns the validator's PropTypes representation
-     * @return {Object}
-     */
-    public getPropType(): PropTypes.Validator<any> {
-        return this._isRequired ? this.propType.isRequired : this.propType;
     }
 }
 

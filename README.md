@@ -751,7 +751,6 @@ Available methods:
   sibling array field or check this fields value against the values included in a sibling array field with a custom function
 - `alwaysFalse(msg: [String])` Make the validation always return false. This may be useful when building more complex dependent validators.
 - `getDefaultValue()` Return the field's default value.
-- `getPropType()` Returns the validator represented as PropTypes
 - `validate(value, [otherValues])` Validate the field.  
   You should not need to use this function. If you do for some reason, pass the field's value as value and
   (if there are dependencies) all other values as otherValues.
@@ -896,7 +895,7 @@ When the validation fails, it will return a dictionary with all the test results
 
 The object validator has three special methods. (See below)
 However, it has to be constructed with the field's children as the first param.  
-It also accepts an additional param `dropEmpty`, which defaults to `true`.  
+It also accepts an additional param `dropEmpty`, which defaults to `false`.  
 This value can also be set after constructing using the `setDropEmpty` function on the validator.  
 This param defines whether empty values will be dropped before handing them to the forms submit handler.  
 It only works on direct children of the specific ObjectValidator so if your data structure contains multiple objects, each ObjectValidator
@@ -914,16 +913,12 @@ If `setEmptyToNull` is called with `true` `dropEmpty` is set to `false` since th
 When constructing the `ObjectValidator`, ensure that you never set `dropEmpty` and `emptyToNull` to `true` at the same time, since 
 these fields are mutually exclusive and attempting to do so will cause an error.
 
-The ObjectValidator accepts an additional parameter for its `getPropType` function.  
-If you pass `true` to the function, instead of returning `PropTypes.shape`, it will return an object that you can directly assign as
-the `PropTypes` of a component.
-
 In addition to the regular `validate` function, the ObjectValidator also has a `validateWithoutRecursion` function.  
 This function allows you to validate all child fields that are neither Array nor ObjectValidators.  
 This can be useful if you only need to validate a subset of a form that is split in multiple steps, with those steps being sub fields of
 each other.
 
-Note that a non required ObjectValidator field will be treated as required if it has any children that are required.  
+Note that a non-required ObjectValidator field will be treated as required if it has any children that are required.  
 To avoid this behaviour and allow empty objects, you may use the `notRequired` method.
 
 Example:

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import {ensureValueIsNumeric} from '../helpers/developerInputValidators';
 import BaseValidator from './BaseValidator';
 import {Dependent, ErrorFunction, InputType, MutationFunction} from '../types';
@@ -16,7 +15,6 @@ const delocalize = (value: string | number): number => {
  */
 class NumberValidator extends BaseValidator<number | string> {
     public defaultInputType: InputType = 'number';
-    protected propType: PropTypes.Requireable<any> = PropTypes.number;
 
     protected _minNum?: number;
     protected _maxNum?: number;
@@ -72,7 +70,7 @@ class NumberValidator extends BaseValidator<number | string> {
         }
 
         this.validateFuncs.push(value => ({
-            success: value >= num,
+            success: value as number >= num,
             errorMsg,
             msgName: 'min_number',
             translationContext: {num: num},
@@ -100,7 +98,7 @@ class NumberValidator extends BaseValidator<number | string> {
         }
 
         this.validateFuncs.push(value => ({
-            success: value <= num,
+            success: value as number <= num,
             errorMsg,
             msgName: 'max_number',
             translationContext: {num: num},
@@ -119,7 +117,7 @@ class NumberValidator extends BaseValidator<number | string> {
      * @returns {this}
      */
     public positive(msg?: string): this {
-        this.validateFuncs.push(value => ({success: value > 0, errorMsg: msg, msgName: 'positive'}));
+        this.validateFuncs.push(value => ({success: Number(value) > 0, errorMsg: msg, msgName: 'positive'}));
         return this;
     }
 
@@ -129,7 +127,7 @@ class NumberValidator extends BaseValidator<number | string> {
      * @returns {this}
      */
     public negative(msg?: string): this {
-        this.validateFuncs.push(value => ({success: value < 0, errorMsg: msg, msgName: 'negative'}));
+        this.validateFuncs.push(value => ({success: Number(value) < 0, errorMsg: msg, msgName: 'negative'}));
         return this;
     }
 
@@ -151,7 +149,7 @@ class NumberValidator extends BaseValidator<number | string> {
         }
 
         this.validateFuncs.push(value => ({
-            success: value >= min && value <= max,
+            success: value as number >= min && value as number <= max,
             errorMsg,
             msgName: 'number_range',
             translationContext: {min: min, max: max},

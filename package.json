@@ -1,6 +1,6 @@
 {
   "name": "formifly",
-  "version": "2.11.0",
+  "version": "3.0.0-rc1",
   "description": "React form handling as light as a butterfly",
   "exports": {
     ".": {
@@ -42,29 +42,29 @@
   },
   "homepage": "https://github.com/binary-butterfly/formifly#readme",
   "devDependencies": {
-    "@binary-butterfly/eslint-config": "^0.0.6",
-    "@testing-library/jest-dom": "^6.4.2",
-    "@testing-library/react": "^12.1.2",
+    "@binary-butterfly/eslint-config": "^1.0.0-rc5",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^24.3.0",
-    "@typescript-eslint/eslint-plugin": "^5.42.0",
-    "@typescript-eslint/parser": "^5.42.0",
-    "@vitejs/plugin-react": "^4.2.1",
-    "@vitest/coverage-v8": "^3.2.4",
-    "eslint": "^8.27.0",
-    "i18next": "^22.0.6",
-    "jest-styled-components": "^7.2.0",
-    "jsdom": "^19.0.0",
-    "react-i18next": "^12.0.0",
-    "styled-components": "^5.3.3 || ^6.1.0",
-    "tslib": "^2.5.0",
-    "typescript": "^4.9.4",
-    "vite": "^7.0.5",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "@vitest/coverage-v8": "^4.1.5",
+    "eslint": "^9.39.4",
+    "i18next": "^26.0.6",
+    "jest-styled-components": "^7.4.0",
+    "jsdom": "^29.0.2",
+    "react": "^19.2.5",
+    "react-i18next": "^17.0.4",
+    "styled-components": "^5.3.3 || ^6.1.0 || ^6.4.0",
+    "tslib": "^2.8.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.10",
     "vite-plugin-dts": "^4.5.4",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.5"
   },
   "peerDependencies": {
-    "prop-types": "^15.8.1",
-    "react": "^17.0.2 || ^18.0.0",
-    "react-dom": "^17.0.2 || ^18.0.0"
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
   }
 }

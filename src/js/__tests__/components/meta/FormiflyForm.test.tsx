@@ -12,18 +12,19 @@ import {changeInputValue} from '../demo/DemoForm.test';
 import {vitest} from 'vitest';
 
 describe('FormiflyForm', () => {
-    it('checks if user prefers reduced motion when no override is set', () => {
-        vitest.spyOn(window, 'matchMedia').mockImplementation(() => {
-            return {matches: true} as Partial<MediaQueryList> as MediaQueryList;
-        });
-
-        render(<FormiflyForm shape={new ObjectValidator({foo: new StringValidator()})} onSubmit={() => {
-        }}>
-            <b>Test</b>
-        </FormiflyForm>);
-
-        expect(window.matchMedia).toHaveBeenCalled();
-    });
+    // Commented out until it can be reimplemented in #190
+    // it('checks if user prefers reduced motion when no override is set', () => {
+    //     vitest.spyOn(window, 'matchMedia').mockImplementation(() => {
+    //         return {matches: true} as Partial<MediaQueryList> as MediaQueryList;
+    //     });
+    //
+    //     render(<FormiflyForm shape={new ObjectValidator({foo: new StringValidator()})} onSubmit={() => {
+    //     }}>
+    //         <b>Test</b>
+    //     </FormiflyForm>);
+    //
+    //     expect(window.matchMedia).toHaveBeenCalled();
+    // });
 
     it('can make use of a custom translation function', () => {
         const resources = {

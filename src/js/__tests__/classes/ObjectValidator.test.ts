@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import ArrayValidator from '../../classes/ArrayValidator';
 import BooleanValidator from '../../classes/BooleanValidator';
 import NumberValidator from '../../classes/NumberValidator';
@@ -94,24 +93,6 @@ describe.each([
     });
 });
 
-test('Test getPropType', () => {
-    const validator = new ObjectValidator({foo: new StringValidator().required(), bar: new NumberValidator()});
-    expect(String(validator.getPropType())).toBe(String(PropTypes.shape({foo: PropTypes.string.isRequired, bar: PropTypes.number})));
-});
-
-test('Test getPropType required', () => {
-    const validator = new ObjectValidator({foo: new StringValidator().required(), bar: new NumberValidator()}).required();
-    expect(String(validator.getPropType())).toBe(String(PropTypes.shape({
-        foo: PropTypes.string.isRequired,
-        bar: PropTypes.number,
-    }).isRequired));
-});
-
-test('Test getPropType first', () => {
-    const validator = new ObjectValidator({foo: new StringValidator().required(), bar: new NumberValidator()});
-    expect(validator.getFirstPropType()).toStrictEqual({foo: PropTypes.string.isRequired, bar: PropTypes.number});
-});
-
 describe.each([
     [
         {
@@ -119,9 +100,9 @@ describe.each([
             bar: new ArrayValidator(new StringValidator()),
             baz: new ArrayValidator(new StringValidator()),
         },
-        {foo: '', bar: [], baz: ['']},
+        {foo: '', bar: [], baz: [''], bla: ['blub']},
         true,
-        [true, {}],
+        [true, {bla: ['blub']}],
         'drops empty fields',
     ],
     [
@@ -130,7 +111,7 @@ describe.each([
             bar: new ArrayValidator(new StringValidator()),
             baz: new ArrayValidator(new StringValidator()),
         },
-        {foo: '', bar: [], baz: ['']},
+        {foo: '', bar: [], baz: [''], bla: ['', 'blub']},
         false,
         [
             true,
@@ -138,6 +119,7 @@ describe.each([
                 foo: '',
                 bar: [],
                 baz: [''],
+                bla: ['', 'blub'],
             },
         ],
         'does not drop empty fields when set false',
@@ -231,10 +213,14 @@ test('Test emptyToNull works as intended', () => {
     });
     const values = {bla: '', arr: [''], anotherArr: ['', 'abc']};
 
-    expect(validator.validate(values)).toStrictEqual([true, {anotherArr: ['abc']}]);
+    expect(validator.validate(values)).toStrictEqual([true, values]);
 
     validator.setEmptyToNull(true);
     expect(validator.validate(values)).toStrictEqual([true, {bla: null, arr: null, anotherArr: [null, 'abc']}]);
+
+    validator.setEmptyToNull(false);
+    // Since setting setEmptyToNull sets dropEmpty to false, this will now return the object unchanged.
+    expect(validator.validate(values)).toStrictEqual([true, values]);
 });
 
 test('Test error thrown if emptyToNull and dropEmpty set to true at the same time', () => {

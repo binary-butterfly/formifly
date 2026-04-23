@@ -35,7 +35,6 @@ export default ({mode}: ConfigEnv): UserConfigExport => {
                     globals: {
                         'react': 'React',
                         'react-dom': 'ReactDOM',
-                        'prop-types': 'PropTypes',
                     },
                     inlineDynamicImports: true,
                     exports: 'auto',
@@ -56,7 +55,6 @@ export default ({mode}: ConfigEnv): UserConfigExport => {
             globals: true,
             coverage: {
                 reporter: ['text', 'html', 'clover', 'json', 'cobertura'],
-                all: true,
                 include: ['src/js/**'],
                 exclude: ['src/js/components/demo/DemoPage.tsx', 'src/js/main.ts', 'src/js/styled.d.ts'],
                 provider: 'v8',

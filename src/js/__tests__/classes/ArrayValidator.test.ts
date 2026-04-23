@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import ArrayValidator from '../../classes/ArrayValidator';
 import BooleanValidator from '../../classes/BooleanValidator';
 import NumberValidator from '../../classes/NumberValidator';
@@ -78,16 +77,6 @@ test('Test ArrayValidator getDefaultValue returns the children\'s default values
 test('Test ArrayValidator getDefaultValue returns as many default values as there are required children', () => {
     const validator = new ArrayValidator(new NumberValidator(undefined, 1)).minLength(3);
     expect(validator.getDefaultValue()).toStrictEqual([1, 1, 1]);
-});
-
-test('Test ArrayValidator getPropType', () => {
-    const validator = new ArrayValidator(new StringValidator());
-    expect(String(validator.getPropType())).toBe(String(PropTypes.arrayOf(PropTypes.string)));
-});
-
-test('Test ArrayValidator getPropType required', () => {
-    const validator = new ArrayValidator(new StringValidator().required());
-    expect(String(validator.getPropType())).toBe(String(PropTypes.arrayOf(PropTypes.string.isRequired).isRequired));
 });
 
 test('Test ArrayValidator does not mutate children', () => {

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import BaseValidator from './BaseValidator';
 import {Dependent, ErrorFunction, InputType, MutationFunction, ValidationResult, Value} from '../types';
 import {TFunction} from 'i18next';
@@ -9,7 +8,6 @@ import {TFunction} from 'i18next';
  */
 class BooleanValidator extends BaseValidator<boolean | string> {
     public defaultInputType: InputType = 'checkbox';
-    protected propType = PropTypes.bool;
     private realBool: boolean;
 
     /**

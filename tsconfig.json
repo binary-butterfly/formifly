@@ -9,7 +9,7 @@
     "outDir": "dist",
     "strict": true,
     "noImplicitReturns": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "types": [
       "vitest/globals"
     ],

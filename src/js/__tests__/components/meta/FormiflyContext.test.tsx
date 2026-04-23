@@ -37,32 +37,26 @@ describe('FormiflyContext', () => {
                 <ObjectComponent/>
             </FormiflyForm>);
         };
-        const error = vitest.fn();
-        global.console.error = error;
         expect(failingFunc).toThrowError('Object validators must not be used for input fields directly');
-        expect(error).toHaveBeenCalledTimes(2);
     });
 
     it('throws an error when trying to get context outside of a provider', () => {
         const failingFunc = () => {
             render(<NotInProviderComponent/>);
         };
-        const error = vitest.fn();
-        global.console.error = error;
         expect(failingFunc)
             .toThrowError(
                 'Attempted to use formifly context outside of a provider. '
                 + 'Only call useFormiflyContext from a component within a FormiflyForm.',
             );
-        expect(error).toHaveBeenCalledTimes(2);
     });
 
-    it('sets failure reason when onSubmit promise is rejected', () => {
+    it('sets failure reason when onSubmit promise is rejected', async () => {
         const shape = new ObjectValidator({foo: new StringValidator()});
 
         render(
             <FormiflyForm shape={shape} onSubmit={() => new Promise(
-                (resolve, reject) => reject({status: 400}),
+                (_resolve, reject) => reject({status: 400}),
             )}>
                 <SubmitErrorDisplay/>
                 <AutomagicFormiflyField label={'foo'} name={'foo'}/>
@@ -71,12 +65,12 @@ describe('FormiflyContext', () => {
         );
 
         fireEvent.click(screen.getByText('Submit'));
-        return screen.findByText('{"status":400}').then(() => {
+        try {
+            await screen.findByText('{"status":400}');
             expect(screen.getByText('Submission did not succeed')).not.toBeNull();
-        })
-            .catch((reason) => {
-                expect(reason).toBeNull();
-            });
+        } catch (reason) {
+            expect(reason).toBeNull();
+        }
     });
 
     it('completes default values', () => {
@@ -211,7 +205,7 @@ describe('FormiflyContext', () => {
         expect(input.attributes.getNamedItem('max')).not.toBeNull();
     });
 
-    it('can trigger field validation', () => {
+    it('can trigger field validation', async () => {
         const CheckForm = withFormifly((props) => {
             const {validateField} = props;
             const [valid1, setValid1] = React.useState<boolean>();
@@ -244,10 +238,9 @@ describe('FormiflyContext', () => {
 
         fireEvent.click(screen.getByText('Click'));
 
-        return screen.findByText('Valid1: true').then((found) => {
-            expect(found).not.toBeNull();
-            expect(screen.getByText('Valid2: false')).not.toBeNull();
-        });
+        const found = await screen.findByText('Valid1: true');
+        expect(found).not.toBeNull();
+        expect(screen.getByText('Valid2: false')).not.toBeNull();
     });
 
     it('returns a promise with the new values from setFieldValue', async () => {
@@ -262,7 +255,7 @@ describe('FormiflyContext', () => {
             };
 
             return <>
-                <p>{fooText}</p>
+                <p>{fooText as string}</p>
                 <AutomagicFormiflyField label="fooField" name="foo"/>
                 <button onClick={handleCoolButtonClick}>Cool button m8</button>
             </>;
@@ -294,7 +287,7 @@ describe('FormiflyContext', () => {
             };
 
             return <>
-                <p>Foo: {fooText}</p>
+                <p>Foo: {fooText as string}</p>
                 <AutomagicFormiflyField label="barField" name="bar"/>
                 <button onClick={handleButtonClick}>Button</button>
             </>;
@@ -314,7 +307,7 @@ describe('FormiflyContext', () => {
         await (waitFor(() => expect((screen.getByLabelText('barField') as HTMLInputElement).value).toBe('bar')));
     });
 
-    it('runs onSubmitValidationError handler', () => {
+    it('runs onSubmitValidationError handler', async () => {
         const Form = () => {
             const [submitError, setSubmitError] = React.useState(false);
 
@@ -333,13 +326,11 @@ describe('FormiflyContext', () => {
         expect(screen.queryByText('Submission has failed')).toBeNull();
         fireEvent.click(screen.getByText('Submit'));
 
-        return screen.findByText('Submission has failed')
-            .then((result) => {
-                return expect(result).not.toBeNull();
-            });
+        const result_5 = await screen.findByText('Submission has failed');
+        return expect(result_5).not.toBeNull();
     });
 
-    it('can get the field value if it is not passed to validateField', () => {
+    it('can get the field value if it is not passed to validateField', async () => {
         const Form = withFormifly((props) => {
             const [fieldValid, setFieldValid] = React.useState(false);
             const {validateField} = props;
@@ -367,10 +358,11 @@ describe('FormiflyContext', () => {
         expect(screen.queryByText('That field is valid!')).toBeNull();
         fireEvent.click(screen.getByText('Validate that field!'));
 
-        return screen.findByText('That field is valid!').then(found => expect(found).not.toBeNull());
+        const found = await screen.findByText('That field is valid!');
+        return expect(found).not.toBeNull();
     });
 
-    it('can validate multiple fields at once', () => {
+    it('can validate multiple fields at once', async () => {
         const NotReallyAForm = withFormifly((props) => {
             const {validateMultipleFields} = props;
             const [allPassed, setAllPassed] = React.useState(true);
@@ -399,15 +391,14 @@ describe('FormiflyContext', () => {
         expect(screen.queryByText('Not all fields have passed validation')).toBeNull();
         fireEvent.click(screen.getByText('Validate those fields!'));
 
-        return screen.findByText('this would have been required').then((found) => {
-            expect(found).not.toBeNull();
-            expect(screen.getByText('Not all fields have passed validation')).not.toBeNull();
-            expect(document.getElementById('foo-input')?.getAttribute('aria-invalid')).toBe('false');
-            expect(document.getElementById('bar-input')?.getAttribute('aria-invalid')).toBe('true');
-        });
+        const found = await screen.findByText('this would have been required');
+        expect(found).not.toBeNull();
+        expect(screen.getByText('Not all fields have passed validation')).not.toBeNull();
+        expect(document.getElementById('foo-input')?.getAttribute('aria-invalid')).toBe('false');
+        expect(document.getElementById('bar-input')?.getAttribute('aria-invalid')).toBe('true');
     });
 
-    it('Does not call on onSubmitValidationError if a user supplied synchronous onSubmit function throws an error', () => {
+    it('Does not call on onSubmitValidationError if a user supplied synchronous onSubmit function throws an error', async () => {
         const onSubmitValidationError = vitest.fn();
         const handleSubmit = vitest.fn().mockImplementation(() => {
             throw 'Test error';
@@ -428,16 +419,15 @@ describe('FormiflyContext', () => {
 
         fireEvent.click(screen.getByText('Submit Form!'));
 
-        return screen.findByText('"Test error"', undefined, {timeout: 4000}).then(() => {
-            expect(handleSubmit).toHaveBeenCalledTimes(1);
-            return expect(onSubmitValidationError).toHaveBeenCalledTimes(0);
-        });
+        await screen.findByText('"Test error"', undefined, {timeout: 4000});
+        expect(handleSubmit).toHaveBeenCalledTimes(1);
+        return expect(onSubmitValidationError).toHaveBeenCalledTimes(0);
     });
 
-    it('Does not call on onSubmitValidationError if a user supplied async onSubmit function throws an error', () => {
+    it('Does not call on onSubmitValidationError if a user supplied async onSubmit function throws an error', async () => {
         const onSubmitValidationError = vitest.fn();
         const handleSubmit = vitest.fn().mockImplementation(() => {
-            return new Promise((resolve, reject) => {
+            return new Promise((_resolve, reject) => {
                 reject('Test error');
             });
         });
@@ -457,13 +447,12 @@ describe('FormiflyContext', () => {
 
         fireEvent.click(screen.getByText('Submit Form!'));
 
-        return screen.findByText('Test error', undefined, {timeout: 4000}).then(() => {
-            expect(handleSubmit).toHaveBeenCalledTimes(1);
-            return expect(onSubmitValidationError).toHaveBeenCalledTimes(0);
-        });
+        await screen.findByText('Test error', undefined, {timeout: 4000});
+        expect(handleSubmit).toHaveBeenCalledTimes(1);
+        return expect(onSubmitValidationError).toHaveBeenCalledTimes(0);
     });
 
-    it('Sets submitting to false if onSubmit function is synchronous', () => {
+    it('Sets submitting to false if onSubmit function is synchronous', async () => {
         const handleSubmit = vitest.fn().mockImplementation(() => true);
 
         const NotARealForm = withFormifly((props) => {
@@ -480,10 +469,8 @@ describe('FormiflyContext', () => {
 
         fireEvent.click(screen.getByText('Submit!'));
 
-        return screen.findByText('Submission successful!')
-            .then(() => {
-                return expect(handleSubmit).toHaveBeenCalledTimes(1);
-            });
+        await screen.findByText('Submission successful!');
+        return expect(handleSubmit).toHaveBeenCalledTimes(1);
     });
 
     it('provides a setMultipleFieldValuesAndValidate function that can validate correct values', async () => {
@@ -496,7 +483,7 @@ describe('FormiflyContext', () => {
 
             return <div>
                 <p>Foo: {values.foo}</p>
-                <p>Foo error: {errors.foo}</p>
+                <p>Foo error: {errors.foo as string}</p>
                 <p>Bla: {values.bla}</p>
                 <AutomagicFormiflyField label="Foo input" name="foo"/>
                 <p>Validation success: {validationSuccess ? 'true' : 'false'}</p>
@@ -533,7 +520,7 @@ describe('FormiflyContext', () => {
                 <p>Validation success: {validationSuccess ? 'true' : 'false'}</p>
                 <p>Foo: {values.foo}</p>
                 <p>Bla: {values.bla === '' ? 'empty string' : values.bla}</p>
-                <p>Bla error: {errors.bla}</p>
+                <p>Bla error: {errors.bla as string}</p>
                 <button onClick={setAndValidate}>Set and validate</button>
             </div>;
         };

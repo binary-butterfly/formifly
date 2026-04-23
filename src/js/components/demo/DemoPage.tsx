@@ -1,10 +1,9 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {createRoot} from 'react-dom/client';
 import DemoForm from './DemoForm';
 
-const Root = () => {
-    return <DemoForm/>;
-};
-
-const DomContainer = document.getElementById('root');
-ReactDOM.render(<Root/>, DomContainer);
+createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+        <DemoForm/>
+    </React.StrictMode>,
+);

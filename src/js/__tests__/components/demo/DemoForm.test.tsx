@@ -20,12 +20,9 @@ export const changeInputValue = (element: HTMLElement, newValue: any) => {
     fireEvent.blur(element);
 };
 
-function checkIfRoleEqualsAndContentNotEmpty(role: string, element: HTMLElement) {
-    return role === 'alert' && element.textContent !== '';
-}
-
 const queryAllAlertsWithContent = () => {
-    return screen.queryAllByRole(checkIfRoleEqualsAndContentNotEmpty);
+    const allAlerts = screen.queryAllByRole('alert');
+    return allAlerts.filter((alert) => alert.textContent !== '');
 };
 
 /**
@@ -34,7 +31,11 @@ const queryAllAlertsWithContent = () => {
  * @return {*}
  */
 const findAllAlertsWithContent = () => {
-    return screen.findAllByRole(checkIfRoleEqualsAndContentNotEmpty);
+    return screen.findAllByRole('alert').then((elements) => {
+        return elements.filter((element) => {
+            return element.textContent !== '';
+        });
+    });
 };
 
 describe('DemoForm', () => {
@@ -228,13 +229,13 @@ describe('DemoForm', () => {
         return waitFor(() => !tastyCheck.checked);
     });
 
-    it('renders a form that can not be submitted while values are missing', () => {
+    it('renders a form that can not be submitted while values are missing', async () => {
         const submitButton = screen.getByText('Submit Form');
 
         fireEvent.submit(submitButton);
-        return findAllAlertsWithContent().then((result) => {
-            expect(result).not.toStrictEqual([]);
-        });
+        return await vi.waitFor(() => findAllAlertsWithContent().then((result) => {
+            expect(result.length).not.toStrictEqual(0);
+        }));
     });
 
     it('renders a form that can be submitted when all values are filled in', () => {
