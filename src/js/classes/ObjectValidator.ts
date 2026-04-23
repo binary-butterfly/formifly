@@ -41,7 +41,7 @@ class ObjectValidator<T extends ObjectValidatorFields> extends BaseValidator<Val
         mutationFunc?: MutationFunction,
         onError?: ErrorFunction,
         dependent?: Dependent,
-        dropEmpty: boolean = true,
+        dropEmpty: boolean = false,
         dropNotInShape: boolean = false,
         emptyToNull: boolean = false,
     ) {
