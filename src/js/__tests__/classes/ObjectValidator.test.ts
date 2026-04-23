@@ -100,9 +100,9 @@ describe.each([
             bar: new ArrayValidator(new StringValidator()),
             baz: new ArrayValidator(new StringValidator()),
         },
-        {foo: '', bar: [], baz: ['']},
+        {foo: '', bar: [], baz: [''], bla: ['blub']},
         true,
-        [true, {}],
+        [true, {bla: ['blub']}],
         'drops empty fields',
     ],
     [
@@ -111,7 +111,7 @@ describe.each([
             bar: new ArrayValidator(new StringValidator()),
             baz: new ArrayValidator(new StringValidator()),
         },
-        {foo: '', bar: [], baz: ['']},
+        {foo: '', bar: [], baz: [''], bla: ['', 'blub']},
         false,
         [
             true,
@@ -119,6 +119,7 @@ describe.each([
                 foo: '',
                 bar: [],
                 baz: [''],
+                bla: ['', 'blub'],
             },
         ],
         'does not drop empty fields when set false',
