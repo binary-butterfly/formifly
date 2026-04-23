@@ -417,7 +417,7 @@ type FormiflyProviderProps<T extends ObjectValidator<any>> = {
     initialValues?: DeepPartial<ValueOfValidator<T>>;
     disableNativeMinMax?: boolean;
     disableNativeRequired?: boolean;
-    children: React.JSX.Element[] | React.JSX.Element;
+    children: React.ReactNode;
     t?: TFunction,
 }
 
