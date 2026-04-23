@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import ArrayValidator from './ArrayValidator';
 import BaseValidator from './BaseValidator';
 import {
@@ -223,35 +222,6 @@ class ObjectValidator<T extends ObjectValidatorFields> extends BaseValidator<Val
         }
 
         return allOk ? [true, testValue] : [false, tests];
-    }
-
-    /**
-     * Returns the PropTypes representation of the validator.
-     * @return {Object}
-     */
-    public getPropType(): PropTypes.Validator<any> {
-        const types: Record<string, PropTypes.Validator<any>> = {};
-        for (const fieldName in this.fields) {
-            types[fieldName] = this.fields[fieldName].getPropType();
-        }
-        const shape = PropTypes.shape(types);
-        return this.isRequired ? shape.isRequired : shape;
-
-    }
-
-    /**
-     * Returns the PropTypes representation of the validator.
-     *
-     * Return an object instead of PropTypes.shape. This is useful if you want to assign this validator's PropType to the PropTypes of a component.
-     * @return {Object}
-     */
-    public getFirstPropType(): Record<string, PropTypes.Validator<any>> {
-        const types: Record<string, PropTypes.Validator<any>> = {};
-        for (const fieldName in this.fields) {
-            types[fieldName] = this.fields[fieldName].getPropType();
-        }
-
-        return types;
     }
 }
 

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import ArrayValidator from '../../classes/ArrayValidator';
 import BooleanValidator from '../../classes/BooleanValidator';
 import NumberValidator from '../../classes/NumberValidator';
@@ -92,24 +91,6 @@ describe.each([
         const Validator = new ObjectValidator(fields);
         expect(Validator.getDefaultValue()).toStrictEqual(expected);
     });
-});
-
-test('Test getPropType', () => {
-    const validator = new ObjectValidator({foo: new StringValidator().required(), bar: new NumberValidator()});
-    expect(String(validator.getPropType())).toBe(String(PropTypes.shape({foo: PropTypes.string.isRequired, bar: PropTypes.number})));
-});
-
-test('Test getPropType required', () => {
-    const validator = new ObjectValidator({foo: new StringValidator().required(), bar: new NumberValidator()}).required();
-    expect(String(validator.getPropType())).toBe(String(PropTypes.shape({
-        foo: PropTypes.string.isRequired,
-        bar: PropTypes.number,
-    }).isRequired));
-});
-
-test('Test getPropType first', () => {
-    const validator = new ObjectValidator({foo: new StringValidator().required(), bar: new NumberValidator()});
-    expect(validator.getFirstPropType()).toStrictEqual({foo: PropTypes.string.isRequired, bar: PropTypes.number});
 });
 
 describe.each([

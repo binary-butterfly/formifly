@@ -61,7 +61,7 @@ export type FormiflySelectFieldProps = FormiflyFieldProps & {
         label: string,
         value: string,
     }[],
-    optionComponent: React.ComponentType<{value: string, disabled?: boolean, className? : string}>,
+    optionComponent: React.ComponentType<{value: string, disabled?: boolean, className? : string, children?: React.ReactNode}>,
     optionClassName: string,
 }
 

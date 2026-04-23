@@ -11,11 +11,7 @@ import {
     getFieldValueFromKeyString,
     setFieldValueFromKeyString,
 } from '../../helpers/generalHelpers';
-import {
-    findFieldValidatorAndSiblingsFromName,
-    findFieldValidatorFromName,
-    unpackErrors,
-} from '../../helpers/validationHelpers';
+import {findFieldValidatorAndSiblingsFromName, findFieldValidatorFromName, unpackErrors} from '../../helpers/validationHelpers';
 import BaseValidator from '../../classes/BaseValidator';
 import {FormiflyFieldProps} from '../input/FormiflyField';
 import {
@@ -286,7 +282,7 @@ export const FormiflyProvider = <T extends ObjectValidator<any>>(props: Formifly
         } else if (fieldValidator instanceof BooleanValidator) {
             additionalProps.checked = Boolean(fieldValue);
             additionalProps.onChange = handleCheckChange;
-        } else if (fieldValidator instanceof ArrayValidator<any>) {
+        } else if (fieldValidator instanceof ArrayValidator) {
             additionalProps.onChange = handleMultiSelectChange;
             additionalProps.value = (fieldValue as Array<Value>).filter((thisValue: Value) => thisValue !== '');
             additionalProps.multiple = true;
@@ -421,7 +417,7 @@ type FormiflyProviderProps<T extends ObjectValidator<any>> = {
     initialValues?: DeepPartial<ValueOfValidator<T>>;
     disableNativeMinMax?: boolean;
     disableNativeRequired?: boolean;
-    children: JSX.Element[] | JSX.Element;
+    children: React.JSX.Element[] | React.JSX.Element;
     t?: TFunction,
 }
 

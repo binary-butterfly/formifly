@@ -60,7 +60,7 @@ export type FormProps<T extends ObjectValidator<any>> = {
     onSubmit: SubmitFunction<T>;
     onSubmitValidationError?: SubmitValidationErrorFunction<T>;
     className?: string;
-    children: (JSX.Element | false)[] | JSX.Element | false;
+    children: React.ReactNode;
 }
 
 export type FormiflyFormProps<T extends ObjectValidator<any>> = FormProps<T> & {

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import BaseValidator from '../../classes/BaseValidator';
 import NumberValidator from '../../classes/NumberValidator';
 import StringValidator from '../../classes/StringValidator';
@@ -117,16 +116,6 @@ test('Test onError callback is called on error', () => {
     const validator = new BaseValidator<boolean>(true, undefined, undefined, callback).alwaysFalse();
     validator.validate(false, {foo: 'bar'});
     expect(callback).toHaveBeenCalledWith(false, {foo: 'bar'});
-});
-
-test('Test getPropType', () => {
-    const validator = new BaseValidator(undefined as any);
-    expect(validator.getPropType()).toBe(PropTypes.any);
-});
-
-test('Test getPropType required', () => {
-    const validator = new BaseValidator(undefined as any).required();
-    expect(validator.getPropType()).toBe(PropTypes.any.isRequired);
 });
 
 test('Test mutationFunc', () => {
