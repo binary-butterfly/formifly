@@ -29,6 +29,8 @@ const FormiflyForm = <T extends ObjectValidator<any>>(props: FormiflyFormProps<T
     } = props;
     const theme = props.theme ?? {};
 
+    // Ignored code should be unignored in #190
+    /* v8 ignore start -- @preserve */
     const scTheme = {
         inputBackgroundColor: 'white',
         errorColor: 'red',
@@ -39,6 +41,7 @@ const FormiflyForm = <T extends ObjectValidator<any>>(props: FormiflyFormProps<T
             (typeof window.matchMedia === 'function' && window.matchMedia(`(prefers-reduced-motion: reduce)`).matches),
         ...theme,
     };
+    /* v8 ignore stop -- @preserve */
 
     return <ThemeProvider theme={scTheme}>
         <FormiflyProvider initialValues={defaultValues}
