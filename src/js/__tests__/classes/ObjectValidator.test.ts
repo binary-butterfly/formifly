@@ -235,6 +235,10 @@ test('Test emptyToNull works as intended', () => {
 
     validator.setEmptyToNull(true);
     expect(validator.validate(values)).toStrictEqual([true, {bla: null, arr: null, anotherArr: [null, 'abc']}]);
+
+    validator.setEmptyToNull(false);
+    // Since setting setEmptyToNull sets dropEmpty to false, this will now return the object unchanged.
+    expect(validator.validate(values)).toStrictEqual([true, {bla: '', arr: [''], anotherArr: ['', 'abc']}]);
 });
 
 test('Test error thrown if emptyToNull and dropEmpty set to true at the same time', () => {
