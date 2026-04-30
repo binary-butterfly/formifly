@@ -32,8 +32,11 @@ export default ({mode}: ConfigEnv): UserConfigExport => {
             rollupOptions: {
                 external: [
                     'react',
-                    'reactDOM',
+                    'react-dom',
                     'prop-types',
+                    'styled-components',
+                    'react-i18next',
+                    'i18next',
                 ],
                 output: {
                     globals: {
@@ -42,6 +45,8 @@ export default ({mode}: ConfigEnv): UserConfigExport => {
                     },
                     inlineDynamicImports: true,
                     exports: 'auto',
+                    preserveModules: false,
+                    externalLiveBindings: false,
                 },
             },
         },
