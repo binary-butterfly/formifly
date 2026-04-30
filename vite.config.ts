@@ -13,7 +13,12 @@ export default ({mode}: ConfigEnv): UserConfigExport => {
         plugins: [
             react(),
             dts(
-                {tsconfigPath: 'build.tsconfig.json'},
+                {
+                    tsconfigPath: 'build.tsconfig.json',
+                    include: ['src/*/**'],
+                    outDir: 'dist',
+                    staticImport: true,
+                },
             ),
         ],
         build: {
