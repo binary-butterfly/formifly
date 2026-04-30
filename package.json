@@ -9,7 +9,7 @@
       "require": "./dist/formifly.umd.cjs"
     }
   },
-  "main": "dist/formifly.umd.js",
+  "main": "dist/formifly.umd.cjs",
   "module": "dist/formifly.js",
   "types": "dist/src/js/main.d.ts",
   "files": [
