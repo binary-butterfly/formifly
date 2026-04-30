@@ -1,16 +1,16 @@
 {
   "name": "formifly",
-  "version": "3.0.0-rc1",
+  "version": "3.0.0-rc2",
   "description": "React form handling as light as a butterfly",
   "exports": {
     ".": {
       "types": "./dist/src/js/main.d.ts",
-      "import": "./dist/formifly.js",
-      "require": "./dist/formifly.umd.cjs"
+      "import": "./dist/formifly.es.js",
+      "require": "./dist/formifly.cjs.js"
     }
   },
-  "main": "dist/formifly.umd.js",
-  "module": "dist/formifly.js",
+  "main": "dist/formifly.cjs.js",
+  "module": "dist/formifly.es.js",
   "types": "dist/src/js/main.d.ts",
   "files": [
     "dist/*"
