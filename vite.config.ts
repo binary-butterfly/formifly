@@ -23,11 +23,12 @@ export default ({mode}: ConfigEnv): UserConfigExport => {
         ],
         build: {
             sourcemap: true,
+            emptyOutDir: true,
             lib: {
                 entry: resolve(__dirname, 'src/js/main.ts'),
                 name: 'Formifly',
                 fileName: (format) => `formifly.${format}.js`,
-                formats: ['es', 'cjs']
+                formats: ['es']
             },
             rollupOptions: {
                 external: [
