@@ -4,7 +4,7 @@ import FormiflyCheckField from './components/input/FormiflyCheckField';
 import AutomagicFormiflyField from './components/input/AutomagicFormiflyField';
 import FormiflyForm from './components/meta/FormiflyForm';
 import withFormifly from './components/meta/withFormifly';
-import {FormiflyProvider, useFormiflyContext} from './components/meta/FormiflyContext';
+import {type FormiflyContextType, FormiflyProvider, useFormiflyContext} from './components/meta/FormiflyContext';
 import AnyOfValidator from './classes/AnyOfValidator';
 import BaseValidator from './classes/BaseValidator';
 import StringValidator from './classes/StringValidator';
@@ -25,19 +25,9 @@ import {
     setFieldValueFromKeyString,
 } from './helpers/generalHelpers';
 import {ensureValueIsDateObject, ensureValueIsNumeric, ensureValueIsRegexp} from './helpers/developerInputValidators';
-import withLabelErrorsAndHelp, {
-    ErrorSpan,
-    FieldContainer,
-    HelpSpan,
-    InputLabel,
-} from './components/input/withLabelErrorsAndHelp';
+import withLabelErrorsAndHelp, {ErrorSpan, FieldContainer, HelpSpan, InputLabel} from './components/input/withLabelErrorsAndHelp';
 import FormiflyRadioGroup, {RadioGroupContainer} from './components/input/FormiflyRadioGroup';
-import FormiflyMultiSelectField, {
-    Option,
-    OptionsAnchor,
-    OptionsMenu,
-    SelectContainer,
-} from './components/input/FormiflyMultiSelectField';
+import FormiflyMultiSelectField, {Option, OptionsAnchor, OptionsMenu, SelectContainer} from './components/input/FormiflyMultiSelectField';
 import {
     type ArrayValue,
     type CheckFunction,
@@ -74,6 +64,7 @@ export {
     FormiflyProvider,
     withFormifly,
     useFormiflyContext,
+    FormiflyContextType,
     AnyOfValidator,
     BaseValidator,
     StringValidator,
