@@ -10,6 +10,7 @@ import {useFormiflyContext} from '../../../components/meta/FormiflyContext';
 import FormiflyForm from '../../../components/meta/FormiflyForm';
 import withFormifly from '../../../components/meta/withFormifly';
 import {Value} from '../../../types';
+import '../../../helpers/i18n';
 
 const ObjectComponent = withFormifly((props) => {
     const {getFieldProps} = props;

@@ -1265,9 +1265,9 @@ This validator does the following things:
 
 ## Localization
 
-By default, all built in validators will return more or less useful error messages in English language, when they are used within a
+By default, all built-in validators will return more or less useful error messages in English, when they are used within a
 FormiflyForm.  
-You can override those on a per validator basis by using the defaultErrorMessage property on the validator and the msg property on
+You can override those on a per-validator basis by using the defaultErrorMessage property on the validator and the msg property on
 validator functions.
 Some validator functions even automatically replace the names of their parameters when they are passed a custom string that contains a
 placeholder like `{{num}}`.
@@ -1277,6 +1277,9 @@ However, overriding all of these error messages can get very tedious, which is w
 To automatically localize all included default error messages, you can pass your own translation function to the FormiflyForm.  
 In order for this to work, you will need a `formifly` namespace with all the translation strings included
 in [our custom i18n.ts](./src/js/helpers/i18n.ts) file.
+
+**Important Note**: Since version 3.0.0, the main bundle of formifly will no longer ship translation files. If you are not using i18next
+in your application, you need to import `formifly/i18n.es.js` in your application to use the default translations.
 
 If the validator takes any parameters, such as `min` for `StringValidator.minLength(min)`, these will be given to the translation function
 in an object as the second parameter, to allow automatic replacement of placeholders.

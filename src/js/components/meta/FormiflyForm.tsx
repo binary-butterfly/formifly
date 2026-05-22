@@ -2,7 +2,6 @@ import React from 'react';
 import {ThemeProvider} from 'styled-components';
 import {FormiflyProvider, useFormiflyContext} from './FormiflyContext';
 import {DeepPartial, SubmitFunction, SubmitValidationErrorFunction, ValueOfValidator} from '../../types';
-import '../../helpers/i18n';
 import {TFunction} from 'i18next';
 import ObjectValidator from '../../classes/ObjectValidator';
 
