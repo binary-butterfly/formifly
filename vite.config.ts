@@ -30,7 +30,7 @@ export default ({mode}: ConfigEnv): UserConfigExport => {
                     'i18n': resolve(__dirname, 'src/js/helpers/i18n.ts'),
                 },
                 name: 'Formifly',
-                fileName: (format, entryName) => entryName === 'i18n' ? `i18n.${format}.js` : `formifly.${format}.js`,
+                fileName: (format, entryName) =>  `${entryName}.${format}.js`,
                 formats: ['es'],
             },
             rollupOptions: {
