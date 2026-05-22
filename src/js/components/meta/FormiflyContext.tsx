@@ -67,6 +67,7 @@ export type FormiflyContextType<T extends ObjectValidator<any>> = {
     setMultipleFieldValuesAndValidate: <V extends Value>(
         pairs: [string, V][], oldValues?: ValueOfValidator<T>,
     ) => Promise<DeepPartial<ValueOfValidator<T>> | undefined>;
+    setErrorForField: (name: string, newError: string|undefined) => void;
 };
 
 // see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/24509#issuecomment-382213106 for why we need to cast here
@@ -179,6 +180,10 @@ export const FormiflyProvider = <T extends ObjectValidator<any>>(props: Formifly
             name,
             event.target.type === 'radio' || event.target.type === 'checkbox' ? event.target.checked : event.target.value,
         );
+    };
+
+    const setErrorForField = (name: string, newError: string | undefined): void => {
+        setErrors(setFieldValueFromKeyString(name, newError as any, errors as any));
     };
 
     const validateField = (name: string, value?: Value): Promise<boolean> => {
@@ -407,6 +412,7 @@ export const FormiflyProvider = <T extends ObjectValidator<any>>(props: Formifly
         setMultipleFieldValues,
         validateMultipleFields,
         setMultipleFieldValuesAndValidate,
+        setErrorForField,
     };
 
     return <Context.Provider value={FormiflyContext}>{children}</Context.Provider>;
