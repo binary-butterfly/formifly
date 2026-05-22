@@ -606,6 +606,7 @@ They will return an object containing/ add the following props:
   this.)  
   This function accepts the following parameters: `name`, `help`, `type`, `value`, `id`, `additionalDescribedBy`.  
   Only the `name` is required, the other parameters are provided to allow you to override the default values used in most cases.
+- `setErrorForField` A function, which allows you to set the error for a field, helpful if the validation conditions have changed.
 
 ### withLabelErrorsAndHelp
 
