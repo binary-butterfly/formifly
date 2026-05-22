@@ -7,6 +7,7 @@ import {cleanup, fireEvent, render, screen, waitFor} from '@testing-library/reac
 import React from 'react';
 import DemoForm from '../../../components/demo/DemoForm';
 import {convertDateObjectToInputString} from '../../../helpers/generalHelpers';
+import '../../../helpers/i18n';
 import {expect} from 'vitest';
 
 /**

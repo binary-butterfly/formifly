@@ -10,6 +10,7 @@ import {useFormiflyContext} from '../../../components/meta/FormiflyContext';
 import FormiflyForm from '../../../components/meta/FormiflyForm';
 import withFormifly from '../../../components/meta/withFormifly';
 import {Value} from '../../../types';
+import '../../../helpers/i18n';
 
 const ObjectComponent = withFormifly((props) => {
     const {getFieldProps} = props;
@@ -535,5 +536,40 @@ describe('FormiflyContext', () => {
         expect(renderResult.getByText('Foo: bar')).toBeInTheDocument();
         expect(renderResult.getByText('Bla: empty string')).toBeInTheDocument();
         expect(renderResult.getByText('Bla error: This field is required')).toBeInTheDocument();
+    });
+
+    it('allows setting the error for a field', async () => {
+        const TestForm = () => {
+            const {setErrorForField} = useFormiflyContext();
+
+            const handleClear = () => {
+                setErrorForField('a', undefined);
+            };
+
+            return <>
+                <AutomagicFormiflyField label="A field" name="a"/>
+                <AutomagicFormiflyField label="B field" name="b"/>
+                <button onClick={handleClear}>Clear A Error</button>
+            </>;
+        };
+
+
+        const shape = new ObjectValidator({
+            a: new StringValidator().required(),
+            b: new StringValidator(),
+        });
+
+        const renderResult = render(<FormiflyForm onSubmit={vi.fn()} shape={shape}>
+            <TestForm/>
+        </FormiflyForm>);
+
+        const aField = renderResult.getByLabelText('A field');
+        fireEvent.click(aField);
+        fireEvent.blur(aField);
+
+        await (vi.waitFor(() => expect(renderResult.getByText('This field is required')).toBeInTheDocument()));
+        fireEvent.click(renderResult.getByText('Clear A Error'));
+
+        await (vi.waitFor(() => expect(renderResult.queryByText('This field is required.')).not.toBeInTheDocument()));
     });
 });

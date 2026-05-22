@@ -25,10 +25,13 @@ export default ({mode}: ConfigEnv): UserConfigExport => {
             sourcemap: true,
             emptyOutDir: true,
             lib: {
-                entry: resolve(__dirname, 'src/js/main.ts'),
+                entry: {
+                    'formifly': resolve(__dirname, 'src/js/main.ts'),
+                    'i18n': resolve(__dirname, 'src/js/helpers/i18n.ts'),
+                },
                 name: 'Formifly',
-                fileName: (format) => `formifly.${format}.js`,
-                formats: ['es']
+                fileName: (format, entryName) =>  `${entryName}.${format}.js`,
+                formats: ['es'],
             },
             rollupOptions: {
                 external: [
@@ -44,7 +47,6 @@ export default ({mode}: ConfigEnv): UserConfigExport => {
                         'react': 'React',
                         'react-dom': 'ReactDOM',
                     },
-                    inlineDynamicImports: true,
                     exports: 'auto',
                     preserveModules: false,
                     externalLiveBindings: false,
