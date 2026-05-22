@@ -53,8 +53,6 @@
     "jest-styled-components": "^7.4.0",
     "jsdom": "^29.0.2",
     "publint": "^0.3.19",
-    "react": "^19.2.5",
-    "react-i18next": "^17.0.4",
     "styled-components": "^6.4.0",
     "tslib": "^2.8.1",
     "typescript": "^6.0.3",
