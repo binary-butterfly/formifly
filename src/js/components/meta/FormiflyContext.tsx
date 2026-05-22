@@ -67,7 +67,7 @@ export type FormiflyContextType<T extends ObjectValidator<any>> = {
     setMultipleFieldValuesAndValidate: <V extends Value>(
         pairs: [string, V][], oldValues?: ValueOfValidator<T>,
     ) => Promise<DeepPartial<ValueOfValidator<T>> | undefined>;
-    setErrorForField: (name: string, newError: string|undefined) => void;
+    setErrorForField: (name: string, newError: string | undefined) => void;
 };
 
 // see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/24509#issuecomment-382213106 for why we need to cast here
