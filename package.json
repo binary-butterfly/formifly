@@ -6,6 +6,10 @@
     ".": {
       "types": "./dist/src/js/main.d.ts",
       "import": "./dist/formifly.es.js"
+    },
+    "./i18n": {
+      "types": "./dist/src/js/helpers/i18n.d.ts",
+      "import": "./dist/i18n.es.js"
     }
   },
   "module": "dist/formifly.es.js",
