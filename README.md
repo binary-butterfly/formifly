@@ -1279,7 +1279,7 @@ In order for this to work, you will need a `formifly` namespace with all the tra
 in [our custom i18n.ts](./src/js/helpers/i18n.ts) file.
 
 **Important Note**: Since version 3.0.0, the main bundle of formifly will no longer ship translation files. If you are not using i18next
-in your application, you need to import `formifly/i18n.es.js` in your application to use the default translations.
+in your application, you need to import `formifly/i18n` in your application to use the default translations.
 
 If the validator takes any parameters, such as `min` for `StringValidator.minLength(min)`, these will be given to the translation function
 in an object as the second parameter, to allow automatic replacement of placeholders.
