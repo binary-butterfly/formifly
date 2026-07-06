@@ -45,7 +45,8 @@
   },
   "homepage": "https://github.com/binary-butterfly/formifly#readme",
   "devDependencies": {
-    "@binary-butterfly/eslint-config": "^1.0.0-rc5",
+    "@binary-butterfly/eslint-config": "^1.0.0-rc6",
+    "@rolldown/plugin-babel": "^0.2.3",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^24.3.0",
@@ -53,6 +54,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "@vitest/coverage-v8": "^4.1.5",
+    "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9.39.4",
     "jest-styled-components": "^7.4.0",
     "jsdom": "^29.0.2",

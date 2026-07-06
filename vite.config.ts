@@ -1,9 +1,9 @@
 import {defineConfig} from 'vitest/config';
 import {resolve} from 'path';
 import {ConfigEnv, loadEnv, UserConfigExport} from 'vite';
-import react from '@vitejs/plugin-react';
+import react, {reactCompilerPreset} from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
-
+import babel from '@rolldown/plugin-babel';
 
 // https://vitejs.dev/config/
 export default ({mode}: ConfigEnv): UserConfigExport => {
@@ -20,6 +20,9 @@ export default ({mode}: ConfigEnv): UserConfigExport => {
                     staticImport: true,
                 },
             ),
+            babel({
+                presets: [reactCompilerPreset()],
+            }),
         ],
         build: {
             sourcemap: true,
@@ -30,7 +33,7 @@ export default ({mode}: ConfigEnv): UserConfigExport => {
                     'i18n': resolve(__dirname, 'src/js/helpers/i18n.ts'),
                 },
                 name: 'Formifly',
-                fileName: (format, entryName) =>  `${entryName}.${format}.js`,
+                fileName: (format, entryName) => `${entryName}.${format}.js`,
                 formats: ['es'],
             },
             rollupOptions: {
