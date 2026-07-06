@@ -27,7 +27,8 @@
     "build:prod": "NODE_ENV=production vite build",
     "start": "vite",
     "prepublishOnly": "npm run build:prod",
-    "publint": "publint"
+    "publint": "publint",
+    "lint": "eslint . --ignore-pattern dist"
   },
   "type": "module",
   "repository": {
