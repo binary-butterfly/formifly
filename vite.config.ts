@@ -1,9 +1,23 @@
 import {defineConfig} from 'vitest/config';
 import {resolve} from 'path';
 import {ConfigEnv, loadEnv, UserConfigExport} from 'vite';
-import react from '@vitejs/plugin-react';
+import react, {reactCompilerPreset} from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
+import babel from '@rolldown/plugin-babel';
 
+// I know how this looks. If you find a better way to not have the bundle throw errors about imaginary require calls, be my guest.
+const stripRolldownRuntimePlugin = () => ({
+    name: 'strip-rolldown-runtime',
+    renderChunk(code: string) {
+        if (code.includes('rolldown/runtime.js')) {
+            return {
+                code: code.replace(/\/\/#region\s\\0rolldown\/runtime\.js(.|\n)*?\/\/#endregion/gm, ''),
+                map: null, // Disables complex remap shifts
+            };
+        }
+        return null;
+    },
+});
 
 // https://vitejs.dev/config/
 export default ({mode}: ConfigEnv): UserConfigExport => {
@@ -20,6 +34,11 @@ export default ({mode}: ConfigEnv): UserConfigExport => {
                     staticImport: true,
                 },
             ),
+            babel({
+                presets: [reactCompilerPreset()],
+                exclude: [/node_modules/],
+            }),
+            stripRolldownRuntimePlugin(),
         ],
         build: {
             sourcemap: true,
@@ -30,10 +49,10 @@ export default ({mode}: ConfigEnv): UserConfigExport => {
                     'i18n': resolve(__dirname, 'src/js/helpers/i18n.ts'),
                 },
                 name: 'Formifly',
-                fileName: (format, entryName) =>  `${entryName}.${format}.js`,
+                fileName: (format, entryName) => `${entryName}.${format}.js`,
                 formats: ['es'],
             },
-            rollupOptions: {
+            rolldownOptions: {
                 external: [
                     'react',
                     'react-dom',

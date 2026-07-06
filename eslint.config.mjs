@@ -18,5 +18,13 @@ export default defineConfig([
                 version: 'detect',
             },
         },
+    },{
+        ...bbConfig[2],
+
+        settings: {
+            react: {
+                version: 'detect',
+            },
+        },
     },
 ]);
