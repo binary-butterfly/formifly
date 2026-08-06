@@ -97,3 +97,47 @@ export function isValidatorStepArrayArray(dependent?: Dependent): dependent is A
 export function isValidatorStep(dependent?: boolean | ValidatorStep): dependent is ValidatorStep {
     return !!dependent && Array.isArray(dependent) && !Array.isArray(dependent[0]);
 }
+
+
+type ResultType<S extends string|number, V extends Value> =
+    S extends number
+        ? V extends Array<infer A>
+            ? A
+            : undefined
+        : S extends `${infer First}.${infer Rest}`
+            ? V extends Record<any, any>
+                ? ResultType<Rest, V[First]>
+                : never
+            : S extends `${infer Last}`
+                ? V extends Record<any, any>
+                    ? V[Last]
+                    : undefined
+                : never;
+
+const getFieldValueFromKeyString = <S extends string|number, T extends Value>(
+    keyString: S, values: T,
+): ResultType<S, T> => {
+    const fieldNames = String(keyString).split('.');
+    let dependentValue = values;
+    for (const fieldName of fieldNames) {
+        if ((dependentValue as ObjectValue)[fieldName] === undefined) {
+            throw new Error('Could not find value for ' + keyString);
+        }
+        dependentValue = (dependentValue as any)[fieldName];
+    }
+    return dependentValue as ResultType<S, T>;
+};
+
+
+// todo: the calls that result in an "unknown" type should ideally result in "undefined" instead
+// todo: need to test if the calls resulting in undefined actually return undefined; if they error, type them never
+const t = getFieldValueFromKeyString('test.1.str', {test: [{str: 'yay!'}]}); // string
+const t2 = getFieldValueFromKeyString(0, ['3', '2']); // string
+const t3 = getFieldValueFromKeyString('0', ['3', '2']); // string
+const t4 = getFieldValueFromKeyString('test.1', {test: [{str: 'yay!'}]}); // {str: string}
+
+const b = getFieldValueFromKeyString('test.1.str.5', {test: [{str: 'yay!'}]}); // undefined
+const b2 = getFieldValueFromKeyString('test.1.strrrrrr', {test: [{str: 'yay!'}]}); // unknown :(
+const b3 = getFieldValueFromKeyString('test.1.str.sss', {test: [{str: 'yay!'}]}); // undefined
+const b5 = getFieldValueFromKeyString('02', ['3', '2']); // unknown :(
+const b6 = getFieldValueFromKeyString(1, {test: [{str: 'yay!'}]}); // undefined
